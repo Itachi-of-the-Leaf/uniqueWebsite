@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Baloo 2', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-warli-paper: #F8F4EB;
+  --color-warli-geru: #5C2418;
+  --color-warli-geru-light: #7C2D12;
+  --color-warli-card: #FFFDF9;
+  --color-warli-border: #E8DFD1;
+  --color-warli-charcoal: #2B1810;
+  --color-warli-rice: #FAF9F6;
+  --color-warli-amber: #D97706;
+}
+
+body {
+  font-family: 'Baloo 2', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F8F4EB;
+  color: #2B1810;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}

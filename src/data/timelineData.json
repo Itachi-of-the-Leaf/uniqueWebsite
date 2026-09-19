@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "year": "1998 - 2013",
+    "title": "First-Mover Roots in Khed",
+    "description": "Pioneering the IT landscape as the first-mover computer sales and service shop in Khed, laying the technological foundation for regional digital literacy and infrastructure."
+  },
+  {
+    "id": 2,
+    "year": "2014 - 2016",
+    "title": "The ₹25K Breakthrough",
+    "description": "Disrupting rural classroom setups with an affordable ₹25,000 LED rig designed specifically for Zilla Parishad ₹30,000 budgets—enabling pen-drive offline educational content projected directly onto white walls without expensive hardware."
+  },
+  {
+    "id": 3,
+    "year": "2017 - 2024",
+    "title": "Institutional Trust & Scale",
+    "description": "Scaling across 100+ rural schools through key partnerships with Zankar DVDs, MMACETP (Mr. Apte), and Pride India, building enduring trust with educational institutions."
+  },
+  {
+    "id": 4,
+    "year": "2025 - 2026",
+    "title": "The Technical Edge",
+    "description": "Deploying 1080p Smart projectors and Google EDLA-certified interactive AI panels with zero subscription fees, empowering teachers with high-performance, future-proof classroom technology."
+  },
+  {
+    "id": 5,
+    "year": "Ongoing",
+    "title": "Custom Donor Visibility",
+    "description": "Implementing customized boot screens, firmware branding, and prominent MLA & CSR donor visibility solutions to recognize regional benefactors driving educational transformation."
+  }
+]
