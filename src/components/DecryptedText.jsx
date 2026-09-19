@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
-const glyphs = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789₹#$*+&%@!'
+const DEFAULT_GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789₹#$*+&%@!'.split('')
 
 export default function DecryptedText({
   text = '',
-  speed = 65, // 65ms per character tick for mechanical, deliberate, readable feel
-  duration = 700, // 700ms total resolution duration
+  speed = 65, // 65ms per character tick
+  duration = 600, // 600ms total resolution duration
   useOriginalCharsOnly = false,
   className = '',
   parentClassName = '',
@@ -15,30 +15,59 @@ export default function DecryptedText({
   const [displayText, setDisplayText] = useState(text)
   const containerRef = useRef(null)
   const intervalRef = useRef(null)
+  const timeoutRef = useRef(null)
+  const isScramblingRef = useRef(false)
+  const hasMountedRef = useRef(false)
+  const textRef = useRef(text)
+  textRef.current = text
 
   const availableChars = useOriginalCharsOnly
     ? Array.from(new Set(text.split(''))).filter((char) => char !== ' ')
-    : glyphs.split('')
+    : DEFAULT_GLYPHS
 
-  const scramble = useCallback(() => {
+  const stopScramble = (finalText) => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
+      intervalRef.current = null
     }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    isScramblingRef.current = false
+    setDisplayText(finalText || textRef.current)
+  }
 
-    const originalText = text.split('')
-    const totalTicks = Math.max(Math.round(duration / speed), 8) // ~10-11 deliberate ticks
+  const startScramble = () => {
+    // If already scrambling, don't start duplicate intervals
+    if (isScramblingRef.current) return
+    isScramblingRef.current = true
+
+    // Clear any pending timers
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
+    const targetStr = textRef.current
+    const originalText = targetStr.split('')
+    // Strict hard cap of 8-10 tick cycles
+    const totalTicks = Math.min(Math.max(Math.round(duration / speed), 6), 9)
     let currentTick = 0
+
+    // Safety watchdog timer: guarantees text unlocks to exact original string at 600ms
+    timeoutRef.current = setTimeout(() => {
+      stopScramble(targetStr)
+    }, Math.max(duration, 600))
 
     intervalRef.current = setInterval(() => {
       currentTick++
       const progress = currentTick / totalTicks
-      const resolvedCharsCount = Math.floor(progress * originalText.length)
+      const resolvedCount = Math.floor(progress * originalText.length)
 
       setDisplayText(
         originalText
           .map((char, index) => {
             if (char === ' ') return ' '
-            if (index < resolvedCharsCount) {
+            if (index < resolvedCount) {
               return originalText[index]
             }
             return availableChars[
@@ -49,27 +78,27 @@ export default function DecryptedText({
       )
 
       if (currentTick >= totalTicks) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-        setDisplayText(text)
+        stopScramble(targetStr)
       }
     }, speed)
-  }, [text, duration, speed, availableChars])
+  }
 
+  // Handle mount and text change (only when text actually changes)
   useEffect(() => {
-    if (animateOn === 'mount') {
-      scramble()
+    stopScramble(text)
+    if (animateOn === 'mount' && !hasMountedRef.current) {
+      hasMountedRef.current = true
+      startScramble()
     }
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
+      stopScramble(text)
     }
-  }, [animateOn, scramble])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, animateOn])
 
   const handleMouseEnter = () => {
     if (animateOn === 'hover') {
-      scramble()
+      startScramble()
     }
   }
 

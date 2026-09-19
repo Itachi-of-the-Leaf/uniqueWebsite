@@ -15,7 +15,7 @@ import ProjectorScreen from './ProjectorScreen'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ── Per-character chalk glow helper ── */
+/* ── Per-character chalk helper with self-resetting ~500ms GSAP elastic spring ── */
 function ChalkText({ text, className = '' }) {
   return (
     <span className={className} aria-label={text}>
@@ -23,7 +23,31 @@ function ChalkText({ text, className = '' }) {
         char === ' ' ? (
           <span key={i}>&nbsp;</span>
         ) : (
-          <span key={i} className="chalk-letter">
+          <span
+            key={i}
+            className="chalk-letter inline-block cursor-default select-none"
+            onMouseEnter={(e) => {
+              gsap.to(e.currentTarget, {
+                y: -4,
+                scale: 1.08,
+                skewX: -4,
+                duration: 0.15,
+                ease: 'power2.out',
+                overwrite: 'auto',
+              })
+            }}
+            onMouseLeave={(e) => {
+              gsap.to(e.currentTarget, {
+                x: 0,
+                y: 0,
+                skewX: 0,
+                scale: 1,
+                duration: 0.5,
+                ease: 'elastic.out(1, 0.4)',
+                overwrite: 'auto',
+              })
+            }}
+          >
             {char}
           </span>
         )
@@ -132,55 +156,103 @@ const mergedEraData = timelineData.map((td, i) => ({
   visual: eraVisualData[i],
 }))
 
-/* ── Chalk dust particle burst helper (Only plays on scroll-away) ── */
+/* ── Chalk dust particle burst helper (Only on full scroll-away) ── */
 function spawnDustParticles(boardEl) {
   const container = boardEl.querySelector('.dust-container')
   if (!container) return
 
-  // Clear any leftover particles and make container visible
   container.innerHTML = ''
   container.style.opacity = '1'
 
-  const count = 22
+  const count = 16
   const frag = document.createDocumentFragment()
 
   for (let i = 0; i < count; i++) {
     const p = document.createElement('div')
     p.className = 'chalk-dust-particle'
     p.style.left = `${Math.random() * 88 + 6}%`
-    p.style.top = `${Math.random() * 25 + 5}%` // Originate along the upper wipe threshold
-    const size = 2 + Math.random() * 2.5
+    p.style.top = `${Math.random() * 20 + 5}%`
+    const size = 1.8 + Math.random() * 2
     p.style.width = `${size}px`
     p.style.height = `${size}px`
-    p.style.opacity = '0.8'
+    p.style.opacity = '0.9'
     p.style.backgroundColor =
       Math.random() > 0.45
-        ? 'rgba(255,255,255,0.85)'
-        : 'rgba(254,240,138,0.8)'
+        ? 'rgba(255,255,255,0.9)'
+        : 'rgba(254,240,138,0.85)'
     frag.appendChild(p)
   }
 
   container.appendChild(frag)
 
-  // Downward drifting chalk flecks (opacity: 0.8 -> 0, y: "+=40px")
-  gsap.to(container.children, {
-    y: '+=40',
-    x: 'random(-14, 14)',
+  const children = Array.from(container.children)
+  gsap.to(children, {
+    y: '+=35',
+    x: 'random(-12, 12)',
     opacity: 0,
-    duration: 0.75,
-    stagger: 0.015,
-    ease: 'power2.out',
+    duration: 0.35,
+    stagger: 0.01,
+    ease: 'power1.out',
     onComplete: () => {
-      container.innerHTML = ''
-      container.style.opacity = '0'
+      children.forEach((c) => c.remove())
+      if (container.children.length === 0) {
+        container.style.opacity = '0'
+      }
+    },
+  })
+}
+
+/* ── Particle Emitter Synchronized Directly Along Active Wipe Edge ── */
+function emitWipeDust(boardEl, wipeY, isYellow) {
+  const container = boardEl.querySelector('.dust-container')
+  if (!container) return
+
+  container.style.opacity = '1'
+  const count = 4
+  const frag = document.createDocumentFragment()
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div')
+    p.className = 'chalk-dust-particle'
+    p.style.left = `${Math.random() * 84 + 8}%`
+    p.style.top = `${wipeY}px`
+    const size = 1.6 + Math.random() * 2
+    p.style.width = `${size}px`
+    p.style.height = `${size}px`
+    p.style.opacity = '0.9'
+    p.style.backgroundColor = isYellow
+      ? 'rgba(254, 240, 138, 0.95)'
+      : Math.random() > 0.3
+      ? 'rgba(255, 255, 255, 0.95)'
+      : 'rgba(254, 240, 138, 0.85)'
+    p.style.boxShadow = isYellow
+      ? '0 0 5px rgba(254, 240, 138, 0.6)'
+      : '0 0 4px rgba(255, 255, 255, 0.6)'
+    frag.appendChild(p)
+  }
+
+  container.appendChild(frag)
+
+  const children = Array.from(container.children).slice(-count)
+  gsap.to(children, {
+    y: '+=25',
+    x: 'random(-10, 10)',
+    opacity: 0,
+    duration: 0.3,
+    ease: 'power1.out',
+    onComplete: () => {
+      children.forEach((c) => c.remove())
+      if (container.children.length === 0) {
+        container.style.opacity = '0'
+      }
     },
   })
 }
 
 /* ══════════════════════════════════════════════════════
    TimelineSection — Scrollytelling Architecture
-   Left: Scrolling blackboard cards with full-board chalk smudge physics,
-         bounded scrub-off zone (height L), and zero stuck dust particles.
+   Left: Scrolling blackboard cards with self-resetting ~500ms spring physics,
+         bounded scrub-off zone (height L/4 ≈ 14px), and bidirectional immersion.
    Right: Single pinned ProjectorScreen with optical beam shadow.
    ══════════════════════════════════════════════════════ */
 export default function TimelineSection() {
@@ -188,17 +260,18 @@ export default function TimelineSection() {
   const containerRef = useRef(null)
   const boardRefs = useRef([])
 
-  // Full-Board Chalk Smudge Spring Physics State (Ref-driven, bypasses React re-renders)
+  // Full-Board Chalk Smudge Spring Physics State
   const smudgeStateRef = useRef(new Map())
   const rafIdRef = useRef(null)
   const lastMouseRef = useRef({ x: 0, y: 0, time: 0 })
+  const lastWipeYMap = useRef(new Map())
+  const revealedBoardsRef = useRef(new Set())
+  const idleTimerRef = useRef(null)
 
   /* ── Full-Board Chalk Smudge Mouse Movement ── */
   const handleBoardMouseMove = (e, index) => {
-    // Only compute physics for currently ACTIVE blackboard
     if (activeEraIndex !== index) return
 
-    // Mobile/touch safeguard
     if (
       typeof window === 'undefined' ||
       !window.matchMedia('(pointer: fine)').matches
@@ -215,7 +288,6 @@ export default function TimelineSection() {
     const now = e.timeStamp || 0
     const dt = Math.max((now - lastMouseRef.current.time) / 1000, 0.001)
 
-    // Calculate cursor velocity vector
     const vx = (mouseX - lastMouseRef.current.x) / dt
     const vy = (mouseY - lastMouseRef.current.y) / dt
 
@@ -225,7 +297,6 @@ export default function TimelineSection() {
     const normVx = speed > 0 ? vx / speed : 0
     const normVy = speed > 0 ? vy / speed : 0
 
-    // Find all smudgable text lines across the entire card
     const items = boardEl.querySelectorAll('.chalk-smudge-item')
     let impacted = false
 
@@ -233,9 +304,8 @@ export default function TimelineSection() {
       const lineCenterY = item.offsetTop + item.offsetHeight / 2
       const distY = Math.abs(mouseY - lineCenterY)
 
-      // Active interaction radius (~48px)
       if (distY < 48) {
-        const force = (1 - distY / 48) * Math.min(speed * 0.045, 8)
+        const force = (1 - distY / 48) * Math.min(speed * 0.045, 6)
         const skewAngle = Math.max(Math.min(vx * 0.015, 3.5), -3.5)
 
         const stateKey = `${index}-${itemIdx}`
@@ -261,19 +331,45 @@ export default function TimelineSection() {
     if (impacted && !rafIdRef.current) {
       startSmudgePhysicsLoop()
     }
+
+    // Self-resetting return animation activates when cursor becomes idle
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    idleTimerRef.current = setTimeout(() => {
+      resetBoardSmudge(index)
+    }, 160)
+  }
+
+  const resetBoardSmudge = (index) => {
+    const boardEl = boardRefs.current[index]
+    if (boardEl) {
+      const items = boardEl.querySelectorAll('.chalk-smudge-item, .chalk-letter')
+      gsap.to(items, {
+        x: 0,
+        y: 0,
+        skewX: 0,
+        scale: 1,
+        duration: 0.5,
+        ease: 'elastic.out(1, 0.4)',
+        overwrite: 'auto',
+      })
+    }
+    smudgeStateRef.current.clear()
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current)
+      rafIdRef.current = null
+    }
   }
 
   // Damped Harmonic Oscillator Loop (~350ms snap-back)
   const startSmudgePhysicsLoop = () => {
-    const k = 0.22 // Spring stiffness
-    const damping = 0.76 // Damping coefficient
+    const k = 0.22
+    const damping = 0.76
 
     const tick = () => {
       let totalDisplacement = 0
       let totalSpeed = 0
 
       smudgeStateRef.current.forEach((state) => {
-        // Hooke's Law: ax = -k * x - damping * vx
         const ax = -k * state.x - damping * state.vx
         const ay = -k * state.y - damping * state.vy
 
@@ -284,7 +380,6 @@ export default function TimelineSection() {
         state.y += state.vy
         state.skew *= 0.8
 
-        // Bound displacement to max 5px offset as specified
         state.x = Math.max(Math.min(state.x, 5), -5)
         state.y = Math.max(Math.min(state.y, 4), -4)
 
@@ -296,7 +391,6 @@ export default function TimelineSection() {
         }
       })
 
-      // When all text nodes have settled close to original crisp letterforms
       if (totalDisplacement < 0.15 && totalSpeed < 0.15) {
         smudgeStateRef.current.forEach((state) => {
           if (state.el) {
@@ -314,8 +408,7 @@ export default function TimelineSection() {
   }
 
   const handleBoardMouseLeave = (index) => {
-    if (activeEraIndex !== index) return
-    // Allow any ongoing spring oscillations to gracefully settle to 0
+    resetBoardSmudge(index)
   }
 
   /* ── GSAP ScrollTrigger wiring ── */
@@ -329,73 +422,84 @@ export default function TimelineSection() {
 
           const chalkLines = boardEl.querySelectorAll('.chalk-line')
 
-          // 1. Era Focus & Chalk Writing In-View Trigger
+          // 1. Era Focus & Initial Chalk Writing Trigger (Plays smoothly on initial entry)
           ScrollTrigger.create({
             trigger: boardEl,
-            start: 'top center',
-            end: 'bottom center',
+            start: 'top 70%',
+            end: 'bottom 35%',
             onEnter: () => {
               setActiveEraIndex(index)
-              gsap.fromTo(
-                chalkLines,
-                { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
-                {
-                  clipPath: 'inset(0 0% 0 0)',
-                  opacity: 1,
-                  duration: 0.6,
-                  stagger: 0.07,
-                  ease: 'power2.out',
-                  overwrite: true,
-                }
-              )
+              if (!revealedBoardsRef.current.has(index)) {
+                revealedBoardsRef.current.add(index)
+                gsap.fromTo(
+                  chalkLines,
+                  { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
+                  {
+                    clipPath: 'inset(0 0% 0 0)',
+                    opacity: 1,
+                    duration: 0.55,
+                    stagger: 0.05,
+                    ease: 'power2.out',
+                    overwrite: true,
+                  }
+                )
+              }
             },
             onEnterBack: () => {
               setActiveEraIndex(index)
-              gsap.fromTo(
-                chalkLines,
-                { clipPath: 'inset(0 100% 0 0)', opacity: 0 },
-                {
-                  clipPath: 'inset(0 0% 0 0)',
-                  opacity: 1,
-                  duration: 0.6,
-                  stagger: 0.07,
-                  ease: 'power2.out',
-                  overwrite: true,
-                }
+              // Soft chalk glow transition over 300ms when scrolling back up into an era
+              const scrubContainer = boardEl.querySelector(
+                '.board-scrub-container'
               )
+              if (scrubContainer) {
+                gsap.to(scrubContainer, {
+                  opacity: 1,
+                  duration: 0.3,
+                  ease: 'power2.out',
+                })
+              }
             },
           })
 
-          // 2. Bounded Upper-Edge Scrub-Off Zone (Height L)
-          // As the board travels up past the top boundary (~110px from viewport top),
-          // only text within distance L of the top dissolves into falling dust as it reaches that threshold.
-          // Bottom half remains legible until reaching that exact zone.
+          // 2. Bounded Upper-Edge Scrub-Off Zone (Tight L/4 ≈ 14px boundary, scrub: 0.5)
+          // Symmetrical bidirectional scrub: smoothly dissolves on forward scroll,
+          // smoothly rolls back and restores chalk from bottom-to-top on reverse scroll.
           ScrollTrigger.create({
             trigger: boardEl,
-            start: 'top 110px',
-            end: 'bottom 140px',
-            scrub: 0.1,
+            start: 'top 90px',
+            end: 'bottom 120px',
+            scrub: 0.5,
             onUpdate: (self) => {
               const scrubContainer = boardEl.querySelector(
                 '.board-scrub-container'
               )
               if (!scrubContainer) return
 
-              const totalH = scrubContainer.offsetHeight || 380
-              const L = 52 // Height of top era pill/bar boundary
+              const totalH = scrubContainer.offsetHeight || 420
+              const wipeWidth = 14
 
-              if (self.progress <= 0.02) {
+              if (self.progress <= 0.008) {
                 scrubContainer.style.maskImage = 'none'
                 scrubContainer.style.webkitMaskImage = 'none'
+                lastWipeYMap.current.set(index, 0)
               } else {
-                const s = (self.progress - 0.02) * (totalH + L)
-                const maskVal = `linear-gradient(to bottom, transparent 0px, transparent ${s.toFixed(1)}px, rgba(0,0,0,0.35) ${(s + L * 0.35).toFixed(1)}px, black ${(s + L).toFixed(1)}px, black 100%)`
+                const s = self.progress * (totalH + wipeWidth)
+                const maskVal = `linear-gradient(to bottom, transparent 0px, transparent ${s.toFixed(1)}px, rgba(0,0,0,0.15) ${(s + 3).toFixed(1)}px, black ${(s + wipeWidth).toFixed(1)}px, black 100%)`
                 scrubContainer.style.maskImage = maskVal
                 scrubContainer.style.webkitMaskImage = maskVal
+
+                // Only emit dust when scrolling forward down the page
+                if (self.direction === 1) {
+                  const prevY = lastWipeYMap.current.get(index) || 0
+                  if (s - prevY >= 14 && s <= totalH + 10) {
+                    lastWipeYMap.current.set(index, s)
+                    const isYellowEra = s < 65 || (s > 95 && s < 135)
+                    emitWipeDust(boardEl, s, isYellowEra)
+                  }
+                }
               }
             },
             onLeave: () => {
-              // Only spawn and animate downward drifting chalk flecks on scroll-away
               spawnDustParticles(boardEl)
             },
             onLeaveBack: () => {
@@ -403,10 +507,17 @@ export default function TimelineSection() {
                 '.board-scrub-container'
               )
               if (scrubContainer) {
-                scrubContainer.style.maskImage = 'none'
-                scrubContainer.style.webkitMaskImage = 'none'
+                gsap.to(scrubContainer, {
+                  opacity: 1,
+                  duration: 0.25,
+                  ease: 'power1.out',
+                  onComplete: () => {
+                    scrubContainer.style.maskImage = 'none'
+                    scrubContainer.style.webkitMaskImage = 'none'
+                  },
+                })
               }
-              spawnDustParticles(boardEl)
+              lastWipeYMap.current.set(index, 0)
             },
           })
         })
@@ -466,9 +577,8 @@ export default function TimelineSection() {
 
     return () => {
       mm.revert()
-      if (rafIdRef.current) {
-        cancelAnimationFrame(rafIdRef.current)
-      }
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current)
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
     }
   }, [])
 
@@ -512,7 +622,6 @@ export default function TimelineSection() {
             {timelineData.map((era, index) => {
               const visual = eraVisualData[index]
               const isActive = activeEraIndex === index
-              const isPast = index < activeEraIndex
 
               return (
                 <div key={era.id} className="relative sm:pl-16">
@@ -522,9 +631,7 @@ export default function TimelineSection() {
                       className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
                         isActive
                           ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-[0_0_22px_#FFD200]'
-                          : isPast
-                          ? 'bg-[#103B9B] ring-2 ring-[#FFD200]/40 scale-100'
-                          : 'bg-slate-700 ring-2 ring-slate-800 scale-90'
+                          : 'bg-[#103B9B] ring-2 ring-[#FFD200]/40 scale-100'
                       }`}
                     >
                       <div
@@ -537,33 +644,27 @@ export default function TimelineSection() {
                     </div>
                   </div>
 
-                  {/* ── Blackboard Card (Full-Board Smudge Interaction on Active Card) ── */}
+                  {/* ── Blackboard Card (Consistent Dimmed ~25% Opacity on Inactive, No Abrupt Jumps) ── */}
                   <div
                     ref={(el) => (boardRefs.current[index] = el)}
                     onMouseMove={(e) => handleBoardMouseMove(e, index)}
                     onMouseLeave={() => handleBoardMouseLeave(index)}
-                    className={`blackboard-panel flex flex-col rounded-2xl sm:rounded-3xl border-[8px] sm:border-[10px] border-[#3E2314] ring-1 ring-[#5C3A21] bg-[#121C17] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_18px_40px_rgba(0,0,0,0.6)] relative overflow-hidden ${
+                    className={`blackboard-panel flex flex-col rounded-2xl sm:rounded-3xl border-[8px] sm:border-[10px] border-[#3E2314] ring-1 ring-[#5C3A21] bg-[#121C17] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_18px_40px_rgba(0,0,0,0.6)] relative overflow-hidden transition-all duration-300 ${
                       isActive
-                        ? 'ring-4 ring-[#FFD200]/50 shadow-[0_0_30px_rgba(255,210,0,0.20)]'
-                        : isPast
-                        ? 'opacity-25'
-                        : 'opacity-40'
+                        ? 'ring-4 ring-[#FFD200]/50 shadow-[0_0_30px_rgba(255,210,0,0.20)] opacity-100'
+                        : 'opacity-25'
                     }`}
                   >
                     {/* Slate surface texture */}
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.06)_0%,transparent_65%)] pointer-events-none" />
                     <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.02)_40%,transparent_60%)] pointer-events-none" />
 
-                    {/* Faint duster smear lines on past boards */}
-                    {isPast && (
-                      <div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_28px,rgba(255,255,255,0.04)_30px,transparent_34px)]" />
-                    )}
-
-                    {/* Dust particle container (opacity: 0 by default, NO stuck dots, plays only on scroll-away) */}
+                    {/* Dust particle container (opacity: 0 by default, NO stuck dots, plays only on active wipe line) */}
                     <div className="dust-container absolute inset-0 pointer-events-none z-30 opacity-0 overflow-hidden" />
 
-                    {/* ── Top Era Pill Bar (Height L ≈ 52px boundary) ── */}
-                    <div className="relative z-20 p-5 pb-0 sm:p-7 sm:pb-0">
+                    {/* ── Bounded Scrub-Off Container (Starts at absolute top edge y = 0) ── */}
+                    <div className="board-scrub-container relative z-10 p-5 sm:p-7 flex-1 flex flex-col space-y-4">
+                      {/* 1. Era pill bar & badge (FIRST to dissolve at y = 0) */}
                       <div className="chalk-line chalk-smudge-item flex items-center justify-between border-b border-white/10 pb-3">
                         <div className="inline-flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-[#FEF08A] shrink-0" />
@@ -577,26 +678,23 @@ export default function TimelineSection() {
                           className="font-chalk text-sm sm:text-base font-bold text-[#FEF08A] border-2 border-dashed border-[#FEF08A]/70 px-2.5 py-0.5 rounded-md bg-[#FEF08A]/10 cursor-default"
                         />
                       </div>
-                    </div>
 
-                    {/* ── Bounded Scrub-Off Container (Height L Mask Scrub Zone) ── */}
-                    <div className="board-scrub-container relative z-10 p-5 pt-3 sm:p-7 sm:pt-4 flex-1 flex flex-col space-y-4">
-                      {/* Title */}
+                      {/* 2. Main title */}
                       <h3 className="chalk-line chalk-smudge-item font-chalk text-2xl sm:text-3xl lg:text-4xl text-[#FFFFFF] font-bold tracking-wide leading-tight cursor-default chalk-text-glow">
                         <ChalkText text={era.title} />
                       </h3>
 
-                      {/* Tagline */}
+                      {/* 3. Subtitle */}
                       <p className="chalk-line chalk-smudge-item font-chalk text-base sm:text-lg text-[#FEF08A]/90 cursor-default">
                         <ChalkText text={`~ ${visual.tagline} ~`} />
                       </p>
 
-                      {/* Description Narrative */}
+                      {/* 4. Narrative description */}
                       <p className="chalk-line chalk-smudge-item font-chalk text-base sm:text-xl text-[#F1F5F9] leading-relaxed cursor-default chalk-text-glow">
                         <ChalkText text={era.description} />
                       </p>
 
-                      {/* Directives Checklist */}
+                      {/* 5. Directives checklist */}
                       <div className="pt-3 border-t border-white/10 space-y-2.5">
                         <div className="chalk-line chalk-smudge-item text-[11px] font-mono uppercase tracking-widest text-[#FEF08A]/80 font-bold">
                           Classroom Directives:

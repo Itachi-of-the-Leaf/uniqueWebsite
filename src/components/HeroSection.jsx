@@ -1,3 +1,4 @@
+import gsap from 'gsap'
 import {
   School,
   Zap,
@@ -12,6 +13,55 @@ import {
 import SpotlightCard from './SpotlightCard'
 import DecryptedText from './DecryptedText'
 import BrandSwoosh from './BrandSwoosh'
+
+/* ── Interactive Character with self-resetting ~500ms GSAP elastic spring ── */
+function SpringChar({ char, className = '' }) {
+  if (char === ' ') return <span>&nbsp;</span>
+
+  const handleMouseEnter = (e) => {
+    gsap.to(e.currentTarget, {
+      y: -5,
+      scale: 1.12,
+      skewX: -5,
+      duration: 0.15,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    })
+  }
+
+  const handleMouseLeave = (e) => {
+    // Self-resetting elastic return to baseline resting position within 500ms
+    gsap.to(e.currentTarget, {
+      x: 0,
+      y: 0,
+      skewX: 0,
+      scale: 1,
+      duration: 0.5,
+      ease: 'elastic.out(1, 0.4)',
+      overwrite: 'auto',
+    })
+  }
+
+  return (
+    <span
+      className={`inline-block cursor-default select-none ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {char}
+    </span>
+  )
+}
+
+function SpringText({ text, className = '' }) {
+  return (
+    <span className={className}>
+      {text.split('').map((char, i) => (
+        <SpringChar key={i} char={char} />
+      ))}
+    </span>
+  )
+}
 
 export default function HeroSection() {
   const stats = [
@@ -75,9 +125,9 @@ export default function HeroSection() {
         {/* Hero Title & Narrative Subhead */}
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#103B9B] leading-[1.15]">
-            Empowering Rural Schools With{' '}
+            <SpringText text="Empowering Rural Schools With " />
             <span className="text-[#081438] underline decoration-[#C41230] decoration-wavy decoration-2 underline-offset-8">
-              Affordable Digital Learning
+              <SpringText text="Affordable Digital Learning" />
             </span>
           </h1>
 
@@ -215,4 +265,3 @@ export default function HeroSection() {
     </section>
   )
 }
-
