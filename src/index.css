@@ -52,17 +52,20 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* Blackboard Chalk Handwriting Utilities */
+/* ═══════════════════════════════════════
+   Blackboard Chalk System
+   ═══════════════════════════════════════ */
+
+/* Chalk handwriting font family */
 .font-chalk {
   font-family: 'Kalam', 'Patrick Hand', cursive;
   letter-spacing: 0.02em;
 }
 
-/* Per-character chalk letter glow on hover */
+/* Per-character subtle glow on hover */
 .chalk-letter {
   display: inline-block;
   transition: text-shadow 0.2s ease, color 0.2s ease;
-  will-change: text-shadow;
 }
 
 .chalk-letter:hover {
@@ -70,35 +73,43 @@ html.lenis body {
   color: #ffffff;
 }
 
-/* Chalk Fast Writing Appearance (When scrolled to) — GPU-composited */
-@keyframes chalkWritingSweep {
-  0% {
-    opacity: 0;
-    transform: translateX(-6px);
-  }
-  40% {
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Chalk text ambient glow (applied to headings/body) */
+.chalk-text-glow {
+  text-shadow: 0 0 1px rgba(255,255,255,0.9), 0 0 6px rgba(254,240,138,0.3);
 }
 
-.animate-chalk-write {
-  animation: chalkWritingSweep 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* ── Chalk line: GSAP target for clipPath reveal ── */
+.chalk-line {
+  will-change: clip-path, opacity;
+  /* Initial hidden state — GSAP animates from here */
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+}
+
+/* ── Chalk dust falling particles ── */
+.chalk-dust-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
   will-change: transform, opacity;
+  z-index: 30;
 }
 
-/* Chalk Duster Rub-off Smear Effect (When scrolled past) — GPU-composited */
-.chalk-duster-erased {
-  opacity: 0.28 !important;
-  filter: blur(0.6px) brightness(0.75);
-  transition: opacity 0.5s ease, filter 0.5s ease;
-  will-change: opacity, filter;
+/* ═══════════════════════════════════════
+   Blackboard Panel GPU Optimization
+   ═══════════════════════════════════════ */
+
+.blackboard-panel {
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: opacity 0.4s ease, ring-color 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Cinema Projector Ambient Light Leak */
+/* ═══════════════════════════════════════
+   Cinema Projector Light Leak
+   ═══════════════════════════════════════ */
+
 @keyframes cinemaFlicker {
   0%, 100% {
     opacity: 0.85;
@@ -140,7 +151,10 @@ html.lenis body {
   background: radial-gradient(ellipse at center, rgba(140, 200, 255, 0.45) 0%, rgba(16, 59, 155, 0.25) 50%, transparent 80%);
 }
 
-/* Video skeleton shimmer loader */
+/* ═══════════════════════════════════════
+   Video Skeleton Shimmer Loader
+   ═══════════════════════════════════════ */
+
 @keyframes shimmer {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
@@ -151,17 +165,4 @@ html.lenis body {
   background-size: 800px 100%;
   animation: shimmer 1.6s infinite linear;
   border-radius: 0.75rem;
-}
-
-/* GPU-composited era row — prevents reflow stutter */
-.era-row {
-  will-change: opacity;
-  transform: translateZ(0);
-}
-
-/* Blackboard panel transitions — contain repaints */
-.blackboard-panel {
-  will-change: opacity, filter;
-  transform: translateZ(0);
-  backface-visibility: hidden;
 }
