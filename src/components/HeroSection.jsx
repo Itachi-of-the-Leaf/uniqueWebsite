@@ -126,7 +126,7 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#103B9B] leading-[1.15]">
             <SpringText text="Empowering Rural Schools With " />
-            <span className="text-[#081438] underline decoration-[#C41230] decoration-wavy decoration-2 underline-offset-8">
+            <span className="text-[#081438]">
               <SpringText text="Affordable Digital Learning" />
             </span>
           </h1>

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Menu, X, ChevronRight, PhoneCall } from 'lucide-react'
-import BrandLogo from './BrandLogo'
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -37,7 +36,26 @@ export default function Navbar() {
             className="group flex items-center focus:outline-none"
             aria-label="Unique Systems Home"
           >
-            <BrandLogo variant="dark" />
+            <div className="flex items-center gap-3 select-none">
+              <img
+                src="/logo.jpeg"
+                alt="Unique Systems"
+                className="h-10 w-10 rounded-lg object-contain border border-white/20 shadow-md flex-shrink-0"
+              />
+              <div className="leading-tight">
+                <div className="flex items-center gap-2">
+                  <span className="font-heading font-extrabold text-xl tracking-tight text-[#FFFFFF]">
+                    Unique Systems
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFD200] text-[#081438] shadow-xs">
+                    EST. 1998
+                  </span>
+                </div>
+                <p className="text-xs font-semibold tracking-wide text-[#FFD200]">
+                  युनिक सिस्टीम्स <span className="text-white/60">| Rural eLearning Pioneers</span>
+                </p>
+              </div>
+            </div>
           </a>
 
           {/* Desktop Navigation Links */}
