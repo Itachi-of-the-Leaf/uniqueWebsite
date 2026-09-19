@@ -68,7 +68,7 @@ export default function Navbar() {
             <a
               href="#quote"
               onClick={(e) => handleSmoothScroll(e, '#solutions')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white text-sm font-extrabold shadow-md shadow-[#C41230]/40 border border-[#FFD200]/70 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E63956] hover:bg-[#C72440] text-white text-sm font-extrabold shadow-md shadow-[#E63956]/40 border border-[#FFD200]/70 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               <span>Get a Quote</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />
@@ -90,7 +90,7 @@ export default function Navbar() {
       </div>
 
       {/* Dynamic Gold Accent Trim Along Bottom */}
-      <div className="h-[2px] w-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-[#103B9B]" />
+      <div className="h-[2px] w-full bg-gradient-to-r from-[#E63956] via-[#FFD200] to-[#103B9B]" />
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
@@ -111,7 +111,7 @@ export default function Navbar() {
             <a
               href="#solutions"
               onClick={(e) => handleSmoothScroll(e, '#solutions')}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#C41230] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#E63956] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
             >
               <span>Get a Quote</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />

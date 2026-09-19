@@ -33,10 +33,10 @@ export default function BrandLogo({ variant = 'light', className = '' }) {
           {/* Core Hardware / Tech Node */}
           <circle cx="22" cy="22" r="3" fill="#FFD200" />
 
-          {/* Dynamic Crimson Vermilion Swoosh Curve (Bottom-Right) */}
+          {/* Dynamic Crimson Rose Swoosh Curve (Bottom-Right) */}
           <path
             d="M16 35 C24 37, 34 33, 40 25 C36 29, 27 34, 18 33 Z"
-            fill="#C41230"
+            fill="#E63956"
           />
 
           {/* Dynamic Canary Gold Swoosh Ribbon */}

@@ -57,7 +57,7 @@ export default function HeroSection() {
     <section className="relative pt-12 pb-24 md:pt-18 md:pb-32 overflow-hidden bg-gradient-to-b from-[#103B9B] via-[#0D2E7C] to-[#07194A] text-white">
       {/* Dynamic Ambient Halos */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-[#FFD200]/15 via-[#103B9B]/20 to-transparent pointer-events-none -z-0 blur-3xl" />
-      <div className="absolute top-36 -right-20 w-80 h-80 bg-[#C41230]/20 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute top-36 -right-20 w-80 h-80 bg-[#E63956]/20 rounded-full blur-3xl pointer-events-none -z-0" />
       <div className="absolute top-48 -left-20 w-80 h-80 bg-[#FFD200]/15 rounded-full blur-3xl pointer-events-none -z-0" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,7 +76,7 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-white leading-[1.15]">
             Empowering Rural Schools With{' '}
-            <span className="text-[#FFD200] underline decoration-[#C41230] decoration-wavy decoration-2 underline-offset-8">
+            <span className="text-[#FFD200] underline decoration-[#E63956] decoration-wavy decoration-2 underline-offset-8">
               Affordable Digital Learning
             </span>
           </h1>
@@ -103,7 +103,7 @@ export default function HeroSection() {
             <a
               href="#solutions"
               onClick={(e) => handleSmoothScroll(e, '#solutions')}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-base shadow-xl shadow-[#C41230]/40 border border-[#FFD200]/80 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-[#E63956] hover:bg-[#C72440] text-white font-extrabold text-base shadow-xl shadow-[#E63956]/40 border border-[#FFD200]/80 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               <span>Explore ₹25K ZP Rig</span>
               <ChevronRight className="w-5 h-5 text-[#FFD200]" />
@@ -118,49 +118,65 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* Impact Stat Counter Spotlight Cards */}
+        {/* Impact Stat Counter Milestone Buttons */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
           {stats.map((stat, i) => {
             const Icon = stat.icon
+            const targetHref = i % 2 === 0 ? '#journey' : '#solutions'
             return (
-              <SpotlightCard
+              <a
                 key={i}
-                spotlightColor="rgba(255, 210, 0, 0.18)"
-                borderColor="rgba(255, 210, 0, 0.5)"
-                className="group p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-[#0A1E5C]/90 border border-white/15 text-white"
+                href={targetHref}
+                onClick={(e) => handleSmoothScroll(e, targetHref)}
+                className="block text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD200] rounded-3xl"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#103B9B] group-hover:bg-[#C41230] text-[#FFD200] group-hover:text-white flex items-center justify-center transition-colors duration-200 shadow-inner border border-[#FFD200]/30">
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#07194A] text-[#FFD200] border border-[#FFD200]/30">
-                    Milestone 0{i + 1}
-                  </span>
-                </div>
+                <SpotlightCard
+                  spotlightColor="rgba(255, 210, 0, 0.22)"
+                  borderColor="rgba(255, 210, 0, 0.6)"
+                  className="p-6 shadow-2xl transition-all duration-300 hover:-translate-y-1.5 bg-[#07194A] border border-white/20 hover:border-[#FFD200]/80 hover:shadow-[0_12px_30px_rgba(0,0,0,0.5)] text-white h-full flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Top Row: Icon and Milestone Badge */}
+                    <div className="flex items-start justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-[#103B9B] group-hover:bg-[#E63956] text-[#FFD200] group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-md border border-[#FFD200]/30 group-hover:scale-105">
+                        <Icon className="w-6 h-6" />
+                      </div>
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#030E2E] text-[#FFD200] border border-[#FFD200]/40 shadow-xs">
+                        Milestone 0{i + 1}
+                      </span>
+                    </div>
 
-                <div className="space-y-1">
-                  <div className="text-3xl sm:text-4xl font-black text-white tracking-tight font-mono">
-                    <DecryptedText
-                      text={stat.value}
-                      animateOn="hover"
-                      speed={25}
-                      className="text-white"
-                    />
-                  </div>
-                  <div className="text-base font-bold text-[#FFD200]">
-                    {stat.label}
-                  </div>
-                </div>
+                    {/* Stat Value & Label */}
+                    <div className="space-y-1.5">
+                      <div className="text-3xl sm:text-4xl font-black text-white tracking-tight font-mono drop-shadow-sm">
+                        <DecryptedText
+                          text={stat.value}
+                          animateOn="hover"
+                          speed={25}
+                          className="text-white"
+                        />
+                      </div>
+                      <div className="text-base sm:text-lg font-extrabold text-[#FFD200] tracking-wide">
+                        {stat.label}
+                      </div>
+                    </div>
 
-                <p className="mt-3 text-xs text-white/80 font-normal leading-relaxed">
-                  {stat.detail}
-                </p>
+                    {/* Stat Detail Description */}
+                    <p className="mt-2.5 text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
+                      {stat.detail}
+                    </p>
+                  </div>
 
-                <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-1.5 text-[11px] font-semibold text-white/90">
-                  <Sparkles className="w-3 h-3 text-[#FFD200]" />
-                  <span>{stat.highlight}</span>
-                </div>
-              </SpotlightCard>
+                  {/* Bottom Highlight Feature & Action */}
+                  <div className="mt-5 pt-3.5 border-t border-white/15 flex items-center justify-between text-xs font-semibold text-white/90">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
+                      <span className="text-slate-100">{stat.highlight}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-[#FFD200] opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  </div>
+                </SpotlightCard>
+              </a>
             )
           })}
         </div>
@@ -173,7 +189,7 @@ export default function HeroSection() {
           <a
             href="#journey"
             onClick={(e) => handleSmoothScroll(e, '#journey')}
-            className="w-10 h-10 rounded-full border border-[#FFD200]/50 bg-[#0A1E5C] shadow-lg flex items-center justify-center text-[#FFD200] hover:text-white hover:bg-[#C41230] hover:border-white hover:scale-110 transition-all animate-bounce"
+            className="w-10 h-10 rounded-full border border-[#FFD200]/50 bg-[#0A1E5C] shadow-lg flex items-center justify-center text-[#FFD200] hover:text-white hover:bg-[#E63956] hover:border-white hover:scale-110 transition-all animate-bounce"
             aria-label="Scroll to interactive timeline"
           >
             <ArrowDown className="w-4 h-4" />
@@ -187,7 +203,7 @@ export default function HeroSection() {
         <BrandSwoosh
           topColor="transparent"
           bottomColor="#F8FAFC"
-          crimson="#C41230"
+          crimson="#E63956"
           gold="#FFD200"
           height={60}
         />

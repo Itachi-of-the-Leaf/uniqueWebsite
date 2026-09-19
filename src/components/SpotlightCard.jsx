@@ -39,6 +39,11 @@ export default function SpotlightCard({
     setOpacity(0)
   }
 
+  const hasBg = /\bbg-/.test(className)
+  const hasBorder = /\bborder-/.test(className)
+  const defaultBg = hasBg ? '' : 'bg-white'
+  const defaultBorder = hasBorder ? '' : 'border border-slate-200'
+
   return (
     <div
       ref={divRef}
@@ -47,7 +52,7 @@ export default function SpotlightCard({
       onBlur={handleBlur}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative rounded-3xl border border-slate-200 bg-white overflow-hidden transition-all duration-300 ${className}`}
+      className={`relative rounded-3xl ${defaultBorder} ${defaultBg} overflow-hidden transition-all duration-300 ${className}`}
       {...props}
     >
       {/* Dynamic Cursor Spotlight Layer */}

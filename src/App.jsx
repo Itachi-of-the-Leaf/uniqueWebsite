@@ -7,6 +7,7 @@ import SpotlightCard from './components/SpotlightCard'
 import DecryptedText from './components/DecryptedText'
 import BrandSwoosh from './components/BrandSwoosh'
 import BrandLogo from './components/BrandLogo'
+import CustomCursor from './components/CustomCursor'
 import {
   PhoneCall,
   MapPin,
@@ -27,6 +28,9 @@ export default function App() {
 
   return (
     <ScrollyTellingWrapper>
+      {/* Modern Lenis-style Interactive Smooth Trailing Cursor */}
+      <CustomCursor />
+
       <div className="min-h-screen bg-[#F8FAFC] text-[#081438] font-sans selection:bg-[#FFD200] selection:text-[#081438] flex flex-col justify-between">
         {/* Navigation */}
         <Navbar />
@@ -70,7 +74,7 @@ export default function App() {
                   <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438]">
                     ₹25K Offline LED Rig
                   </h3>
-                  <div className="mt-2 text-3xl font-black text-[#C41230] font-mono">
+                  <div className="mt-2 text-3xl font-black text-[#E63956] font-mono">
                     <DecryptedText text="₹25,000" animateOn="hover" speed={20} />
                     <span className="text-sm font-semibold text-slate-500 font-sans"> / classroom</span>
                   </div>
@@ -96,7 +100,7 @@ export default function App() {
                   <a
                     href="#contact"
                     onClick={(e) => handleSmoothScroll(e, '#contact')}
-                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-sm transition-all shadow-md shadow-[#C41230]/30 border border-[#FFD200]/70"
+                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#E63956] hover:bg-[#C72440] text-white font-extrabold text-sm transition-all shadow-md shadow-[#E63956]/30 border border-[#FFD200]/70"
                   >
                     Request ZP Specification Sheet
                   </a>
@@ -108,7 +112,7 @@ export default function App() {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#103B9B]/30 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#103B9B] to-[#C41230] text-white text-xs font-black mb-4 shadow-xs border border-[#FFD200]/30">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#103B9B] to-[#E63956] text-white text-xs font-black mb-4 shadow-xs border border-[#FFD200]/30">
                     <Sparkles className="w-3.5 h-3.5 text-[#FFD200]" /> Next-Gen AI Classroom
                   </div>
                   <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-white">
@@ -140,7 +144,7 @@ export default function App() {
                   <a
                     href="#contact"
                     onClick={(e) => handleSmoothScroll(e, '#contact')}
-                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-sm transition-all shadow-md shadow-[#C41230]/40 border border-[#FFD200]/80"
+                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#E63956] hover:bg-[#C72440] text-white font-extrabold text-sm transition-all shadow-md shadow-[#E63956]/40 border border-[#FFD200]/80"
                   >
                     Request CSR / MLA Quotation
                   </a>
@@ -156,7 +160,7 @@ export default function App() {
           <BrandSwoosh
             topColor="#FFFFFF"
             bottomColor="#0A1E5C"
-            crimson="#C41230"
+            crimson="#E63956"
             gold="#FFD200"
             height={56}
           />

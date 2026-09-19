@@ -154,7 +154,7 @@ export default function TimelineSection() {
         {/* Section Header */}
         <div className="max-w-3xl mb-16 lg:mb-20">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#103B9B]/10 text-[#103B9B] text-xs font-black uppercase tracking-wider mb-3 border border-[#103B9B]/25">
-            <TrendingUp className="w-3.5 h-3.5 text-[#C41230]" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#E63956]" />
             <span>Interactive Chronicle (1998 — Present)</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#081438] tracking-tight">
@@ -172,7 +172,7 @@ export default function TimelineSection() {
           <div className="lg:col-span-5 relative pb-20">
             
             {/* Vertical Cobalt Milestone Line */}
-            <div className="absolute left-6 top-8 bottom-16 w-0.5 bg-gradient-to-b from-[#103B9B] via-[#C41230] to-[#FFD200] pointer-events-none hidden sm:block opacity-60" />
+            <div className="absolute left-6 top-8 bottom-16 w-0.5 bg-gradient-to-b from-[#103B9B] via-[#E63956] to-[#FFD200] pointer-events-none hidden sm:block opacity-60" />
 
             <div className="space-y-20 lg:space-y-28">
               {timelineData.map((era, index) => {
@@ -222,7 +222,7 @@ export default function TimelineSection() {
                           <Calendar className="w-3.5 h-3.5 text-[#FFD200]" />
                           {era.year}
                         </span>
-                        <span className="text-xs font-black uppercase tracking-widest text-[#C41230]">
+                        <span className="text-xs font-black uppercase tracking-widest text-[#E63956]">
                           Era 0{era.id}
                         </span>
                       </div>
@@ -254,7 +254,7 @@ export default function TimelineSection() {
                       {/* Active Indicator with Canary Gold badge */}
                       {isActive && (
                         <div className="mt-6 inline-flex items-center gap-2 text-xs font-black text-[#081438] bg-[#FFD200] px-3.5 py-1.5 rounded-xl border border-[#FFD200] shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#C41230] animate-ping" />
+                          <span className="w-2 h-2 rounded-full bg-[#E63956] animate-ping" />
                           <span>Active Milestone in View</span>
                         </div>
                       )}
@@ -299,7 +299,7 @@ export default function TimelineSection() {
                   <h4 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438] tracking-tight">
                     {currentTimelineItem.title}
                   </h4>
-                  <p className="mt-1 text-sm font-semibold text-[#C41230]">
+                  <p className="mt-1 text-sm font-semibold text-[#E63956]">
                     {currentVisual.tagline}
                   </p>
                 </div>
@@ -323,7 +323,7 @@ export default function TimelineSection() {
                     onClick={() => setActiveMediaTab('salvi')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
                       activeMediaTab === 'salvi'
-                        ? 'bg-[#C41230] text-white shadow-sm'
+                        ? 'bg-[#E63956] text-white shadow-sm'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -336,7 +336,7 @@ export default function TimelineSection() {
                     onClick={() => setActiveMediaTab('impact')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
                       activeMediaTab === 'impact'
-                        ? 'bg-[#C41230] text-white shadow-sm'
+                        ? 'bg-[#E63956] text-white shadow-sm'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -369,7 +369,7 @@ export default function TimelineSection() {
                       <span>RESOLUTION: 1080P UHD</span>
                     </div>
 
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#E63956] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
                       <Award className="w-8 h-8 text-[#FFD200]" />
                     </div>
 
@@ -392,7 +392,7 @@ export default function TimelineSection() {
                         <span className="text-emerald-400 font-bold">READY</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
+                        <div className="w-full h-full bg-gradient-to-r from-[#E63956] via-[#FFD200] to-emerald-400 rounded-full" />
                       </div>
                     </div>
 
@@ -522,7 +522,7 @@ export default function TimelineSection() {
                       }}
                       className={`h-2.5 rounded-full transition-all duration-300 ${
                         i === activeEraIndex
-                          ? 'bg-[#C41230] shadow-sm scale-y-125'
+                          ? 'bg-[#E63956] shadow-sm scale-y-125'
                           : i < activeEraIndex
                           ? 'bg-[#103B9B]'
                           : 'bg-slate-200 hover:bg-slate-300'
