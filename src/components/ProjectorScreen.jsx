@@ -185,7 +185,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
       {/* Cinema Overhead Projector Light Beam (Strictly pointer-events: none) */}
       <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#80B0FF]/15 via-transparent to-transparent pointer-events-none" />
       <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
-      <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
+      <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-3xl opacity-10 bg-[#80B0FF] pointer-events-none" />
 
       {/* Optical Projector Light Cone & Beam Dust pseudo-overlay */}
       <div

@@ -53,11 +53,25 @@ function SpringChar({ char, className = '' }) {
   )
 }
 
+function SpringWord({ word, className = '' }) {
+  return (
+    <span className={`inline-block whitespace-nowrap ${className}`}>
+      {word.split('').map((char, i) => (
+        <SpringChar key={i} char={char} />
+      ))}
+    </span>
+  )
+}
+
 function SpringText({ text, className = '' }) {
+  const words = text.split(' ')
   return (
     <span className={className}>
-      {text.split('').map((char, i) => (
-        <SpringChar key={i} char={char} />
+      {words.map((word, i) => (
+        <span key={i}>
+          <SpringWord word={word} />
+          {i < words.length - 1 && ' '}
+        </span>
       ))}
     </span>
   )
@@ -105,10 +119,9 @@ export default function HeroSection() {
 
   return (
     <section className="relative pt-12 pb-24 md:pt-18 md:pb-32 overflow-hidden bg-gradient-to-b from-[#F8FAFC] via-[#FFFFFF] to-[#F1F5F9] text-[#081438]">
-      {/* Dynamic Ambient Halos for Warmth */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-[#103B9B]/10 via-[#FFD200]/10 to-transparent pointer-events-none -z-0 blur-3xl" />
-      <div className="absolute top-36 -right-20 w-80 h-80 bg-[#C41230]/10 rounded-full blur-3xl pointer-events-none -z-0" />
-      <div className="absolute top-48 -left-20 w-80 h-80 bg-[#FFD200]/12 rounded-full blur-3xl pointer-events-none -z-0" />
+      {/* Dynamic Ambient Halos for Clean Neutral Canvas */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-[#103B9B]/8 via-transparent to-transparent pointer-events-none -z-0 blur-3xl" />
+      <div className="absolute top-36 -right-20 w-80 h-80 bg-[#C41230]/8 rounded-full blur-3xl pointer-events-none -z-0" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -124,9 +137,11 @@ export default function HeroSection() {
 
         {/* Hero Title & Narrative Subhead */}
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#103B9B] leading-[1.15]">
-            <SpringText text="Empowering Rural Schools With " />
-            <span className="text-[#081438]">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#0B1B4F] leading-tight">
+            <span className="inline-block">
+              <SpringText text="Empowering Rural Schools With" />
+            </span>{' '}
+            <span className="text-[#103B9B] inline-block whitespace-nowrap">
               <SpringText text="Affordable Digital Learning" />
             </span>
           </h1>
@@ -174,7 +189,7 @@ export default function HeroSection() {
         </div>
 
         {/* Impact Stat Counter Milestone Buttons */}
-        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto items-stretch">
           {stats.map((stat, i) => {
             const Icon = stat.icon
             const targetHref = i % 2 === 0 ? '#journey' : '#solutions'
@@ -183,51 +198,53 @@ export default function HeroSection() {
                 key={i}
                 href={targetHref}
                 onClick={(e) => handleSmoothScroll(e, targetHref)}
-                className="block text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD200] rounded-3xl"
+                className="block text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FFD200] rounded-3xl h-full"
               >
                 <SpotlightCard
                   spotlightColor="rgba(16, 59, 155, 0.12)"
                   borderColor="rgba(255, 210, 0, 0.6)"
                   className="p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1.5 bg-white border border-slate-200 hover:border-[#FFD200] hover:shadow-[0_12px_30px_rgba(16,59,155,0.12)] text-[#081438] h-full flex flex-col justify-between"
                 >
-                  <div>
-                    {/* Top Row: Icon and Milestone Badge */}
-                    <div className="flex items-start justify-between mb-5">
-                      <div className="w-12 h-12 rounded-xl bg-[#103B9B] group-hover:bg-[#C41230] text-[#FFD200] group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-md border border-[#FFD200]/40 group-hover:scale-105">
-                        <Icon className="w-6 h-6" />
+                  <div className="flex flex-col h-full justify-between">
+                    <div>
+                      {/* Top Row: Icon and Milestone Badge */}
+                      <div className="flex items-start justify-between mb-5">
+                        <div className="w-12 h-12 rounded-xl bg-[#103B9B] group-hover:bg-[#C41230] text-[#FFD200] group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-md border border-[#FFD200]/40 group-hover:scale-105">
+                          <Icon className="w-6 h-6" />
+                        </div>
+                        <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#0F172A] text-[#FFD200] border border-[#FFD200]/40 shadow-xs">
+                          Milestone 0{i + 1}
+                        </span>
                       </div>
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#0F172A] text-[#FFD200] border border-[#FFD200]/40 shadow-xs">
-                        Milestone 0{i + 1}
-                      </span>
+
+                      {/* Stat Value & Label */}
+                      <div className="space-y-1.5">
+                        <div className="text-3xl sm:text-4xl font-black text-[#081438] tracking-tight font-mono">
+                          <DecryptedText
+                            text={stat.value}
+                            animateOn="hover"
+                            className="text-[#081438]"
+                          />
+                        </div>
+                        <div className="text-base sm:text-lg font-extrabold text-[#103B9B] tracking-wide">
+                          {stat.label}
+                        </div>
+                      </div>
+
+                      {/* Stat Detail Description (Equalized min-height across 1-line and 2-line descriptions) */}
+                      <p className="mt-2.5 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed min-h-[44px] flex items-start">
+                        {stat.detail}
+                      </p>
                     </div>
 
-                    {/* Stat Value & Label */}
-                    <div className="space-y-1.5">
-                      <div className="text-3xl sm:text-4xl font-black text-[#081438] tracking-tight font-mono">
-                        <DecryptedText
-                          text={stat.value}
-                          animateOn="hover"
-                          className="text-[#081438]"
-                        />
+                    {/* Bottom Highlight Feature & Action (Locked to identical baseline across all cards) */}
+                    <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
+                        <span className="text-slate-700">{stat.highlight}</span>
                       </div>
-                      <div className="text-base sm:text-lg font-extrabold text-[#103B9B] tracking-wide">
-                        {stat.label}
-                      </div>
+                      <ChevronRight className="w-4 h-4 text-[#103B9B] opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                     </div>
-
-                    {/* Stat Detail Description */}
-                    <p className="mt-2.5 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                      {stat.detail}
-                    </p>
-                  </div>
-
-                  {/* Bottom Highlight Feature & Action */}
-                  <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-800">
-                    <div className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
-                      <span className="text-slate-700">{stat.highlight}</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-[#103B9B] opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </div>
                 </SpotlightCard>
               </a>

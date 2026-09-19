@@ -76,7 +76,7 @@ export default function SpotlightCard({
       />
 
       {/* Card Inner Content */}
-      <div className="relative z-20 h-full">
+      <div className="relative z-20 h-full flex flex-col justify-between">
         {children}
       </div>
     </div>
