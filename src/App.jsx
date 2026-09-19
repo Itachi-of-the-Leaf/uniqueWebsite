@@ -191,16 +191,31 @@ export default function App() {
                 <div className="space-y-3 text-sm text-slate-200">
                   <p className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-[#FFD200] shrink-0 mt-1" />
-                    <span>Main Road, Khed, Dist. Ratnagiri - 415709, Maharashtra</span>
+                    <a
+                      href="https://maps.app.goo.gl/wmjpm8W1p9Zxd1YR9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-yellow-400 transition-colors"
+                    >
+                      Main Road, Khed, Dist. Ratnagiri - 415709, Maharashtra
+                    </a>
                   </p>
                   <p className="flex items-center gap-2">
                     <PhoneCall className="w-4 h-4 text-[#FFD200] shrink-0" />
-                    <span>Direct: +91 98XXX XXXXX</span>
+                    <span>
+                      Direct:{' '}
+                      <a
+                        href="tel:+919422433394"
+                        className="hover:text-yellow-400 transition-colors"
+                      >
+                        +91 94224 33394
+                      </a>
+                    </span>
                   </p>
                   <a
-                    href="https://maps.google.com/?q=Khed+Ratnagiri"
+                    href="https://maps.app.goo.gl/wmjpm8W1p9Zxd1YR9"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FFD200] hover:underline pt-1"
                   >
                     <span>View Location on Google Maps</span>
