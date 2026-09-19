@@ -11,8 +11,10 @@ import {
 } from 'lucide-react'
 import DecryptedText from './DecryptedText'
 import ProjectorVideoPlayer from './ProjectorVideoPlayer'
+import { useLanguage } from '../context/LanguageContext'
 
 export default function ProjectorScreen({ activeEraIndex, eraData }) {
+  const { t } = useLanguage()
   // All hooks must be called unconditionally (rules of hooks)
   const [tabs, setTabs] = useState(() => eraData.map((e) => e.visual.defaultTab))
   const [displayedEra, setDisplayedEra] = useState(activeEraIndex)
@@ -266,7 +268,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                 />
               </div>
               <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                Cinema Projection Screen
+                {t('projector.screenSub')}
               </div>
             </div>
           </div>
@@ -291,7 +293,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              MLA Donor Boot Screen
+              {t('projector.tabDonor')}
             </button>
 
             <button
@@ -304,7 +306,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               }`}
             >
               <Play className="w-3 h-3 fill-current" />
-              <span>HM Salvi Video</span>
+              <span>{t('projector.tabSalvi')}</span>
             </button>
 
             <button
@@ -317,7 +319,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               }`}
             >
               <Play className="w-3 h-3 fill-current" />
-              <span>Classroom Impact</span>
+              <span>{t('projector.tabImpact')}</span>
             </button>
 
             <button
@@ -329,7 +331,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              Hardware Specs
+              {t('projector.tabSpecs')}
             </button>
           </div>
         </div>
@@ -340,27 +342,27 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
           {currentTab === 'donor' && (
             <div className="rounded-2xl bg-[#081438] p-5 sm:p-6 border-2 border-[#103B9B] text-white text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
               <div className="w-full flex items-center justify-between text-[11px] font-mono text-slate-400 border-b border-white/10 pb-2">
-                <span className="text-[#FFD200] font-bold">PROJECTOR KERNEL BOOT SCREEN</span>
-                <span>RESOLUTION: 1080P UHD</span>
+                <span className="text-[#FFD200] font-bold">{t('projector.bootTitle')}</span>
+                <span>{t('projector.bootRes')}</span>
               </div>
               <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
                 <Award className="w-7 h-7 text-[#FFD200]" />
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-mono uppercase tracking-widest text-[#FFD200] font-black">
-                  MAHARASHTRA VIDHAN SABHA • VIDHAYAK NIDHI
+                  {t('projector.bootGov')}
                 </span>
                 <h5 className="text-lg sm:text-xl font-heading font-extrabold text-white">
-                  Donated by MLA Bharat Gogavale
+                  {t('projector.bootDonor')}
                 </h5>
                 <p className="text-xs text-slate-300 max-w-sm mx-auto">
-                  &quot;Dedicated for the digital empowerment of rural Zilla Parishad students across Mahad &amp; Khed constituencies.&quot;
+                  {t('projector.bootQuote')}
                 </p>
               </div>
               <div className="w-full max-w-xs space-y-1.5 pt-1">
                 <div className="flex justify-between text-[10px] font-mono text-slate-400">
-                  <span>OFFLINE STATE BOARD SYLLABUS</span>
-                  <span className="text-emerald-400 font-bold">READY</span>
+                  <span>{t('projector.bootStatus')}</span>
+                  <span className="text-emerald-400 font-bold">{t('projector.bootReady')}</span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
                   <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
@@ -368,7 +370,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               </div>
               <div className="inline-flex items-center gap-1.5 text-[11px] text-[#FFD200] font-semibold bg-white/10 px-3 py-1 rounded-full border border-white/10">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Tamper-Proof BIOS ROM • Zero Recurring Cloud Costs</span>
+                <span>{t('projector.bootSecure')}</span>
               </div>
             </div>
           )}
@@ -379,7 +381,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
                 <span className="flex items-center gap-2">
                   <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
-                  Headmaster Salvi • Walan English School
+                  {t('projector.salviSchool')}
                 </span>
                 <a
                   href="https://www.youtube.com/watch?v=J3EQ6acI7oU"
@@ -387,14 +389,14 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
                 >
-                  <span>YouTube</span>
+                  <span>{t('projector.openYoutube')}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
               <div className="relative flex-1 w-full min-h-[240px]">
                 <ProjectorVideoPlayer
                   videoId="J3EQ6acI7oU"
-                  title="Headmaster Salvi Interview - Walan English School"
+                  title={t('projector.salviSchool')}
                   activeEraIndex={displayedEra}
                 />
               </div>
@@ -407,7 +409,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
                 <span className="flex items-center gap-2">
                   <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
-                  Classroom Tech in Action • ZP Rural Konkan
+                  {t('projector.impactSchool')}
                 </span>
                 <a
                   href="https://www.youtube.com/watch?v=3xy5Ti_cFRU"
@@ -415,14 +417,14 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
                 >
-                  <span>YouTube</span>
+                  <span>{t('projector.openYoutube')}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
               <div className="relative flex-1 w-full min-h-[240px]">
                 <ProjectorVideoPlayer
                   videoId="3xy5Ti_cFRU"
-                  title="Classroom Tech in Action - Rural Konkan"
+                  title={t('projector.impactSchool')}
                   activeEraIndex={displayedEra}
                 />
               </div>
@@ -450,7 +452,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
               <div className="p-4 rounded-2xl bg-[#0A1E5C] text-white border border-[#FFD200]/30 shadow-md">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#FFD200] uppercase tracking-wider mb-1">
                   <Sliders className="w-3.5 h-3.5 text-[#FFD200]" />
-                  <span>Hardware &amp; Deployment Profile</span>
+                  <span>{t('projector.specsHeader')}</span>
                 </div>
                 <p className="text-xs sm:text-sm font-semibold text-white/95 leading-relaxed">
                   {visual.specHighlight}
@@ -464,11 +466,12 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
           <div className="flex items-center gap-1.5 font-medium">
             <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
-            <span>Projection Hall Verified Stream</span>
+            <span>{t('projector.footerVerified')}</span>
           </div>
-          <span className="font-mono font-bold text-[#103B9B]">Konkan Deployment</span>
+          <span className="font-mono font-bold text-[#103B9B]">{t('projector.footerDeployment')}</span>
         </div>
       </div>
     </div>
   )
 }
+

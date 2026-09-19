@@ -13,6 +13,7 @@ import {
 import SpotlightCard from './SpotlightCard'
 import DecryptedText from './DecryptedText'
 import BrandSwoosh from './BrandSwoosh'
+import { useLanguage } from '../context/LanguageContext'
 
 /* ── Interactive Character with self-resetting ~500ms GSAP elastic spring ── */
 function SpringChar({ char, className = '' }) {
@@ -54,9 +55,17 @@ function SpringChar({ char, className = '' }) {
 }
 
 function SpringWord({ word, className = '' }) {
+  // Grapheme-aware splitting to preserve Marathi / Devanagari conjuncts & matras
+  const characters =
+    typeof Intl !== 'undefined' && Intl.Segmenter
+      ? Array.from(
+          new Intl.Segmenter('mr', { granularity: 'grapheme' }).segment(word)
+        ).map((s) => s.segment)
+      : word.split('')
+
   return (
     <span className={`inline-block whitespace-nowrap ${className}`}>
-      {word.split('').map((char, i) => (
+      {characters.map((char, i) => (
         <SpringChar key={i} char={char} />
       ))}
     </span>
@@ -78,36 +87,14 @@ function SpringText({ text, className = '' }) {
 }
 
 export default function HeroSection() {
-  const stats = [
-    {
-      icon: School,
-      value: '120+',
-      label: 'Schools Digitized',
-      detail: 'Across Raigad & Ratnagiri districts',
-      highlight: 'Zilla Parishad & Rural Ashrams',
-    },
-    {
-      icon: Zap,
-      value: '₹25,000',
-      label: 'Budget Breakthrough',
-      detail: 'Engineered for ZP ₹30K limits',
-      highlight: 'LED rig + Pen-drive deployment',
-    },
-    {
-      icon: WifiOff,
-      value: '100%',
-      label: 'Offline Capable',
-      detail: 'Zero internet dependency',
-      highlight: 'Plug & teach digital curriculum',
-    },
-    {
-      icon: Award,
-      value: 'Google EDLA',
-      label: 'Certified Next-Gen',
-      detail: 'Interactive smart panels',
-      highlight: 'Zero monthly subscription traps',
-    },
-  ]
+  const { t } = useLanguage()
+
+  const statIcons = [School, Zap, WifiOff, Award]
+  const rawStats = t('hero.stats') || []
+  const stats = rawStats.map((item, index) => ({
+    ...item,
+    icon: statIcons[index] || Award,
+  }))
 
   const handleSmoothScroll = (e, href) => {
     e.preventDefault()
@@ -129,8 +116,8 @@ export default function HeroSection() {
         <div className="flex justify-center mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/95 border border-[#103B9B]/25 text-[#103B9B] text-xs sm:text-sm font-bold shadow-sm">
             <MapPin className="w-4 h-4 text-[#FFD200]" />
-            <span className="text-[#081438] font-semibold">Konkan Operational Belt:</span>
-            <span className="text-[#103B9B] font-bold">Khed • Chiplun • Mahad • Dapoli • Guhagar</span>
+            <span className="text-[#081438] font-semibold">{t('hero.beltLabel')}</span>
+            <span className="text-[#103B9B] font-bold">{t('hero.beltCities')}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-[#FFD200] animate-pulse" />
           </div>
         </div>
@@ -139,32 +126,35 @@ export default function HeroSection() {
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight text-[#0B1B4F] leading-tight">
             <span className="inline-block">
-              <SpringText text="Empowering Rural Schools With" />
+              <SpringText text={t('hero.titlePart1')} />
             </span>{' '}
             <span className="text-[#103B9B] inline-block whitespace-nowrap">
-              <SpringText text="Affordable Digital Learning" />
+              <SpringText text={t('hero.titlePart2')} />
             </span>
           </h1>
 
           <p className="text-lg sm:text-xl text-slate-700 font-normal leading-relaxed max-w-3xl mx-auto">
-            Pioneering rugged, offline eLearning setups across{' '}
+            {t('hero.subtitlePrefix')}
             <strong className="font-extrabold text-[#103B9B] underline decoration-[#FFD200]">
-              120+ Zilla Parishad schools
-            </strong>{' '}
-            in Raigad & Ratnagiri since 2014—starting at just{' '}
-            <strong className="font-black text-[#C41230]">₹25,000</strong>.
+              {t('hero.schoolsHighlight')}
+            </strong>
+            {t('hero.subtitleMiddle')}
+            <strong className="font-black text-[#C41230]">
+              {t('hero.priceHighlight')}
+            </strong>
+            {t('hero.subtitleSuffix')}
           </p>
 
           {/* Quick Value Props Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-[#081438] text-xs font-semibold border border-slate-200 shadow-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> State Board Marathi & Semi-English
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> {t('hero.prop1')}
             </span>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-[#081438] text-xs font-semibold border border-slate-200 shadow-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> No Smartboard Screen Maintenance
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> {t('hero.prop2')}
             </span>
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-[#081438] text-xs font-semibold border border-slate-200 shadow-xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> MLA & CSR Donor Branding Support
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#103B9B]" /> {t('hero.prop3')}
             </span>
           </div>
 
@@ -175,7 +165,7 @@ export default function HeroSection() {
               onClick={(e) => handleSmoothScroll(e, '#solutions')}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-base shadow-xl shadow-[#C41230]/30 border border-[#FFD200]/80 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
-              <span>Explore ₹25K ZP Rig</span>
+              <span>{t('hero.ctaExplore')}</span>
               <ChevronRight className="w-5 h-5 text-[#FFD200]" />
             </a>
             <a
@@ -183,7 +173,7 @@ export default function HeroSection() {
               onClick={(e) => handleSmoothScroll(e, '#journey')}
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#103B9B] hover:bg-[#0B1B4F] text-white font-bold text-sm border border-[#103B9B]/30 transition-all duration-200 shadow-md hover:-translate-y-0.5"
             >
-              <span>View 25-Year Journey</span>
+              <span>{t('hero.ctaJourney')}</span>
             </a>
           </div>
         </div>
@@ -213,7 +203,7 @@ export default function HeroSection() {
                           <Icon className="w-6 h-6" />
                         </div>
                         <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#0F172A] text-[#FFD200] border border-[#FFD200]/40 shadow-xs">
-                          Milestone 0{i + 1}
+                          {t('hero.milestonePrefix')}{i + 1}
                         </span>
                       </div>
 
@@ -231,13 +221,13 @@ export default function HeroSection() {
                         </div>
                       </div>
 
-                      {/* Stat Detail Description (Equalized min-height across 1-line and 2-line descriptions) */}
+                      {/* Stat Detail Description */}
                       <p className="mt-2.5 text-xs sm:text-sm text-slate-600 font-medium leading-relaxed min-h-[44px] flex items-start">
                         {stat.detail}
                       </p>
                     </div>
 
-                    {/* Bottom Highlight Feature & Action (Locked to identical baseline across all cards) */}
+                    {/* Bottom Highlight Feature & Action */}
                     <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-800">
                       <div className="flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
@@ -255,7 +245,7 @@ export default function HeroSection() {
         {/* Scroll To Explore Indicator */}
         <div className="mt-14 flex flex-col items-center justify-center text-center space-y-2">
           <span className="text-xs uppercase tracking-widest font-extrabold text-[#103B9B]">
-            Scroll To Experience The Grassroots Journey
+            {t('hero.scrollIndicator')}
           </span>
           <a
             href="#journey"
@@ -282,3 +272,4 @@ export default function HeroSection() {
     </section>
   )
 }
+

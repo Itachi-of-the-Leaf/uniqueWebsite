@@ -10,120 +10,37 @@ import {
   Zap,
   TrendingUp,
 } from 'lucide-react'
-import timelineData from '../data/timelineData.json'
 import ProjectorScreen from './ProjectorScreen'
+import { useLanguage } from '../context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
-/* ── Static visual metadata per era ── */
-const eraVisualData = [
-  {
-    badge: 'Pioneering Ground Zero',
-    tagline: 'Laying IT Foundations in Konkan',
-    icon: Monitor,
-    stats: [
-      { label: 'Founding Base', val: 'Khed Bazaar' },
-      { label: 'Service Hub', val: '24-hr Local Repair' },
-      { label: 'Hardware', val: 'CRT & Custom Rigs' },
-    ],
-    deliverables: [
-      'First dedicated computer retail & assembly center in Khed taluka',
-      'Eliminated 150km repair travel to Mumbai / Pune for local institutions',
-      'Conducted earliest digital literacy bootcamps for rural teachers',
-    ],
-    specHighlight:
-      'Custom Intel x86 Hardware • CRT Displays • Local Konkan Support',
-    defaultTab: 'specs',
-  },
-  {
-    badge: 'The ₹25K Breakthrough',
-    tagline: 'Engineered for ZP ₹30,000 Grant Limits',
-    icon: HardDrive,
-    stats: [
-      { label: 'ZP Grant Limit', val: '₹30,000' },
-      { label: 'Rig Cost', val: '₹25,000 Only' },
-      { label: 'School Surplus', val: '₹5,000 Left' },
-    ],
-    deliverables: [
-      'High-lumen LED projector + 32GB offline USB pen-drive bundle',
-      'Zero screen damage risk: Projected directly onto whitewashed classroom walls',
-      '100% immune to rural power cuts & internet blackout zones',
-    ],
-    specHighlight:
-      '₹25,000 Turnkey LED Kit • Offline Pen-Drive OS • No Smartboard Fees',
-    defaultTab: 'salvi',
-  },
-  {
-    badge: 'Institutional Trust & Scale',
-    tagline: '100+ Schools with Zankar & Pride India',
-    icon: Film,
-    stats: [
-      { label: 'Institutions', val: '100+ Connected' },
-      { label: 'Curriculum', val: 'State Board Marathi' },
-      { label: 'Strategic Partner', val: 'MMACETP (Mr. Apte)' },
-    ],
-    deliverables: [
-      'Complete Maharashtra State Board Marathi & Semi-English syllabus via Zankar DVDs',
-      'Strategic partnership with MMACETP (Mr. Apte) & Pride India CSR Foundation',
-      'Teacher onboarding bootcamp: from 0 to confident digital instructor in 2 hours',
-    ],
-    specHighlight:
-      'Zankar DVD Syllabus • Multi-District Ashrams • Scaled Konkan Trust',
-    defaultTab: 'impact',
-  },
-  {
-    badge: 'The Technical Edge',
-    tagline: 'Google EDLA 4K Panels & Smart AI Projection',
-    icon: Zap,
-    stats: [
-      { label: 'Resolution', val: '1080p & 4K UHD' },
-      { label: 'Certification', val: 'Google EDLA' },
-      { label: 'Annual SaaS', val: '₹0 / No Renewal' },
-    ],
-    deliverables: [
-      '1080p Smart Android wireless classroom projectors with built-in stereo audio',
-      'Google EDLA-certified 65" and 75" interactive multi-touch AI panels',
-      'Anti-SaaS policy: Lifetime offline functionality with zero recurring fees',
-    ],
-    specHighlight:
-      'Google EDLA Certification • Offline AI Tools • Zero Annual Fees',
-    defaultTab: 'specs',
-  },
-  {
-    badge: 'Sovereign Donor Visibility',
-    tagline: 'Custom Boot Screens for MLA & CSR Benefactors',
-    icon: Award,
-    stats: [
-      { label: 'Branding', val: 'Firmware-Level' },
-      { label: 'Key Benefactor', val: 'MLA Bharat Gogavale' },
-      { label: 'Longevity', val: 'Permanent Display' },
-    ],
-    deliverables: [
-      'Custom BIOS & Android boot logos acknowledging local MLA / CSR leadership',
-      'Featured: Hon. MLA Bharat Gogavale (Mahad & Khed Vidhayak Nidhi)',
-      'Anodized laser-engraved plaques & verifiable photo audit dossiers for grants',
-    ],
-    specHighlight:
-      'Custom Firmware Splash • MLA Donor Recognition • Verifiable CSR Impact',
-    defaultTab: 'donor',
-  },
-]
+const eraIcons = [Monitor, HardDrive, Film, Zap, Award]
 
-/* ── Merge timeline + visual data for the projector screen ── */
-const mergedEraData = timelineData.map((td, i) => ({
-  timeline: td,
-  visual: eraVisualData[i],
-}))
-
-/* ══════════════════════════════════════════════════════
-   TimelineSection — Scrollytelling Architecture
-   Left: 100% Static Realism Blackboard Cards (#0F172A slate, chalk-rail, 100%/30% opacity).
-   Right: Single Pinned ProjectorScreen with micro-tilt & video facade.
-   ══════════════════════════════════════════════════════ */
 export default function TimelineSection() {
   const [activeEraIndex, setActiveEraIndex] = useState(0)
   const containerRef = useRef(null)
   const boardRefs = useRef([])
+  const { t } = useLanguage()
+
+  const rawEras = t('timeline.eras') || []
+  const mergedEraData = rawEras.map((era, i) => ({
+    timeline: {
+      id: era.id,
+      year: era.year,
+      title: era.title,
+      description: era.description,
+    },
+    visual: {
+      badge: era.badge,
+      tagline: era.tagline,
+      icon: eraIcons[i] || Monitor,
+      stats: era.stats || [],
+      deliverables: era.deliverables || [],
+      specHighlight: era.specHighlight || '',
+      defaultTab: era.defaultTab || 'specs',
+    },
+  }))
 
   /* ── GSAP ScrollTrigger wiring for era synchronization ── */
   useEffect(() => {
@@ -184,15 +101,13 @@ export default function TimelineSection() {
         <div className="max-w-3xl mb-14 lg:mb-20">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFD200]/15 text-[#FFD200] text-xs font-black uppercase tracking-wider mb-3 border border-[#FFD200]/40 shadow-xs">
             <TrendingUp className="w-3.5 h-3.5 text-[#FFD200]" />
-            <span>Interactive Chronicle (1998 — Present)</span>
+            <span>{t('timeline.badge')}</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#FFFFFF] tracking-tight drop-shadow-sm">
-            25 Years of Grassroots Innovation
+            {t('timeline.heading')}
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            Scroll through the five transformative eras that turned a local Khed
-            computer shop into the most trusted rural educational hardware
-            partner across Konkan.
+            {t('timeline.subheading')}
           </p>
         </div>
 
@@ -206,8 +121,8 @@ export default function TimelineSection() {
             {/* Spine visible on lg+ only, inside the left col */}
             <div className="absolute left-4 sm:left-6 top-6 bottom-12 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden lg:block opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.45)]" />
 
-            {timelineData.map((era, index) => {
-              const visual = eraVisualData[index]
+            {mergedEraData.map((eraObj, index) => {
+              const { timeline: era, visual } = eraObj
               const isActive = activeEraIndex === index
 
               return (
@@ -255,7 +170,7 @@ export default function TimelineSection() {
                           </span>
                         </div>
                         <span className="font-chalk text-sm sm:text-base font-bold text-[#FEF08A] border border-dashed border-[#FEF08A]/60 px-2.5 py-0.5 rounded-md bg-[#FEF08A]/10">
-                          ★ Era 0{era.id}
+                          ★ {t('timeline.eraPill')}{era.id}
                         </span>
                       </div>
 
@@ -277,7 +192,7 @@ export default function TimelineSection() {
                       {/* 5. Directives checklist */}
                       <div className="pt-3 border-t border-white/15 space-y-2.5">
                         <div className="text-[11px] font-mono uppercase tracking-widest text-[#FEF08A] font-bold">
-                          Classroom Directives:
+                          {t('timeline.directivesHeader')}
                         </div>
                         {visual.deliverables.map((item, dIdx) => (
                           <div
@@ -334,3 +249,4 @@ export default function TimelineSection() {
     </section>
   )
 }
+

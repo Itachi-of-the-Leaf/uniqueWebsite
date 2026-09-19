@@ -1,11 +1,11 @@
+import { useLanguage } from '../context/LanguageContext'
+
 /**
  * BrandLogo.jsx - Official "Unique Systems" (युनिक सिस्टीम्स) Brand Identity Emblem
- * 
- * Features the brand emblem with the signature Crimson Vermilion & Canary Gold swoosh,
- * bold brand title, and Devanagari subhead "युनिक सिस्टीम्स | Rural eLearning Pioneers".
  */
 export default function BrandLogo({ variant = 'light', className = '' }) {
   const isDarkBg = variant === 'dark' // true when placed on Royal Navy or Cobalt background
+  const { language, t } = useLanguage()
 
   return (
     <div className={`flex items-center gap-3 select-none ${className}`}>
@@ -24,10 +24,10 @@ export default function BrandLogo({ variant = 'light', className = '' }) {
               isDarkBg ? 'text-[#FFFFFF]' : 'text-[#081438]'
             }`}
           >
-            Unique Systems
+            {language === 'mr' ? 'युनिक सिस्टीम्स' : 'Unique Systems'}
           </span>
           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFD200] text-[#081438] shadow-xs">
-            Est. 1998
+            {t('nav.established')}
           </span>
         </div>
         <p
@@ -35,9 +35,13 @@ export default function BrandLogo({ variant = 'light', className = '' }) {
             isDarkBg ? 'text-[#FFD200]' : 'text-[#103B9B]'
           }`}
         >
-          युनिक सिस्टीम्स <span className={isDarkBg ? 'text-white/60' : 'text-slate-500'}>| Rural eLearning Pioneers</span>
+          {language === 'mr' ? 'Unique Systems' : 'युनिक सिस्टीम्स'}{' '}
+          <span className={isDarkBg ? 'text-white/60' : 'text-slate-500'}>
+            | {t('nav.tagline')}
+          </span>
         </p>
       </div>
     </div>
   )
 }
+
