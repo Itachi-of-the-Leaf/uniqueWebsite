@@ -3,7 +3,6 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   Monitor,
-  CheckCircle,
   HardDrive,
   Film,
   Award,
@@ -15,9 +14,26 @@ import {
   Volume2,
   ExternalLink,
   ShieldCheck,
+  Sparkles,
+  Loader2,
 } from 'lucide-react'
 import timelineData from '../data/timelineData.json'
 import DecryptedText from './DecryptedText'
+
+/* Per-character chalk glow helper */
+function ChalkText({ text, className = '' }) {
+  return (
+    <span className={className} aria-label={text}>
+      {text.split('').map((char, i) =>
+        char === ' ' ? (
+          <span key={i}>&nbsp;</span>
+        ) : (
+          <span key={i} className="chalk-letter">{char}</span>
+        )
+      )}
+    </span>
+  )
+}
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -111,9 +127,20 @@ const eraVisualData = [
 
 export default function TimelineSection() {
   const [activeEraIndex, setActiveEraIndex] = useState(0)
-  const [activeMediaTab, setActiveMediaTab] = useState('donor') // 'donor' | 'salvi' | 'impact' | 'specs'
+  // Individual media tab states for each era so users can toggle per card
+  const [eraTabs, setEraTabs] = useState(() =>
+    eraVisualData.map((v) => v.defaultTab)
+  )
   const containerRef = useRef(null)
   const stepRefs = useRef([])
+
+  const setTabForEra = (eraIdx, tabName) => {
+    setEraTabs((prev) => {
+      const next = [...prev]
+      next[eraIdx] = tabName
+      return next
+    })
+  }
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -122,26 +149,16 @@ export default function TimelineSection() {
 
         ScrollTrigger.create({
           trigger: el,
-          start: 'top center',
-          end: 'bottom center',
-          onEnter: () => {
-            setActiveEraIndex(index)
-            setActiveMediaTab(eraVisualData[index].defaultTab)
-          },
-          onEnterBack: () => {
-            setActiveEraIndex(index)
-            setActiveMediaTab(eraVisualData[index].defaultTab)
-          },
+          start: 'top 60%',
+          end: 'bottom 40%',
+          onEnter: () => setActiveEraIndex(index),
+          onEnterBack: () => setActiveEraIndex(index),
         })
       })
     }, containerRef)
 
     return () => ctx.revert()
   }, [])
-
-  const currentVisual = eraVisualData[activeEraIndex] || eraVisualData[0]
-  const currentTimelineItem = timelineData[activeEraIndex] || timelineData[0]
-  const ActiveIcon = currentVisual.icon
 
   return (
     <section
@@ -150,13 +167,13 @@ export default function TimelineSection() {
       className="relative py-20 lg:py-28 text-white overflow-hidden border-t border-slate-800"
       style={{
         background:
-          'radial-gradient(circle at 15% 25%, rgba(16, 59, 155, 0.20) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(16, 59, 155, 0.16) 0%, transparent 50%), #061033',
+          'radial-gradient(circle at 15% 25%, rgba(16, 59, 155, 0.22) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(16, 59, 155, 0.18) 0%, transparent 50%), #061033',
       }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="max-w-3xl mb-16 lg:mb-20">
+        <div className="max-w-3xl mb-14 lg:mb-20">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFD200]/15 text-[#FFD200] text-xs font-black uppercase tracking-wider mb-3 border border-[#FFD200]/40 shadow-xs">
             <TrendingUp className="w-3.5 h-3.5 text-[#FFD200]" />
             <span>Interactive Chronicle (1998 — Present)</span>
@@ -169,390 +186,403 @@ export default function TimelineSection() {
           </p>
         </div>
 
-        {/* Dual-Column Responsive Scrollytelling Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        {/* Vertical Timeline Rail with Paired Scrolling Columns */}
+        <div className="relative space-y-16 lg:space-y-24">
           
-          {/* Left Column: The Slate Blackboard (~45% width -> 5 cols on lg) */}
-          <div className="lg:col-span-5 relative pb-20">
-            
-            {/* Vertical Canary Gold Milestone Progress Spine */}
-            <div className="absolute left-6 top-8 bottom-16 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden sm:block opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.4)]" />
+          {/* Continuous Vertical Canary Gold Milestone Progress Spine */}
+          <div className="absolute left-4 sm:left-6 top-6 bottom-12 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden sm:block opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.45)]" />
 
-            <div className="space-y-20 lg:space-y-28">
-              {timelineData.map((era, index) => {
-                const isActive = activeEraIndex === index
-                const visual = eraVisualData[index]
+          {timelineData.map((era, index) => {
+            const visual = eraVisualData[index]
+            const isActive = activeEraIndex === index
+            const isPast = index < activeEraIndex
+            const ActiveIcon = visual.icon
+            const currentTab = eraTabs[index] || visual.defaultTab
 
-                return (
+            return (
+              <div
+                key={era.id}
+                ref={(el) => (stepRefs.current[index] = el)}
+                className="era-row relative sm:pl-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch"
+              >
+                {/* Glowing Node on Timeline Spine */}
+                <div className="hidden sm:flex absolute left-0 top-10 items-center justify-center w-12 h-12 -translate-x-1/2 z-20">
                   <div
-                    key={era.id}
-                    ref={(el) => (stepRefs.current[index] = el)}
-                    className="relative sm:pl-16 transition-all duration-500"
+                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
+                      isActive
+                        ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-[0_0_22px_#FFD200]'
+                        : isPast
+                        ? 'bg-[#103B9B] ring-2 ring-[#FFD200]/40 scale-100'
+                        : 'bg-slate-700 ring-2 ring-slate-800 scale-90'
+                    }`}
                   >
-                    {/* Glowing Canary Node on Timeline Rail */}
-                    <div className="hidden sm:flex absolute left-0 top-6 items-center justify-center w-12 h-12 -translate-x-1/2 z-10">
-                      <div
-                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                          isActive
-                            ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-[0_0_20px_#FFD200]'
-                            : 'bg-slate-700 ring-2 ring-slate-800 scale-90'
-                        }`}
-                      >
-                        <div
-                          className={`w-2.5 h-2.5 rounded-full ${
-                            isActive ? 'bg-[#061033] animate-ping' : 'bg-slate-500'
-                          }`}
+                    <div
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        isActive ? 'bg-[#061033] animate-ping' : 'bg-white/80'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* LEFT COLUMN: Traditional Classroom Chalkboard */}
+                <div className="lg:col-span-5 flex flex-col">
+                  <div
+                    className={`blackboard-panel h-full flex flex-col rounded-2xl sm:rounded-3xl border-[8px] sm:border-[10px] border-[#3E2314] ring-1 ring-[#5C3A21] bg-[#121C17] shadow-[inset_0_0_25px_rgba(0,0,0,0.9),0_18px_40px_rgba(0,0,0,0.6)] relative overflow-hidden ${
+                      isActive
+                        ? 'ring-4 ring-[#FFD200]/50 shadow-[0_0_30px_rgba(255,210,0,0.20)]'
+                        : isPast
+                        ? 'chalk-duster-erased'
+                        : 'opacity-40'
+                    }`}
+                  >
+                    {/* Blackboard Slate Surface Texture & Smudges */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.06)_0%,transparent_65%)] pointer-events-none" />
+                    <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.02)_40%,transparent_60%)] pointer-events-none" />
+
+                    {/* Faint Duster Eraser Smear Lines across the board */}
+                    {isPast && (
+                      <div className="absolute inset-0 pointer-events-none bg-[repeating-linear-gradient(0deg,transparent,transparent_28px,rgba(255,255,255,0.04)_30px,transparent_34px)]" />
+                    )}
+
+                    {/* Chalk Content Area */}
+                    <div className="relative z-10 p-5 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
+
+                      {/* Top Row: Chalk Era & Year Badge */}
+                      <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div className="inline-flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-[#FEF08A] shrink-0" />
+                          <ChalkText
+                            text={era.year}
+                            className="font-chalk text-xl sm:text-2xl font-bold text-[#FEF08A] tracking-wider cursor-default"
+                          />
+                        </div>
+                        <ChalkText
+                          text={`★ Era 0${era.id}`}
+                          className="font-chalk text-sm sm:text-base font-bold text-[#FEF08A] border-2 border-dashed border-[#FEF08A]/70 px-2.5 py-0.5 rounded-md bg-[#FEF08A]/10 cursor-default"
                         />
                       </div>
-                    </div>
 
-                    {/* The Slate Blackboard Narrative Card */}
-                    <div
-                      className={`transition-all duration-500 rounded-3xl p-6 sm:p-8 bg-[#0F172A] border border-[#1E293B] border-b-4 border-b-[#334155] shadow-2xl relative overflow-hidden ${
-                        isActive
-                          ? 'opacity-100 ring-2 ring-[#FFD200]/40 scale-[1.02]'
-                          : 'opacity-30 hover:opacity-75 scale-100'
-                      }`}
-                    >
-                      {/* Faint chalk dust ambient texture */}
-                      <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:16px_16px] opacity-5 pointer-events-none" />
-
-                      {/* Era Header & Year Badge */}
-                      <div className="relative z-10 flex items-center justify-between gap-3 mb-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 text-xs sm:text-sm font-black px-3.5 py-1 rounded-full ${
-                            isActive
-                              ? 'bg-[#103B9B] text-white shadow-sm border border-[#FFD200]/40'
-                              : 'bg-slate-800 text-slate-300'
+                      {/* Chalkboard Headline */}
+                      <div className="space-y-1">
+                        <h3
+                          className={`font-chalk text-2xl sm:text-3xl lg:text-4xl text-[#FFFFFF] font-bold tracking-wide leading-tight cursor-default ${
+                            isActive ? 'animate-chalk-write' : ''
                           }`}
                         >
-                          <Calendar className="w-3.5 h-3.5 text-[#FFD200]" />
-                          {era.year}
-                        </span>
-                        <span className="text-xs font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-[#FEF08A]/70 text-[#FEF08A] bg-[#FEF08A]/10">
-                          Era 0{era.id}
-                        </span>
+                          <ChalkText text={era.title} />
+                        </h3>
+                        <p className="font-chalk text-base sm:text-lg text-[#FEF08A]/90 cursor-default">
+                          <ChalkText text={`~ ${visual.tagline} ~`} />
+                        </p>
                       </div>
 
-                      {/* Title: Crisp Chalk White with diffuse glow */}
-                      <h3 className="relative z-10 text-2xl sm:text-3xl font-heading font-extrabold text-[#F8FAFC] tracking-tight drop-shadow-[0_0_8px_rgba(248,250,252,0.35)]">
-                        {era.title}
-                      </h3>
-
-                      {/* Narrative Body: Soft chalk silver */}
-                      <p className="relative z-10 mt-4 text-[#CBD5E1] text-base leading-relaxed font-normal">
+                      {/* Chalkboard Narrative Body */}
+                      <p
+                        className={`font-chalk text-base sm:text-xl text-[#F1F5F9] leading-relaxed cursor-default ${
+                          isActive ? 'animate-chalk-write' : ''
+                        }`}
+                        style={{ animationDelay: '0.12s' }}
+                      >
                         {era.description}
                       </p>
 
-                      {/* Key Highlights Checklist: Pale chalk dust yellow bullets */}
-                      <div className="relative z-10 mt-6 pt-5 border-t border-[#1E293B] space-y-3">
+                      {/* Chalk Deliverables Checklist */}
+                      <div className="pt-3 border-t border-white/10 space-y-2.5">
+                        <div className="text-[11px] font-mono uppercase tracking-widest text-[#FEF08A]/80 font-bold">
+                          Classroom Directives:
+                        </div>
                         {visual.deliverables.map((item, dIdx) => (
-                          <div key={dIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#CBD5E1]">
-                            <CheckCircle
-                              className={`w-4 h-4 shrink-0 mt-0.5 ${
-                                isActive ? 'text-[#FEF08A]' : 'text-slate-500'
-                              }`}
-                            />
-                            <span className="font-medium leading-normal">{item}</span>
+                          <div
+                            key={dIdx}
+                            className={`flex items-start gap-2 text-sm sm:text-base font-chalk text-[#CBD5E1] cursor-default ${
+                              isActive ? 'animate-chalk-write' : ''
+                            }`}
+                            style={{ animationDelay: `${0.18 + dIdx * 0.08}s` }}
+                          >
+                            <span className="text-[#FEF08A] font-bold text-lg shrink-0 leading-none select-none">
+                              ✓
+                            </span>
+                            <ChalkText text={item} className="leading-snug" />
                           </div>
                         ))}
                       </div>
 
-                      {/* Chalk-rail Active Indicator */}
-                      {isActive && (
-                        <div className="relative z-10 mt-6 inline-flex items-center gap-2 text-xs font-mono font-bold text-[#061033] bg-[#FEF08A] px-3.5 py-1.5 rounded-xl border border-[#FEF08A] shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#C41230] animate-ping" />
-                          <span>Active Milestone in View</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* RIGHT COLUMN: Luminous Cinema Projector Screen (~55% -> 7 cols) */}
+                <div className="lg:col-span-7 flex flex-col justify-center">
+                  <div
+                    className={`cinema-light-leak rounded-2xl sm:rounded-3xl bg-white text-[#081438] p-5 sm:p-7 shadow-2xl border-4 sm:border-6 border-slate-800 ring-1 ring-slate-700/60 flex flex-col justify-between relative overflow-hidden transition-[opacity,box-shadow] duration-400 ${
+                      isActive
+                        ? 'shadow-[0_0_45px_rgba(70,140,255,0.35),0_20px_40px_rgba(0,0,0,0.6)]'
+                        : 'opacity-90 hover:opacity-100 shadow-[0_0_25px_rgba(16,59,155,0.2)]'
+                    }`}
+                  >
+                    {/* Cinema Overhead Projector Light Beam Simulation */}
+                    <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#80B0FF]/15 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
+                    <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
+
+                    {/* Screen Header & Era Badge */}
+                    <div className="relative z-10 space-y-3 border-b border-slate-100 pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#103B9B] text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+                          <ActiveIcon className="w-4 h-4 text-[#FFD200]" />
+                          <span>{visual.badge}</span>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xl sm:text-2xl font-black text-[#103B9B] font-mono">
+                            <DecryptedText
+                              text={era.year}
+                              animateOn="mount"
+                              speed={20}
+                              className="text-[#103B9B] font-mono font-bold"
+                            />
+                          </div>
+                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            Cinema Projection Screen
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438] tracking-tight">
+                          {era.title}
+                        </h4>
+                        <p className="mt-1 text-sm font-semibold text-[#103B9B]">
+                          {visual.tagline}
+                        </p>
+                      </div>
+
+                      {/* Interactive Media Tab Selectors */}
+                      <div className="pt-2 flex flex-wrap items-center gap-2">
+                        {/* Tab: MLA Donor */}
+                        <button
+                          type="button"
+                          onClick={() => setTabForEra(index, 'donor')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+                            currentTab === 'donor'
+                              ? 'bg-[#103B9B] text-white shadow-sm'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          MLA Donor Boot Screen
+                        </button>
+
+                        {/* Tab: HM Salvi Video */}
+                        <button
+                          type="button"
+                          onClick={() => setTabForEra(index, 'salvi')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                            currentTab === 'salvi'
+                              ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>HM Salvi Video</span>
+                        </button>
+
+                        {/* Tab: Classroom Impact Video */}
+                        <button
+                          type="button"
+                          onClick={() => setTabForEra(index, 'impact')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+                            currentTab === 'impact'
+                              ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          <Play className="w-3 h-3 fill-current" />
+                          <span>Classroom Impact</span>
+                        </button>
+
+                        {/* Tab: Hardware Specs */}
+                        <button
+                          type="button"
+                          onClick={() => setTabForEra(index, 'specs')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+                            currentTab === 'specs'
+                              ? 'bg-[#081438] text-white shadow-sm'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                        >
+                          Hardware Specs
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Dynamic Viewport Canvas Inside Screen */}
+                    <div className="relative z-10 my-4 flex-1 flex flex-col justify-center min-h-[280px]">
+                      
+                      {/* 1. MLA BHARAT GOGAVALE DONOR PREVIEW */}
+                      {currentTab === 'donor' && (
+                        <div className="rounded-2xl bg-[#081438] p-5 sm:p-6 border-2 border-[#103B9B] text-white text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
+                          <div className="w-full flex items-center justify-between text-[11px] font-mono text-slate-400 border-b border-white/10 pb-2">
+                            <span className="text-[#FFD200] font-bold">PROJECTOR KERNEL BOOT SCREEN</span>
+                            <span>RESOLUTION: 1080P UHD</span>
+                          </div>
+
+                          <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
+                            <Award className="w-7 h-7 text-[#FFD200]" />
+                          </div>
+
+                          <div className="space-y-1">
+                            <span className="text-xs font-mono uppercase tracking-widest text-[#FFD200] font-black">
+                              MAHARASHTRA VIDHAN SABHA • VIDHAYAK NIDHI
+                            </span>
+                            <h5 className="text-lg sm:text-xl font-heading font-extrabold text-white">
+                              Donated by MLA Bharat Gogavale
+                            </h5>
+                            <p className="text-xs text-slate-300 max-w-sm mx-auto">
+                              "Dedicated for the digital empowerment of rural Zilla Parishad students across Mahad & Khed constituencies."
+                            </p>
+                          </div>
+
+                          {/* Startup Progress Bar */}
+                          <div className="w-full max-w-xs space-y-1.5 pt-1">
+                            <div className="flex justify-between text-[10px] font-mono text-slate-400">
+                              <span>OFFLINE STATE BOARD SYLLABUS</span>
+                              <span className="text-emerald-400 font-bold">READY</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                              <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
+                            </div>
+                          </div>
+
+                          <div className="inline-flex items-center gap-1.5 text-[11px] text-[#FFD200] font-semibold bg-white/10 px-3 py-1 rounded-full border border-white/10">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>Tamper-Proof BIOS ROM • Zero Recurring Cloud Costs</span>
+                          </div>
                         </div>
                       )}
 
-                      {/* Bottom Chalk-rail Accent Line */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#CBD5E1]/30 to-transparent" />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Right Column: The Luminous Projector Screen (~55% width -> 7 cols on lg) */}
-          <div className="lg:col-span-7 sticky top-24 h-[calc(100vh-7rem)] min-h-[580px] max-h-[780px] flex flex-col justify-between">
-            {/* Luminous 16:9 Screen Bezel with Outer Ambient Light Cast */}
-            <div
-              className="h-full rounded-3xl bg-white text-[#081438] p-6 sm:p-8 lg:p-9 border-4 sm:border-8 border-slate-800 ring-1 ring-slate-700/60 flex flex-col justify-between relative overflow-hidden"
-              style={{
-                boxShadow: '0 0 50px rgba(16, 59, 155, 0.4), 0 20px 40px rgba(0, 0, 0, 0.6)',
-              }}
-            >
-              {/* Overhead Projector Light Beam Simulation */}
-              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#103B9B]/12 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
-              <div className="absolute -left-20 -bottom-20 w-72 h-72 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
-
-              {/* Screen Header & Era Badge */}
-              <div className="relative z-10 space-y-3 border-b border-slate-100 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#103B9B] text-white text-xs font-bold uppercase tracking-wider shadow-sm">
-                    <ActiveIcon className="w-4 h-4 text-[#FFD200]" />
-                    <span>{currentVisual.badge}</span>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xl sm:text-2xl font-black text-[#103B9B] font-mono">
-                      <DecryptedText
-                        text={currentTimelineItem.year}
-                        animateOn="mount"
-                        speed={20}
-                        className="text-[#103B9B] font-mono font-bold"
-                      />
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                      Konkan Milestone
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438] tracking-tight">
-                    {currentTimelineItem.title}
-                  </h4>
-                  <p className="mt-1 text-sm font-semibold text-[#103B9B]">
-                    {currentVisual.tagline}
-                  </p>
-                </div>
-
-                {/* Interactive Media Tab Selectors */}
-                <div className="pt-2 flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveMediaTab('donor')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
-                      activeMediaTab === 'donor'
-                        ? 'bg-[#103B9B] text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    MLA Donor Boot Screen
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveMediaTab('salvi')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
-                      activeMediaTab === 'salvi'
-                        ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    <Play className="w-3 h-3 fill-current" />
-                    <span>HM Salvi Video</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveMediaTab('impact')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
-                      activeMediaTab === 'impact'
-                        ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    <Play className="w-3 h-3 fill-current" />
-                    <span>Classroom Impact</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setActiveMediaTab('specs')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
-                      activeMediaTab === 'specs'
-                        ? 'bg-[#081438] text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    Hardware Specs
-                  </button>
-                </div>
-              </div>
-
-              {/* Dynamic Viewport Canvas Inside Pinned Plaque */}
-              <div className="relative z-10 my-4 flex-1 flex flex-col justify-center">
-                
-                {/* 1. MLA BHARAT GOGAVALE DONOR PREVIEW */}
-                {activeMediaTab === 'donor' && (
-                  <div className="rounded-2xl bg-[#081438] p-5 sm:p-6 border-2 border-[#103B9B] text-white text-center flex flex-col items-center justify-center space-y-4 shadow-xl">
-                    <div className="w-full flex items-center justify-between text-[11px] font-mono text-slate-400 border-b border-white/10 pb-2">
-                      <span className="text-[#FFD200] font-bold">PROJECTOR KERNEL BOOT SCREEN</span>
-                      <span>RESOLUTION: 1080P UHD</span>
-                    </div>
-
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
-                      <Award className="w-8 h-8 text-[#FFD200]" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-xs font-mono uppercase tracking-widest text-[#FFD200] font-black">
-                        MAHARASHTRA VIDHAN SABHA • VIDHAYAK NIDHI
-                      </span>
-                      <h5 className="text-lg sm:text-xl font-heading font-extrabold text-white">
-                        Donated by MLA Bharat Gogavale
-                      </h5>
-                      <p className="text-xs text-slate-300 max-w-sm mx-auto">
-                        "Dedicated for the digital empowerment of rural Zilla Parishad students across Mahad & Khed constituencies."
-                      </p>
-                    </div>
-
-                    {/* Startup Progress Bar */}
-                    <div className="w-full max-w-xs space-y-1.5 pt-1">
-                      <div className="flex justify-between text-[10px] font-mono text-slate-400">
-                        <span>OFFLINE STATE BOARD SYLLABUS</span>
-                        <span className="text-emerald-400 font-bold">READY</span>
-                      </div>
-                      <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
-                      </div>
-                    </div>
-
-                    <div className="inline-flex items-center gap-1.5 text-[11px] text-[#FFD200] font-semibold bg-white/10 px-3 py-1 rounded-full border border-white/10">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>Tamper-Proof BIOS ROM • Zero Recurring Cloud Costs</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. HEADMASTER SALVI VIDEO EMBED */}
-                {activeMediaTab === 'salvi' && (
-                  <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full max-h-[360px]">
-                    <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold">
-                      <span className="flex items-center gap-2">
-                        <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
-                        Headmaster Salvi • Walan English School
-                      </span>
-                      <a
-                        href="https://www.youtube.com/watch?v=J3EQ6acI7oU"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
-                      >
-                        <span>YouTube</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                    <div className="relative flex-1 w-full min-h-[240px]">
-                      <iframe
-                        src="https://www.youtube-nocookie.com/embed/J3EQ6acI7oU"
-                        title="Headmaster Salvi Interview - Walan English School"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. CLASSROOM IMPACT VIDEO EMBED */}
-                {activeMediaTab === 'impact' && (
-                  <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full max-h-[360px]">
-                    <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold">
-                      <span className="flex items-center gap-2">
-                        <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
-                        Classroom Tech in Action • ZP Rural Konkan
-                      </span>
-                      <a
-                        href="https://www.youtube.com/watch?v=3xy5Ti_cFRU"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
-                      >
-                        <span>YouTube</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                    <div className="relative flex-1 w-full min-h-[240px]">
-                      <iframe
-                        src="https://www.youtube-nocookie.com/embed/3xy5Ti_cFRU"
-                        title="Classroom Tech in Action - Rural Konkan"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* 4. HARDWARE SPECS VIEW */}
-                {activeMediaTab === 'specs' && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-3">
-                      {currentVisual.stats.map((st, sIdx) => (
-                        <div
-                          key={sIdx}
-                          className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-left shadow-xs"
-                        >
-                          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                            {st.label}
+                      {/* 2. HEADMASTER SALVI VIDEO EMBED */}
+                      {currentTab === 'salvi' && (
+                        <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full min-h-[280px]">
+                          <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
+                            <span className="flex items-center gap-2">
+                              <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
+                              Headmaster Salvi • Walan English School
+                            </span>
+                            <a
+                              href="https://www.youtube.com/watch?v=J3EQ6acI7oU"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
+                            >
+                              <span>YouTube</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
                           </div>
-                          <div className="mt-1 text-sm sm:text-base font-extrabold text-[#103B9B] truncate font-mono">
-                            {st.val}
+                          <div className="relative flex-1 w-full min-h-[240px]">
+                            {/* Skeleton shimmer loader visible until iframe paints */}
+                            <div className="video-skeleton absolute inset-0 flex flex-col items-center justify-center gap-3">
+                              <Loader2 className="w-8 h-8 text-slate-500 animate-spin" />
+                              <span className="text-xs text-slate-500 font-mono">Loading video…</span>
+                            </div>
+                            <iframe
+                              src="https://www.youtube-nocookie.com/embed/J3EQ6acI7oU"
+                              title="Headmaster Salvi Interview - Walan English School"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              loading="lazy"
+                              className="absolute inset-0 w-full h-full z-10"
+                              onLoad={(e) => e.target.previousElementSibling && (e.target.previousElementSibling.style.display = 'none')}
+                            />
                           </div>
                         </div>
-                      ))}
+                      )}
+
+                      {/* 3. CLASSROOM IMPACT VIDEO EMBED */}
+                      {currentTab === 'impact' && (
+                        <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full min-h-[280px]">
+                          <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
+                            <span className="flex items-center gap-2">
+                              <Volume2 className="w-3.5 h-3.5 text-[#FFD200]" />
+                              Classroom Tech in Action • ZP Rural Konkan
+                            </span>
+                            <a
+                              href="https://www.youtube.com/watch?v=3xy5Ti_cFRU"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-[11px] text-[#FFD200] hover:underline"
+                            >
+                              <span>YouTube</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                          <div className="relative flex-1 w-full min-h-[240px]">
+                            {/* Skeleton shimmer loader visible until iframe paints */}
+                            <div className="video-skeleton absolute inset-0 flex flex-col items-center justify-center gap-3">
+                              <Loader2 className="w-8 h-8 text-slate-500 animate-spin" />
+                              <span className="text-xs text-slate-500 font-mono">Loading video…</span>
+                            </div>
+                            <iframe
+                              src="https://www.youtube-nocookie.com/embed/3xy5Ti_cFRU"
+                              title="Classroom Tech in Action - Rural Konkan"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              loading="lazy"
+                              className="absolute inset-0 w-full h-full z-10"
+                              onLoad={(e) => e.target.previousElementSibling && (e.target.previousElementSibling.style.display = 'none')}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 4. HARDWARE SPECS VIEW */}
+                      {currentTab === 'specs' && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-3 gap-3">
+                            {visual.stats.map((st, sIdx) => (
+                              <div
+                                key={sIdx}
+                                className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-left shadow-xs"
+                              >
+                                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                  {st.label}
+                                </div>
+                                <div className="mt-1 text-sm sm:text-base font-extrabold text-[#103B9B] truncate font-mono">
+                                  {st.val}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="p-4 rounded-2xl bg-[#0A1E5C] text-white border border-[#FFD200]/30 shadow-md">
+                            <div className="flex items-center gap-2 text-xs font-bold text-[#FFD200] uppercase tracking-wider mb-1">
+                              <Sliders className="w-3.5 h-3.5 text-[#FFD200]" />
+                              <span>Hardware & Deployment Profile</span>
+                            </div>
+                            <p className="text-xs sm:text-sm font-semibold text-white/95 leading-relaxed">
+                              {visual.specHighlight}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-[#0A1E5C] text-white border border-[#FFD200]/30 shadow-md">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#FFD200] uppercase tracking-wider mb-1">
-                        <Sliders className="w-3.5 h-3.5 text-[#FFD200]" />
-                        <span>Hardware & Deployment Profile</span>
+                    {/* Card Footer */}
+                    <div className="relative z-10 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                      <div className="flex items-center gap-1.5 font-medium">
+                        <Sparkles className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
+                        <span>Projection Hall Verified Stream</span>
                       </div>
-                      <p className="text-xs sm:text-sm font-semibold text-white/95 leading-relaxed">
-                        {currentVisual.specHighlight}
-                      </p>
+                      <span className="font-mono font-bold text-[#103B9B]">
+                        Konkan Deployment
+                      </span>
                     </div>
+
                   </div>
-                )}
-
-              </div>
-
-              {/* Card Footer: Era Progress Tabs */}
-              <div className="relative z-10 pt-3 border-t border-slate-100">
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="text-xs font-bold uppercase tracking-widest text-slate-600">
-                    Chronicle Era ({activeEraIndex + 1} of {timelineData.length})
-                  </span>
-                  <span className="text-xs font-semibold text-[#103B9B]">
-                    Scroll down for next era
-                  </span>
                 </div>
 
-                {/* Progress Indicator Tabs */}
-                <div className="grid grid-cols-5 gap-2">
-                  {timelineData.map((era, i) => (
-                    <button
-                      key={era.id}
-                      onClick={() => {
-                        const target = stepRefs.current[i]
-                        if (target) {
-                          target.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                        }
-                      }}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        i === activeEraIndex
-                          ? 'bg-[#C41230] shadow-sm scale-y-125'
-                          : i < activeEraIndex
-                          ? 'bg-[#103B9B]'
-                          : 'bg-slate-200 hover:bg-slate-300'
-                      }`}
-                      title={`Jump to ${era.year}: ${era.title}`}
-                      aria-label={`Jump to era ${i + 1}`}
-                    />
-                  ))}
-                </div>
               </div>
-
-            </div>
-          </div>
-
+            )
+          })}
         </div>
 
       </div>

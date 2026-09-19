@@ -3,6 +3,7 @@
 @theme {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
+  --font-chalk: 'Kalam', 'Patrick Hand', cursive;
   --color-brand-canvas: #F8FAFC;
   --color-brand-white: #FFFFFF;
   --color-brand-navy: #0A1E5C;
@@ -49,4 +50,118 @@ html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* Blackboard Chalk Handwriting Utilities */
+.font-chalk {
+  font-family: 'Kalam', 'Patrick Hand', cursive;
+  letter-spacing: 0.02em;
+}
+
+/* Per-character chalk letter glow on hover */
+.chalk-letter {
+  display: inline-block;
+  transition: text-shadow 0.2s ease, color 0.2s ease;
+  will-change: text-shadow;
+}
+
+.chalk-letter:hover {
+  text-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 12px rgba(255,255,255,0.3);
+  color: #ffffff;
+}
+
+/* Chalk Fast Writing Appearance (When scrolled to) — GPU-composited */
+@keyframes chalkWritingSweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  40% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-chalk-write {
+  animation: chalkWritingSweep 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+/* Chalk Duster Rub-off Smear Effect (When scrolled past) — GPU-composited */
+.chalk-duster-erased {
+  opacity: 0.28 !important;
+  filter: blur(0.6px) brightness(0.75);
+  transition: opacity 0.5s ease, filter 0.5s ease;
+  will-change: opacity, filter;
+}
+
+/* Cinema Projector Ambient Light Leak */
+@keyframes cinemaFlicker {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.98;
+    transform: scale(1.015);
+  }
+}
+
+.cinema-light-leak {
+  position: relative;
+}
+
+.cinema-light-leak::before,
+.cinema-light-leak::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  width: 90px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(35px);
+  animation: cinemaFlicker 4s infinite ease-in-out;
+}
+
+/* Left side light leak */
+.cinema-light-leak::before {
+  left: -45px;
+  background: radial-gradient(ellipse at center, rgba(120, 180, 255, 0.45) 0%, rgba(16, 59, 155, 0.25) 50%, transparent 80%);
+}
+
+/* Right side light leak */
+.cinema-light-leak::after {
+  right: -45px;
+  background: radial-gradient(ellipse at center, rgba(140, 200, 255, 0.45) 0%, rgba(16, 59, 155, 0.25) 50%, transparent 80%);
+}
+
+/* Video skeleton shimmer loader */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.video-skeleton {
+  background: linear-gradient(90deg, #1e2a3a 25%, #2a3a50 50%, #1e2a3a 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 0.75rem;
+}
+
+/* GPU-composited era row — prevents reflow stutter */
+.era-row {
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+/* Blackboard panel transitions — contain repaints */
+.blackboard-panel {
+  will-change: opacity, filter;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
