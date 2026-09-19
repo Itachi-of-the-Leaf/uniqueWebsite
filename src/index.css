@@ -48,7 +48,7 @@ html.lenis body {
   overflow: hidden;
 }
 
-.lenis.lenis-smooth iframe {
+.lenis.lenis-scrolling iframe {
   pointer-events: none;
 }
 
@@ -62,60 +62,15 @@ html.lenis body {
   letter-spacing: 0.02em;
 }
 
-/* Per-character subtle glow on hover */
-.chalk-letter {
-  display: inline-block;
-  transition: text-shadow 0.2s ease, color 0.2s ease;
-}
-
-.chalk-letter:hover {
-  text-shadow: 0 0 6px rgba(255,255,255,0.7), 0 0 12px rgba(255,255,255,0.3);
-  color: #ffffff;
-}
-
-/* Chalk text ambient glow (applied to headings/body) */
-.chalk-text-glow {
-  text-shadow: 0 0 1px rgba(255,255,255,0.9), 0 0 6px rgba(254,240,138,0.3);
-}
-
-/* ── Chalk line: GSAP target for clipPath reveal ── */
-.chalk-line {
-  will-change: clip-path, opacity;
-  /* Initial hidden state — GSAP animates from here */
-  clip-path: inset(0 100% 0 0);
-  opacity: 0;
-}
-
-/* ── Chalk dust falling particles ── */
-.chalk-dust-particle {
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  will-change: transform, opacity;
-  z-index: 30;
-}
-
-/* ── Chalk smudge item: GPU transform with spring physics ── */
-.chalk-smudge-item {
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-}
-
-/* ── Bounded scrub-off container ── */
-.board-scrub-container {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
 /* ═══════════════════════════════════════
-   Blackboard Panel GPU Optimization
+   Blackboard Panel GPU Optimization (Static Realism)
    ═══════════════════════════════════════ */
 
 .blackboard-panel {
   will-change: opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
-  transition: opacity 0.4s ease, ring-color 0.4s ease, box-shadow 0.4s ease;
+  transition: opacity 0.3s ease-out;
 }
 
 /* ═══════════════════════════════════════

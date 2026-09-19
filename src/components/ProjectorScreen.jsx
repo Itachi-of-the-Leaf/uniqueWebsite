@@ -8,52 +8,67 @@ import {
   ExternalLink,
   ShieldCheck,
   Sparkles,
-  Loader2,
 } from 'lucide-react'
 import DecryptedText from './DecryptedText'
+import ProjectorVideoPlayer from './ProjectorVideoPlayer'
 
 export default function ProjectorScreen({ activeEraIndex, eraData }) {
   // All hooks must be called unconditionally (rules of hooks)
   const [tabs, setTabs] = useState(() => eraData.map((e) => e.visual.defaultTab))
-  const contentRef = useRef(null)
+  const [displayedEra, setDisplayedEra] = useState(activeEraIndex)
+  const slideRef = useRef(null)
   const containerRef = useRef(null)
   const shadowRef = useRef(null)
   const rafIdRef = useRef(null)
-  const prevEra = useRef(activeEraIndex)
+  const pendingEraRef = useRef(activeEraIndex)
 
   const setTab = useCallback(
     (tab) =>
       setTabs((prev) => {
         const next = [...prev]
-        next[activeEraIndex] = tab
+        next[displayedEra] = tab
         return next
       }),
-    [activeEraIndex]
+    [displayedEra]
   )
 
-  // Projector-beam flicker crossfade on era change
+  // ── Smooth, Seamless Projector Screen Transitions (Animated Crossfade) ──
   useEffect(() => {
-    if (prevEra.current === activeEraIndex) return
-    prevEra.current = activeEraIndex
+    pendingEraRef.current = activeEraIndex
+    if (activeEraIndex === displayedEra) return
 
-    const el = contentRef.current
-    if (!el) return
+    const el = slideRef.current
+    if (!el) {
+      setDisplayedEra(activeEraIndex)
+      return
+    }
 
-    const tl = gsap.timeline()
-    tl.to(el, {
-      opacity: 0.35,
-      filter: 'blur(3px) brightness(1.6)',
-      duration: 0.12,
+    gsap.killTweensOf(el)
+    gsap.to(el, {
+      opacity: 0,
+      y: -6,
+      duration: 0.18,
       ease: 'power2.in',
-    }).to(el, {
-      opacity: 1,
-      filter: 'blur(0px) brightness(1)',
-      duration: 0.4,
-      ease: 'power2.out',
+      onComplete: () => {
+        const targetEra = pendingEraRef.current
+        setDisplayedEra(targetEra)
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 6 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.22,
+            ease: 'power2.out',
+          }
+        )
+      },
     })
 
-    return () => tl.kill()
-  }, [activeEraIndex])
+    return () => {
+      gsap.killTweensOf(el)
+    }
+  }, [activeEraIndex, displayedEra])
 
   // Clean up any pending RAF on unmount
   useEffect(() => {
@@ -64,35 +79,49 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
     }
   }, [])
 
-  /* ── Optical Projector Beam Cursor Shadow (GPU hardware compositing) ── */
+  /* ── Combined 3D Perspective Micro-Tilt (±1.5deg) & Optical Shadow (RAF Throttled) ── */
   const handleMouseMove = (e) => {
-    // Check for fine pointer (desktop mouse)
-    if (!window.matchMedia('(pointer: fine)').matches) return
-    if (!containerRef.current || !shadowRef.current) return
+    if (typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) return
+    if (!containerRef.current) return
 
     const clientX = e.clientX
     const clientY = e.clientY
 
     if (!rafIdRef.current) {
       rafIdRef.current = requestAnimationFrame(() => {
-        if (!containerRef.current || !shadowRef.current) {
+        if (!containerRef.current) {
           rafIdRef.current = null
           return
         }
-        const rect = containerRef.current.getBoundingClientRect()
-        // Center the 220px shadow silhouette on the cursor
-        const x = clientX - rect.left - 110
-        const y = clientY - rect.top - 110
 
-        // Strictly GPU-accelerated translate3d + scale expansion for optical penumbra
-        shadowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.15)`
+        const rect = containerRef.current.getBoundingClientRect()
+
+        // 1. Subtle 3D perspective tilt (bounded strictly between -1.5deg and 1.5deg)
+        const centerX = rect.left + rect.width / 2
+        const centerY = rect.top + rect.height / 2
+        const offsetX = clientX - centerX
+        const offsetY = clientY - centerY
+
+        const rotY = Math.max(-1.5, Math.min(1.5, (offsetX / (rect.width / 2)) * 1.5))
+        const rotX = Math.max(-1.5, Math.min(1.5, (-offsetY / (rect.height / 2)) * 1.5))
+
+        containerRef.current.style.setProperty('--rotate-x', `${rotX.toFixed(2)}deg`)
+        containerRef.current.style.setProperty('--rotate-y', `${rotY.toFixed(2)}deg`)
+
+        // 2. Optical cursor shadow position
+        if (shadowRef.current) {
+          const x = clientX - rect.left - 110
+          const y = clientY - rect.top - 110
+          shadowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.15)`
+        }
+
         rafIdRef.current = null
       })
     }
   }
 
   const handleMouseEnter = () => {
-    if (!window.matchMedia('(pointer: fine)').matches) return
+    if (typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) return
     if (shadowRef.current) {
       shadowRef.current.style.opacity = '1'
       shadowRef.current.style.willChange = 'transform'
@@ -100,18 +129,26 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
   }
 
   const handleMouseLeave = () => {
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current)
+      rafIdRef.current = null
+    }
+    if (containerRef.current) {
+      containerRef.current.style.setProperty('--rotate-x', '0deg')
+      containerRef.current.style.setProperty('--rotate-y', '0deg')
+    }
     if (shadowRef.current) {
       shadowRef.current.style.opacity = '0'
       shadowRef.current.style.willChange = 'auto'
     }
   }
 
-  const era = eraData[activeEraIndex]
+  const era = eraData[displayedEra] || eraData[activeEraIndex]
   if (!era) return null
 
   const { timeline: td, visual } = era
   const ActiveIcon = visual.icon
-  const currentTab = tabs[activeEraIndex] || visual.defaultTab
+  const currentTab = tabs[displayedEra] || visual.defaultTab
 
   return (
     <div
@@ -120,9 +157,16 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       data-projector-screen="true"
-      className="cinema-light-leak rounded-2xl sm:rounded-3xl bg-white text-[#081438] p-5 sm:p-7 shadow-2xl border-4 sm:border-6 border-slate-800 ring-1 ring-slate-700/60 flex flex-col relative overflow-hidden h-full will-change-transform"
+      className="cinema-light-leak rounded-2xl sm:rounded-3xl bg-white text-[#081438] p-5 sm:p-7 border-4 sm:border-6 border-slate-800 ring-1 ring-slate-700/60 flex flex-col relative overflow-hidden h-full will-change-transform"
+      style={{
+        transform:
+          'perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg))',
+        transition: 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        boxShadow:
+          '0 0 50px rgba(16, 59, 155, 0.25), 0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      }}
     >
-      {/* Cinema Overhead Projector Light Beam */}
+      {/* Cinema Overhead Projector Light Beam (Strictly pointer-events: none) */}
       <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#80B0FF]/15 via-transparent to-transparent pointer-events-none" />
       <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
       <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
@@ -145,7 +189,6 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             transform: 'translate3d(-500px, -500px, 0) scale(1.15)',
           }}
         >
-          {/* Pre-rendered SVG Silhouette with multi-stop radial diffusion penumbra — No runtime CSS blur filters */}
           <svg
             viewBox="0 0 220 220"
             className="w-full h-full"
@@ -176,9 +219,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                 <stop offset="100%" stopColor="rgba(8, 12, 24, 0)" />
               </radialGradient>
             </defs>
-            {/* Outer diffused penumbra ellipse */}
             <ellipse cx="110" cy="110" rx="105" ry="90" fill="url(#opticalPenumbra)" />
-            {/* Inner obstruction core (pointing silhouette shape) */}
             <path
               d="M110 50 C125 50 145 75 140 105 C136 130 155 145 160 165 C165 185 140 195 110 195 C80 195 55 185 60 165 C65 145 84 130 80 105 C75 75 95 50 110 50 Z"
               fill="url(#handSilhouetteCore)"
@@ -187,7 +228,8 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
         </div>
       </div>
 
-      <div ref={contentRef} className="relative z-10 flex flex-col flex-1">
+      {/* ── Slide Crossfade Container: Smoothly animates out & in without tears ── */}
+      <div ref={slideRef} className="relative z-10 flex flex-col flex-1 pointer-events-auto">
         {/* Screen Header & Era Badge */}
         <div className="space-y-3 border-b border-slate-100 pb-4">
           <div className="flex items-center justify-between">
@@ -223,7 +265,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             <button
               type="button"
               onClick={() => setTab('donor')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 currentTab === 'donor'
                   ? 'bg-[#103B9B] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -235,7 +277,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             <button
               type="button"
               onClick={() => setTab('salvi')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer ${
                 currentTab === 'salvi'
                   ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -248,7 +290,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             <button
               type="button"
               onClick={() => setTab('impact')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer ${
                 currentTab === 'impact'
                   ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -261,7 +303,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             <button
               type="button"
               onClick={() => setTab('specs')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
                 currentTab === 'specs'
                   ? 'bg-[#081438] text-white shadow-sm'
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
@@ -311,7 +353,7 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
             </div>
           )}
 
-          {/* 2. HEADMASTER SALVI VIDEO */}
+          {/* 2. HEADMASTER SALVI VIDEO (Click-to-Play Facade) */}
           {currentTab === 'salvi' && (
             <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full min-h-[280px]">
               <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
@@ -330,27 +372,16 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                 </a>
               </div>
               <div className="relative flex-1 w-full min-h-[240px]">
-                <div className="video-skeleton absolute inset-0 flex flex-col items-center justify-center gap-3">
-                  <Loader2 className="w-8 h-8 text-slate-500 animate-spin" />
-                  <span className="text-xs text-slate-500 font-mono">Loading video…</span>
-                </div>
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/J3EQ6acI7oU"
+                <ProjectorVideoPlayer
+                  videoId="J3EQ6acI7oU"
                   title="Headmaster Salvi Interview - Walan English School"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full z-10"
-                  onLoad={(e) =>
-                    e.target.previousElementSibling &&
-                    (e.target.previousElementSibling.style.display = 'none')
-                  }
+                  activeEraIndex={displayedEra}
                 />
               </div>
             </div>
           )}
 
-          {/* 3. CLASSROOM IMPACT VIDEO */}
+          {/* 3. CLASSROOM IMPACT VIDEO (Click-to-Play Facade) */}
           {currentTab === 'impact' && (
             <div className="rounded-2xl overflow-hidden border-2 border-[#103B9B] shadow-xl bg-slate-950 flex flex-col h-full min-h-[280px]">
               <div className="bg-[#103B9B] px-4 py-2 flex items-center justify-between text-xs text-white font-bold shrink-0">
@@ -369,21 +400,10 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                 </a>
               </div>
               <div className="relative flex-1 w-full min-h-[240px]">
-                <div className="video-skeleton absolute inset-0 flex flex-col items-center justify-center gap-3">
-                  <Loader2 className="w-8 h-8 text-slate-500 animate-spin" />
-                  <span className="text-xs text-slate-500 font-mono">Loading video…</span>
-                </div>
-                <iframe
-                  src="https://www.youtube-nocookie.com/embed/3xy5Ti_cFRU"
+                <ProjectorVideoPlayer
+                  videoId="3xy5Ti_cFRU"
                   title="Classroom Tech in Action - Rural Konkan"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full z-10"
-                  onLoad={(e) =>
-                    e.target.previousElementSibling &&
-                    (e.target.previousElementSibling.style.display = 'none')
-                  }
+                  activeEraIndex={displayedEra}
                 />
               </div>
             </div>

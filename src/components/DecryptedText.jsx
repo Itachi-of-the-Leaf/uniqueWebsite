@@ -4,8 +4,8 @@ const DEFAULT_GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789₹#$*+&%@!'.split('')
 
 export default function DecryptedText({
   text = '',
-  speed = 65, // 65ms per character tick
-  duration = 600, // 600ms total resolution duration
+  speed = 30, // 30ms per character tick
+  duration = 300, // 300ms total resolution duration
   useOriginalCharsOnly = false,
   className = '',
   parentClassName = '',
@@ -49,14 +49,14 @@ export default function DecryptedText({
 
     const targetStr = textRef.current
     const originalText = targetStr.split('')
-    // Strict hard cap of 8-10 tick cycles
-    const totalTicks = Math.min(Math.max(Math.round(duration / speed), 6), 9)
+    // Fast 8-10 tick cycles settling around ~300ms
+    const totalTicks = Math.min(Math.max(Math.round(duration / speed), 6), 10)
     let currentTick = 0
 
-    // Safety watchdog timer: guarantees text unlocks to exact original string at 600ms
+    // Safety watchdog timer: guarantees text unlocks to exact original string at 300ms
     timeoutRef.current = setTimeout(() => {
       stopScramble(targetStr)
-    }, Math.max(duration, 600))
+    }, Math.max(duration, 300))
 
     intervalRef.current = setInterval(() => {
       currentTick++
