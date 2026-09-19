@@ -157,7 +157,6 @@ export default function HeroSection() {
                         <DecryptedText
                           text={stat.value}
                           animateOn="hover"
-                          speed={25}
                           className="text-[#081438]"
                         />
                       </div>

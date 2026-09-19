@@ -1,77 +1,82 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 
 const glyphs = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789₹#$*+&%@!'
 
 export default function DecryptedText({
   text = '',
-  speed = 35,
-  maxIterations = 10,
-  sequential = true,
-  revealDirection = 'start',
+  speed = 65, // 65ms per character tick for mechanical, deliberate, readable feel
+  duration = 700, // 700ms total resolution duration
   useOriginalCharsOnly = false,
   className = '',
   parentClassName = '',
-  animateOn = 'hover', // 'hover', 'view', 'mount'
+  animateOn = 'hover', // 'hover', 'mount'
   ...props
 }) {
   const [displayText, setDisplayText] = useState(text)
-  const [isHovering, setIsHovering] = useState(false)
-  const [hasAnimated, setHasAnimated] = useState(false)
   const containerRef = useRef(null)
+  const intervalRef = useRef(null)
 
   const availableChars = useOriginalCharsOnly
     ? Array.from(new Set(text.split(''))).filter((char) => char !== ' ')
     : glyphs.split('')
 
-  const scramble = () => {
-    let iteration = 0
+  const scramble = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+    }
+
     const originalText = text.split('')
-    const interval = setInterval(() => {
-      setDisplayText((prev) =>
+    const totalTicks = Math.max(Math.round(duration / speed), 8) // ~10-11 deliberate ticks
+    let currentTick = 0
+
+    intervalRef.current = setInterval(() => {
+      currentTick++
+      const progress = currentTick / totalTicks
+      const resolvedCharsCount = Math.floor(progress * originalText.length)
+
+      setDisplayText(
         originalText
           .map((char, index) => {
             if (char === ' ') return ' '
-            if (index < iteration) {
+            if (index < resolvedCharsCount) {
               return originalText[index]
             }
-            return availableChars[Math.floor(Math.random() * availableChars.length)]
+            return availableChars[
+              Math.floor(Math.random() * availableChars.length)
+            ]
           })
           .join('')
       )
 
-      if (iteration >= originalText.length) {
-        clearInterval(interval)
+      if (currentTick >= totalTicks) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
         setDisplayText(text)
       }
-
-      iteration += 1 / (maxIterations / originalText.length || 1)
     }, speed)
-
-    return () => clearInterval(interval)
-  }
+  }, [text, duration, speed, availableChars])
 
   useEffect(() => {
     if (animateOn === 'mount') {
       scramble()
     }
-  }, [text])
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    }
+  }, [animateOn, scramble])
 
   const handleMouseEnter = () => {
-    setIsHovering(true)
     if (animateOn === 'hover') {
       scramble()
     }
-  }
-
-  const handleMouseLeave = () => {
-    setIsHovering(false)
   }
 
   return (
     <span
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className={`inline-block cursor-default font-mono ${parentClassName}`}
       {...props}
     >

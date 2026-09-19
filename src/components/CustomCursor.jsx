@@ -1,20 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
 
+/**
+ * Context-Aware Custom Cursor:
+ * - Default / Neutral Areas: Sleek 5px brand Navy/Gold dot with subtle trailing lag.
+ * - Blackboard (Left Column): Soft chalk-tip dot (#FFFFFF with powdery yellow halo).
+ * - Projector Screen (Right Column): Sharp classroom Red Laser Pointer dot (#EF4444 with optical bloom).
+ * - Disables cleanly on touch devices (pointer: coarse).
+ */
 export default function CustomCursor() {
   const cursorDotRef = useRef(null)
   const cursorRingRef = useRef(null)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isClicked, setIsClicked] = useState(false)
+  const [cursorMode, setCursorMode] = useState('default') // 'default' | 'chalk' | 'laser'
+  const [isInteractive, setIsInteractive] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
-  // Store coordinates in refs for 60fps RAF loop without re-renders
+  // 60fps GPU RAF coordinates
   const mousePos = useRef({ x: -100, y: -100 })
   const ringPos = useRef({ x: -100, y: -100 })
   const rafId = useRef(null)
 
   useEffect(() => {
-    // Only enable on fine pointer devices (mouse/trackpad), disable on touchscreens
-    if (typeof window === 'undefined' || !window.matchMedia('(pointer: fine)').matches) {
+    // Only enable on fine pointer devices (desktop mouse/trackpad), disable on touch/coarse devices
+    if (
+      typeof window === 'undefined' ||
+      !window.matchMedia('(pointer: fine)').matches
+    ) {
       return
     }
 
@@ -24,40 +34,47 @@ export default function CustomCursor() {
 
       if (!isVisible) setIsVisible(true)
 
-      // Direct placement for inner dot for immediate responsiveness
+      // Immediate 1:1 hardware placement for leading core dot
       if (cursorDotRef.current) {
         cursorDotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`
       }
 
-      // Check if hovering over an interactive element
+      // Context detection via DOM hierarchy
       const target = e.target
-      const interactive = target && (
-        target.closest('a') ||
-        target.closest('button') ||
-        target.closest('[role="button"]') ||
-        target.closest('input') ||
-        target.closest('textarea') ||
-        target.closest('select') ||
-        target.closest('.group')
-      )
-      setIsHovered(Boolean(interactive))
+      if (target) {
+        if (target.closest('.blackboard-panel')) {
+          setCursorMode('chalk')
+        } else if (
+          target.closest('.cinema-light-leak') ||
+          target.closest('[data-projector-screen]')
+        ) {
+          setCursorMode('laser')
+        } else {
+          setCursorMode('default')
+        }
+
+        const interactive = Boolean(
+          target.closest('a') ||
+            target.closest('button') ||
+            target.closest('[role="button"]') ||
+            target.closest('input') ||
+            target.closest('textarea') ||
+            target.closest('select')
+        )
+        setIsInteractive(interactive)
+      }
     }
 
-    const onMouseDown = () => setIsClicked(true)
-    const onMouseUp = () => setIsClicked(false)
     const onMouseLeave = () => setIsVisible(false)
     const onMouseEnter = () => setIsVisible(true)
 
     window.addEventListener('mousemove', onMouseMove, { passive: true })
-    window.addEventListener('mousedown', onMouseDown)
-    window.addEventListener('mouseup', onMouseUp)
     document.addEventListener('mouseleave', onMouseLeave)
     document.addEventListener('mouseenter', onMouseEnter)
 
-    // Butter-smooth trailing interpolation loop (Lerp)
+    // Butter-smooth Lerp trailing loop
     const render = () => {
-      // Lerp factor ~0.18 gives a responsive yet smooth trailing feel
-      const ease = 0.18
+      const ease = 0.2
       ringPos.current.x += (mousePos.current.x - ringPos.current.x) * ease
       ringPos.current.y += (mousePos.current.y - ringPos.current.y) * ease
 
@@ -72,64 +89,100 @@ export default function CustomCursor() {
 
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mouseup', onMouseUp)
       document.removeEventListener('mouseleave', onMouseLeave)
       document.removeEventListener('mouseenter', onMouseEnter)
       if (rafId.current) cancelAnimationFrame(rafId.current)
     }
   }, [isVisible])
 
+  // Dynamic styling configurations per context mode
+  let dotStyles = {}
+  let ringStyles = {}
+
+  if (cursorMode === 'chalk') {
+    // Soft Chalk-Tip Dot (Blackboard Mode)
+    dotStyles = {
+      width: '7px',
+      height: '7px',
+      marginLeft: '-3.5px',
+      marginTop: '-3.5px',
+      backgroundColor: '#FFFFFF',
+      boxShadow:
+        '0 0 6px 1px rgba(255, 255, 255, 0.9), 0 0 14px 4px rgba(254, 240, 138, 0.35)',
+    }
+    ringStyles = {
+      width: '18px',
+      height: '18px',
+      marginLeft: '-9px',
+      marginTop: '-9px',
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      border: '1px solid rgba(254, 240, 138, 0.3)',
+      boxShadow: '0 0 8px rgba(254, 240, 138, 0.2)',
+    }
+  } else if (cursorMode === 'laser') {
+    // Sharp Classroom Red Laser Pointer (Projector Mode)
+    dotStyles = {
+      width: '5px',
+      height: '5px',
+      marginLeft: '-2.5px',
+      marginTop: '-2.5px',
+      background: 'radial-gradient(circle, #FFFFFF 20%, #EF4444 80%)',
+      boxShadow:
+        '0 0 4px #EF4444, 0 0 8px #DC2626, 0 0 16px rgba(239, 68, 68, 0.65)',
+    }
+    ringStyles = {
+      width: '14px',
+      height: '14px',
+      marginLeft: '-7px',
+      marginTop: '-7px',
+      backgroundColor: 'rgba(239, 68, 68, 0.12)',
+      border: '1px solid rgba(239, 68, 68, 0.35)',
+      boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)',
+    }
+  } else {
+    // Default / Neutral Areas: Sleek 5px Brand Navy/Gold Dot
+    dotStyles = {
+      width: isInteractive ? '7px' : '5px',
+      height: isInteractive ? '7px' : '5px',
+      marginLeft: isInteractive ? '-3.5px' : '-2.5px',
+      marginTop: isInteractive ? '-3.5px' : '-2.5px',
+      backgroundColor: isInteractive ? '#FFD200' : '#103B9B',
+      boxShadow: isInteractive
+        ? '0 0 8px #FFD200'
+        : '0 0 5px rgba(16, 59, 155, 0.5)',
+    }
+    ringStyles = {
+      width: isInteractive ? '28px' : '16px',
+      height: isInteractive ? '28px' : '16px',
+      marginLeft: isInteractive ? '-14px' : '-8px',
+      marginTop: isInteractive ? '-14px' : '-8px',
+      backgroundColor: isInteractive
+        ? 'rgba(255, 210, 0, 0.12)'
+        : 'rgba(16, 59, 155, 0.08)',
+      border: isInteractive
+        ? '1.5px solid rgba(255, 210, 0, 0.6)'
+        : '1px solid rgba(16, 59, 155, 0.25)',
+    }
+  }
+
   return (
     <div
-      className={`pointer-events-none fixed inset-0 z-50 transition-opacity duration-300 ${
+      className={`pointer-events-none fixed inset-0 z-50 transition-opacity duration-200 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       } hidden md:block`}
     >
-      {/* Trailing Outer Circle */}
+      {/* Trailing Optical Aura / Ring */}
       <div
         ref={cursorRingRef}
-        className="fixed top-0 left-0 -ml-4 -mt-4 rounded-full pointer-events-none will-change-transform"
-        style={{
-          width: '32px',
-          height: '32px',
-          transition: 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), margin 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease',
-          ...(isHovered
-            ? {
-                width: '52px',
-                height: '52px',
-                marginLeft: '-26px',
-                marginTop: '-26px',
-                border: '1.5px solid #FFD200',
-                backgroundColor: 'rgba(196, 18, 48, 0.14)',
-                boxShadow: '0 0 16px rgba(255, 210, 0, 0.3)',
-              }
-            : isClicked
-            ? {
-                width: '26px',
-                height: '26px',
-                marginLeft: '-13px',
-                marginTop: '-13px',
-                border: '2px solid #C41230',
-                backgroundColor: 'rgba(196, 18, 48, 0.25)',
-              }
-            : {
-                border: '1.5px solid #C41230',
-                backgroundColor: 'transparent',
-                boxShadow: '0 0 8px rgba(196, 18, 48, 0.25)',
-              }),
-        }}
+        className="fixed top-0 left-0 rounded-full pointer-events-none will-change-transform transition-[width,height,margin,border-color,background-color,box-shadow] duration-200 ease-out"
+        style={ringStyles}
       />
 
-      {/* Immediate Center Dot */}
+      {/* Immediate Sharp Leading Dot */}
       <div
         ref={cursorDotRef}
-        className="fixed top-0 left-0 -ml-1 -mt-1 w-2 h-2 rounded-full pointer-events-none will-change-transform"
-        style={{
-          backgroundColor: isHovered ? '#FFD200' : '#C41230',
-          boxShadow: isHovered ? '0 0 6px #FFD200' : '0 0 4px #C41230',
-          transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
-        }}
+        className="fixed top-0 left-0 rounded-full pointer-events-none will-change-transform transition-[width,height,margin,background-color,box-shadow] duration-150 ease-out"
+        style={dotStyles}
       />
     </div>
   )

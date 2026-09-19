@@ -16,6 +16,9 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
   // All hooks must be called unconditionally (rules of hooks)
   const [tabs, setTabs] = useState(() => eraData.map((e) => e.visual.defaultTab))
   const contentRef = useRef(null)
+  const containerRef = useRef(null)
+  const shadowRef = useRef(null)
+  const rafIdRef = useRef(null)
   const prevEra = useRef(activeEraIndex)
 
   const setTab = useCallback(
@@ -52,6 +55,57 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
     return () => tl.kill()
   }, [activeEraIndex])
 
+  // Clean up any pending RAF on unmount
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current)
+      }
+    }
+  }, [])
+
+  /* ── Optical Projector Beam Cursor Shadow (GPU hardware compositing) ── */
+  const handleMouseMove = (e) => {
+    // Check for fine pointer (desktop mouse)
+    if (!window.matchMedia('(pointer: fine)').matches) return
+    if (!containerRef.current || !shadowRef.current) return
+
+    const clientX = e.clientX
+    const clientY = e.clientY
+
+    if (!rafIdRef.current) {
+      rafIdRef.current = requestAnimationFrame(() => {
+        if (!containerRef.current || !shadowRef.current) {
+          rafIdRef.current = null
+          return
+        }
+        const rect = containerRef.current.getBoundingClientRect()
+        // Center the 220px shadow silhouette on the cursor
+        const x = clientX - rect.left - 110
+        const y = clientY - rect.top - 110
+
+        // Strictly GPU-accelerated translate3d + scale expansion for optical penumbra
+        shadowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.15)`
+        rafIdRef.current = null
+      })
+    }
+  }
+
+  const handleMouseEnter = () => {
+    if (!window.matchMedia('(pointer: fine)').matches) return
+    if (shadowRef.current) {
+      shadowRef.current.style.opacity = '1'
+      shadowRef.current.style.willChange = 'transform'
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (shadowRef.current) {
+      shadowRef.current.style.opacity = '0'
+      shadowRef.current.style.willChange = 'auto'
+    }
+  }
+
   const era = eraData[activeEraIndex]
   if (!era) return null
 
@@ -60,11 +114,78 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
   const currentTab = tabs[activeEraIndex] || visual.defaultTab
 
   return (
-    <div className="cinema-light-leak rounded-2xl sm:rounded-3xl bg-white text-[#081438] p-5 sm:p-7 shadow-2xl border-4 sm:border-6 border-slate-800 ring-1 ring-slate-700/60 flex flex-col relative overflow-hidden h-full">
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      data-projector-screen="true"
+      className="cinema-light-leak rounded-2xl sm:rounded-3xl bg-white text-[#081438] p-5 sm:p-7 shadow-2xl border-4 sm:border-6 border-slate-800 ring-1 ring-slate-700/60 flex flex-col relative overflow-hidden h-full will-change-transform"
+    >
       {/* Cinema Overhead Projector Light Beam */}
       <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-[#80B0FF]/15 via-transparent to-transparent pointer-events-none" />
       <div className="absolute -right-20 -top-20 w-72 h-72 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
       <div className="absolute -left-20 -bottom-20 w-64 h-64 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
+
+      {/* Optical Projector Light Cone & Beam Dust pseudo-overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none z-25 bg-gradient-to-bl from-white/10 via-transparent to-black/5"
+        style={{
+          background:
+            'radial-gradient(circle at 90% 10%, rgba(140, 190, 255, 0.14) 0%, rgba(16, 59, 155, 0.04) 50%, transparent 80%)',
+        }}
+      />
+
+      {/* ── Optical Beam Cursor Shadow Layer (Pre-blurred GPU silhouette with optical penumbra) ── */}
+      <div className="absolute inset-0 pointer-events-none z-30 overflow-hidden mix-blend-multiply">
+        <div
+          ref={shadowRef}
+          className="absolute top-0 left-0 w-[220px] h-[220px] pointer-events-none opacity-0 transition-opacity duration-150 ease-out"
+          style={{
+            transform: 'translate3d(-500px, -500px, 0) scale(1.15)',
+          }}
+        >
+          {/* Pre-rendered SVG Silhouette with multi-stop radial diffusion penumbra — No runtime CSS blur filters */}
+          <svg
+            viewBox="0 0 220 220"
+            className="w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <radialGradient
+                id="opticalPenumbra"
+                cx="50%"
+                cy="50%"
+                r="50%"
+                fx="50%"
+                fy="50%"
+              >
+                <stop offset="0%" stopColor="rgba(10, 15, 30, 0.65)" />
+                <stop offset="40%" stopColor="rgba(10, 15, 30, 0.52)" />
+                <stop offset="70%" stopColor="rgba(10, 15, 30, 0.22)" />
+                <stop offset="100%" stopColor="rgba(10, 15, 30, 0)" />
+              </radialGradient>
+              <radialGradient
+                id="handSilhouetteCore"
+                cx="42%"
+                cy="42%"
+                r="45%"
+              >
+                <stop offset="0%" stopColor="rgba(8, 12, 24, 0.70)" />
+                <stop offset="60%" stopColor="rgba(8, 12, 24, 0.40)" />
+                <stop offset="100%" stopColor="rgba(8, 12, 24, 0)" />
+              </radialGradient>
+            </defs>
+            {/* Outer diffused penumbra ellipse */}
+            <ellipse cx="110" cy="110" rx="105" ry="90" fill="url(#opticalPenumbra)" />
+            {/* Inner obstruction core (pointing silhouette shape) */}
+            <path
+              d="M110 50 C125 50 145 75 140 105 C136 130 155 145 160 165 C165 185 140 195 110 195 C80 195 55 185 60 165 C65 145 84 130 80 105 C75 75 95 50 110 50 Z"
+              fill="url(#handSilhouetteCore)"
+            />
+          </svg>
+        </div>
+      </div>
 
       <div ref={contentRef} className="relative z-10 flex flex-col flex-1">
         {/* Screen Header & Era Badge */}
@@ -79,7 +200,6 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
                 <DecryptedText
                   text={td.year}
                   animateOn="mount"
-                  speed={20}
                   className="text-[#103B9B] font-mono font-bold"
                 />
               </div>

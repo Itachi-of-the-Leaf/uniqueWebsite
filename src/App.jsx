@@ -75,7 +75,7 @@ export default function App() {
                     ₹25K Offline LED Rig
                   </h3>
                   <div className="mt-2 text-3xl font-black text-[#C41230] font-mono">
-                    <DecryptedText text="₹25,000" animateOn="hover" speed={20} />
+                    <DecryptedText text="₹25,000" animateOn="hover" />
                     <span className="text-sm font-semibold text-slate-500 font-sans"> / classroom</span>
                   </div>
                   <p className="mt-4 text-sm text-slate-700 leading-relaxed">
@@ -119,7 +119,7 @@ export default function App() {
                     Google EDLA 4K Panel
                   </h3>
                   <div className="mt-2 text-3xl font-black text-[#FFD200] font-mono">
-                    <DecryptedText text="Turnkey AI" animateOn="mount" speed={25} />
+                    <DecryptedText text="Turnkey AI" animateOn="mount" />
                     <span className="text-sm font-semibold text-slate-300 font-sans"> / lifetime license</span>
                   </div>
                   <p className="mt-4 text-sm text-slate-200 leading-relaxed">

@@ -139,7 +139,6 @@ export default function MLADonorShowcase() {
                     <DecryptedText
                       text={`DONOR-ID #${selectedDonorType.toUpperCase()}-2026-KONKAN`}
                       animateOn="hover"
-                      speed={25}
                       className="text-[#C41230]"
                     />
                   </div>
@@ -208,7 +207,6 @@ export default function MLADonorShowcase() {
                     <DecryptedText
                       text={current.firmwareLogo}
                       animateOn="mount"
-                      speed={20}
                       className="tracking-widest font-mono"
                     />
                   </div>
