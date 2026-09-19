@@ -1,21 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Baloo 2', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --color-warli-paper: #F8F4EB;
-  --color-warli-geru: #5C2418;
-  --color-warli-geru-light: #7C2D12;
-  --color-warli-card: #FFFDF9;
-  --color-warli-border: #E8DFD1;
-  --color-warli-charcoal: #2B1810;
-  --color-warli-rice: #FAF9F6;
-  --color-warli-amber: #D97706;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
+  --color-brand-canvas: #F8FAFC;
+  --color-brand-white: #FFFFFF;
+  --color-brand-navy: #0A1E5C;
+  --color-brand-navy-dark: #07194A;
+  --color-brand-midnight: #081438;
+  --color-brand-cobalt: #103B9B;
+  --color-brand-cobalt-light: #1E4FB8;
+  --color-brand-crimson: #C41230;
+  --color-brand-crimson-hover: #A00E26;
+  --color-brand-gold: #FFD200;
+  --color-brand-gold-hover: #E6BD00;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Baloo 2', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #F8F4EB;
-  color: #2B1810;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F8FAFC;
+  color: #081438;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
 }
 
 html.lenis,

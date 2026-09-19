@@ -3,8 +3,8 @@ import { useRef, useState } from 'react'
 export default function SpotlightCard({
   children,
   className = '',
-  spotlightColor = 'rgba(217, 119, 6, 0.18)',
-  borderColor = 'rgba(217, 119, 6, 0.45)',
+  spotlightColor = 'rgba(255, 210, 0, 0.15)',
+  borderColor = 'rgba(16, 59, 155, 0.4)',
   ...props
 }) {
   const divRef = useRef(null)
@@ -47,7 +47,7 @@ export default function SpotlightCard({
       onBlur={handleBlur}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative rounded-3xl border border-[#E8DFD1] bg-[#FFFDF9] overflow-hidden transition-all duration-300 ${className}`}
+      className={`relative rounded-3xl border border-slate-200 bg-white overflow-hidden transition-all duration-300 ${className}`}
       {...props}
     >
       {/* Dynamic Cursor Spotlight Layer */}
