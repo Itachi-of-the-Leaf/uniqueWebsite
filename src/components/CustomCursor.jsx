@@ -95,74 +95,30 @@ export default function CustomCursor() {
     }
   }, [isVisible])
 
-  // Dynamic styling configurations per context mode
-  let dotStyles = {}
-  let ringStyles = {}
+  // Dynamic styling configurations per context mode (compositor-safe, no width/height/margin transitions)
+  let dotBg = '#103B9B'
+  let dotBoxShadow = '0 0 5px rgba(16, 59, 155, 0.5)'
+  let ringBg = 'rgba(16, 59, 155, 0.08)'
+  let ringBorder = '1px solid rgba(16, 59, 155, 0.25)'
+  let ringBoxShadow = 'none'
 
   if (cursorMode === 'chalk') {
-    // Soft Chalk-Tip Dot (Blackboard Mode)
-    dotStyles = {
-      width: '7px',
-      height: '7px',
-      marginLeft: '-3.5px',
-      marginTop: '-3.5px',
-      backgroundColor: '#FFFFFF',
-      boxShadow:
-        '0 0 6px 1px rgba(255, 255, 255, 0.9), 0 0 14px 4px rgba(254, 240, 138, 0.35)',
-    }
-    ringStyles = {
-      width: '18px',
-      height: '18px',
-      marginLeft: '-9px',
-      marginTop: '-9px',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      border: '1px solid rgba(254, 240, 138, 0.3)',
-      boxShadow: '0 0 8px rgba(254, 240, 138, 0.2)',
-    }
+    dotBg = '#FFFFFF'
+    dotBoxShadow = '0 0 6px 1px rgba(255, 255, 255, 0.9), 0 0 12px 3px rgba(254, 240, 138, 0.35)'
+    ringBg = 'rgba(255, 255, 255, 0.1)'
+    ringBorder = '1px solid rgba(254, 240, 138, 0.4)'
+    ringBoxShadow = '0 0 8px rgba(254, 240, 138, 0.2)'
   } else if (cursorMode === 'laser') {
-    // Sharp Classroom Red Laser Pointer (Projector Mode)
-    dotStyles = {
-      width: '5px',
-      height: '5px',
-      marginLeft: '-2.5px',
-      marginTop: '-2.5px',
-      background: 'radial-gradient(circle, #FFFFFF 20%, #EF4444 80%)',
-      boxShadow:
-        '0 0 4px #EF4444, 0 0 8px #DC2626, 0 0 16px rgba(239, 68, 68, 0.65)',
-    }
-    ringStyles = {
-      width: '14px',
-      height: '14px',
-      marginLeft: '-7px',
-      marginTop: '-7px',
-      backgroundColor: 'rgba(239, 68, 68, 0.12)',
-      border: '1px solid rgba(239, 68, 68, 0.35)',
-      boxShadow: '0 0 10px rgba(239, 68, 68, 0.3)',
-    }
-  } else {
-    // Default / Neutral Areas: Sleek 5px Brand Navy/Gold Dot
-    dotStyles = {
-      width: isInteractive ? '7px' : '5px',
-      height: isInteractive ? '7px' : '5px',
-      marginLeft: isInteractive ? '-3.5px' : '-2.5px',
-      marginTop: isInteractive ? '-3.5px' : '-2.5px',
-      backgroundColor: isInteractive ? '#FFD200' : '#103B9B',
-      boxShadow: isInteractive
-        ? '0 0 8px #FFD200'
-        : '0 0 5px rgba(16, 59, 155, 0.5)',
-    }
-    ringStyles = {
-      width: isInteractive ? '28px' : '16px',
-      height: isInteractive ? '28px' : '16px',
-      marginLeft: isInteractive ? '-14px' : '-8px',
-      marginTop: isInteractive ? '-14px' : '-8px',
-      backgroundColor: isInteractive
-        ? 'rgba(255, 210, 0, 0.12)'
-        : 'rgba(16, 59, 155, 0.08)',
-      border: isInteractive
-        ? '1.5px solid rgba(255, 210, 0, 0.6)'
-        : '1px solid rgba(16, 59, 155, 0.25)',
-    }
+    dotBg = '#EF4444'
+    dotBoxShadow = '0 0 4px #EF4444, 0 0 8px #DC2626'
+    ringBg = 'rgba(239, 68, 68, 0.12)'
+    ringBorder = '1px solid rgba(239, 68, 68, 0.45)'
+    ringBoxShadow = '0 0 8px rgba(239, 68, 68, 0.3)'
+  } else if (isInteractive) {
+    dotBg = '#FFD200'
+    dotBoxShadow = '0 0 8px #FFD200'
+    ringBg = 'rgba(255, 210, 0, 0.12)'
+    ringBorder = '1.5px solid rgba(255, 210, 0, 0.6)'
   }
 
   return (
@@ -174,15 +130,26 @@ export default function CustomCursor() {
       {/* Trailing Optical Aura / Ring */}
       <div
         ref={cursorRingRef}
-        className="fixed top-0 left-0 rounded-full pointer-events-none will-change-transform transition-[width,height,margin,border-color,background-color,box-shadow] duration-200 ease-out"
-        style={ringStyles}
+        className="fixed top-0 left-0 w-6 h-6 -ml-3 -mt-3 rounded-full pointer-events-none will-change-transform transition-[background-color,border-color,box-shadow] duration-200 ease-out"
+        style={{
+          backgroundColor: ringBg,
+          border: ringBorder,
+          boxShadow: ringBoxShadow,
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+        }}
       />
 
       {/* Immediate Sharp Leading Dot */}
       <div
         ref={cursorDotRef}
-        className="fixed top-0 left-0 rounded-full pointer-events-none will-change-transform transition-[width,height,margin,background-color,box-shadow] duration-150 ease-out"
-        style={dotStyles}
+        className="fixed top-0 left-0 w-2 h-2 -ml-1 -mt-1 rounded-full pointer-events-none will-change-transform transition-[background-color,box-shadow] duration-150 ease-out"
+        style={{
+          backgroundColor: dotBg,
+          boxShadow: dotBoxShadow,
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+        }}
       />
     </div>
   )

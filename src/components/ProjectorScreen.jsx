@@ -47,27 +47,43 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
     gsap.to(el, {
       opacity: 0,
       y: -6,
-      duration: 0.18,
+      duration: 0.15,
       ease: 'power2.in',
+      overwrite: 'auto',
       onComplete: () => {
-        const targetEra = pendingEraRef.current
-        setDisplayedEra(targetEra)
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 6 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.22,
-            ease: 'power2.out',
-          }
-        )
+        setDisplayedEra(pendingEraRef.current)
       },
     })
+  }, [activeEraIndex])
 
-    return () => {
-      gsap.killTweensOf(el)
-    }
+  // When displayedEra updates, smoothly animate the new slide in
+  useEffect(() => {
+    const el = slideRef.current
+    if (!el) return
+
+    gsap.killTweensOf(el)
+    gsap.fromTo(
+      el,
+      { opacity: 0, y: 6 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.22,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      }
+    )
+  }, [displayedEra])
+
+  // Failsafe watchdog: guarantee slide content is never stuck invisible
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const el = slideRef.current
+      if (el && parseFloat(getComputedStyle(el).opacity) < 0.25) {
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.15, overwrite: 'auto' })
+      }
+    }, 350)
+    return () => clearTimeout(timer)
   }, [activeEraIndex, displayedEra])
 
   // Clean up any pending RAF on unmount
@@ -229,7 +245,11 @@ export default function ProjectorScreen({ activeEraIndex, eraData }) {
       </div>
 
       {/* ── Slide Crossfade Container: Smoothly animates out & in without tears ── */}
-      <div ref={slideRef} className="relative z-10 flex flex-col flex-1 pointer-events-auto">
+      <div
+        ref={slideRef}
+        style={{ opacity: 1, transform: 'translate3d(0, 0, 0)' }}
+        className="relative z-10 flex flex-col flex-1 pointer-events-auto"
+      >
         {/* Screen Header & Era Badge */}
         <div className="space-y-3 border-b border-slate-100 pb-4">
           <div className="flex items-center justify-between">

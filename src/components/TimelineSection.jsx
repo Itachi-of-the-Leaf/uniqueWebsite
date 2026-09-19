@@ -231,19 +231,23 @@ export default function TimelineSection() {
                     </div>
                   </div>
 
-                  {/* ── Blackboard Card (100% Static Realism: Matte Slate #0F172A with Chalk Rail) ── */}
+                  {/* ── Blackboard Card (Authentic Classroom Green Slate #121C17 with Wooden Frame) ── */}
                   <div
                     ref={(el) => (boardRefs.current[index] = el)}
-                    className={`blackboard-panel flex flex-col rounded-2xl sm:rounded-3xl border border-[#1E293B] bg-[#0F172A] shadow-xl relative overflow-hidden transition-opacity duration-300 ease-out select-text ${
+                    className={`blackboard-panel flex flex-col rounded-2xl sm:rounded-3xl border-[6px] sm:border-[8px] border-[#3E2314] ring-1 ring-[#5C3A21] bg-[#121C17] shadow-[inset_0_0_28px_rgba(0,0,0,0.85),0_18px_40px_rgba(0,0,0,0.6)] relative overflow-hidden transition-opacity duration-300 ease-out select-text ${
                       isActive
-                        ? 'opacity-100 ring-2 ring-[#FEF08A]/30'
+                        ? 'opacity-100 ring-2 ring-[#FEF08A]/40'
                         : 'opacity-30'
                     }`}
                   >
+                    {/* Faint slate chalk haze textures */}
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.05)_0%,transparent_65%)] pointer-events-none" />
+                    <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.015)_40%,transparent_60%)] pointer-events-none" />
+
                     {/* Content Container */}
-                    <div className="p-5 sm:p-7 flex-1 flex flex-col space-y-4">
+                    <div className="p-5 sm:p-7 flex-1 flex flex-col space-y-4 relative z-10">
                       {/* 1. Era pill bar & badge */}
-                      <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
+                      <div className="flex items-center justify-between border-b border-white/15 pb-3">
                         <div className="inline-flex items-center gap-2">
                           <Calendar className="w-4 h-4 text-[#FEF08A] shrink-0" />
                           <span className="font-chalk text-xl sm:text-2xl font-bold text-[#FEF08A] tracking-wider">
@@ -255,30 +259,30 @@ export default function TimelineSection() {
                         </span>
                       </div>
 
-                      {/* 2. Main title */}
-                      <h3 className="font-chalk text-2xl sm:text-3xl lg:text-4xl text-[#F8FAFC] font-bold tracking-wide leading-tight">
+                      {/* 2. Main title (Silverish / Grey chalk on green slate) */}
+                      <h3 className="font-chalk text-2xl sm:text-3xl lg:text-4xl text-[#CBD5E1] font-bold tracking-wide leading-tight">
                         {era.title}
                       </h3>
 
-                      {/* 3. Subtitle */}
+                      {/* 3. Subtitle (Warm chalk yellow) */}
                       <p className="font-chalk text-base sm:text-lg text-[#FEF08A]/90">
                         ~ {visual.tagline} ~
                       </p>
 
-                      {/* 4. Narrative description */}
-                      <p className="font-chalk text-base sm:text-lg text-[#F8FAFC] leading-relaxed">
+                      {/* 4. Narrative description (Silverish chalk text) */}
+                      <p className="font-chalk text-base sm:text-lg text-[#CBD5E1] leading-relaxed">
                         {era.description}
                       </p>
 
                       {/* 5. Directives checklist */}
-                      <div className="pt-3 border-t border-[#1E293B] space-y-2.5">
+                      <div className="pt-3 border-t border-white/15 space-y-2.5">
                         <div className="text-[11px] font-mono uppercase tracking-widest text-[#FEF08A] font-bold">
                           Classroom Directives:
                         </div>
                         {visual.deliverables.map((item, dIdx) => (
                           <div
                             key={dIdx}
-                            className="flex items-start gap-2.5 text-sm sm:text-base font-chalk text-[#F8FAFC]"
+                            className="flex items-start gap-2.5 text-sm sm:text-base font-chalk text-[#CBD5E1]"
                           >
                             <span className="text-[#FEF08A] font-bold text-lg shrink-0 leading-none select-none">
                               ✓
@@ -291,9 +295,13 @@ export default function TimelineSection() {
                       </div>
                     </div>
 
-                    {/* Faint Bottom Wooden / Slate Chalk Rail */}
-                    <div className="h-2.5 w-full bg-[#1E293B] border-t border-[#334155] shadow-inner flex items-center px-4 shrink-0">
-                      <div className="w-5 h-1 bg-[#F8FAFC]/80 rounded-xs shadow-xs" />
+                    {/* Authentic Wooden Bottom Chalk Rail / Trough */}
+                    <div className="h-3.5 w-full bg-[#2A180D] border-t-2 border-[#4A2C18] shadow-inner flex items-center justify-between px-4 shrink-0 z-10">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-1 bg-[#CBD5E1]/90 rounded-xs shadow-xs" />
+                        <div className="w-3 h-1 bg-[#FEF08A]/90 rounded-xs shadow-xs" />
+                      </div>
+                      <div className="w-8 h-1.5 bg-[#5C3A21] rounded-xs border border-[#3E2314]" />
                     </div>
                   </div>
 
@@ -309,8 +317,11 @@ export default function TimelineSection() {
             })}
           </div>
 
-          {/* ═══ RIGHT COLUMN: Single Pinned Projector Screen (lg+ only) ═══ */}
-          <div className="hidden lg:block lg:w-[55%] sticky top-24 self-start">
+          {/* ═══ RIGHT COLUMN: Single Pinned Projector Screen (lg+ only, GPU Isolated) ═══ */}
+          <div
+            className="hidden lg:block lg:w-[55%] sticky top-24 self-start will-change-transform"
+            style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
+          >
             <div className="h-[calc(100vh-8rem)]">
               <ProjectorScreen
                 activeEraIndex={activeEraIndex}
