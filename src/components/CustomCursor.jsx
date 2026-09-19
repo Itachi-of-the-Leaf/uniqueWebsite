@@ -101,7 +101,7 @@ export default function CustomCursor() {
                 marginLeft: '-26px',
                 marginTop: '-26px',
                 border: '1.5px solid #FFD200',
-                backgroundColor: 'rgba(230, 57, 86, 0.14)',
+                backgroundColor: 'rgba(196, 18, 48, 0.14)',
                 boxShadow: '0 0 16px rgba(255, 210, 0, 0.3)',
               }
             : isClicked
@@ -110,13 +110,13 @@ export default function CustomCursor() {
                 height: '26px',
                 marginLeft: '-13px',
                 marginTop: '-13px',
-                border: '2px solid #E63956',
-                backgroundColor: 'rgba(230, 57, 86, 0.25)',
+                border: '2px solid #C41230',
+                backgroundColor: 'rgba(196, 18, 48, 0.25)',
               }
             : {
-                border: '1.5px solid #E63956',
+                border: '1.5px solid #C41230',
                 backgroundColor: 'transparent',
-                boxShadow: '0 0 8px rgba(230, 57, 86, 0.25)',
+                boxShadow: '0 0 8px rgba(196, 18, 48, 0.25)',
               }),
         }}
       />
@@ -126,8 +126,8 @@ export default function CustomCursor() {
         ref={cursorDotRef}
         className="fixed top-0 left-0 -ml-1 -mt-1 w-2 h-2 rounded-full pointer-events-none will-change-transform"
         style={{
-          backgroundColor: isHovered ? '#FFD200' : '#E63956',
-          boxShadow: isHovered ? '0 0 6px #FFD200' : '0 0 4px #E63956',
+          backgroundColor: isHovered ? '#FFD200' : '#C41230',
+          boxShadow: isHovered ? '0 0 6px #FFD200' : '0 0 4px #C41230',
           transition: 'background-color 0.2s ease, box-shadow 0.2s ease',
         }}
       />

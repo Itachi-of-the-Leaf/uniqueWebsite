@@ -147,20 +147,24 @@ export default function TimelineSection() {
     <section
       id="journey"
       ref={containerRef}
-      className="relative bg-[#F8FAFC] py-20 lg:py-28 border-t border-slate-200"
+      className="relative py-20 lg:py-28 text-white overflow-hidden border-t border-slate-800"
+      style={{
+        background:
+          'radial-gradient(circle at 15% 25%, rgba(16, 59, 155, 0.20) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(16, 59, 155, 0.16) 0%, transparent 50%), #061033',
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="max-w-3xl mb-16 lg:mb-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#103B9B]/10 text-[#103B9B] text-xs font-black uppercase tracking-wider mb-3 border border-[#103B9B]/25">
-            <TrendingUp className="w-3.5 h-3.5 text-[#E63956]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFD200]/15 text-[#FFD200] text-xs font-black uppercase tracking-wider mb-3 border border-[#FFD200]/40 shadow-xs">
+            <TrendingUp className="w-3.5 h-3.5 text-[#FFD200]" />
             <span>Interactive Chronicle (1998 — Present)</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#081438] tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#FFFFFF] tracking-tight drop-shadow-sm">
             25 Years of Grassroots Innovation
           </h2>
-          <p className="mt-3 text-base sm:text-lg text-slate-700 font-normal leading-relaxed">
+          <p className="mt-3 text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
             Scroll through the five transformative eras that turned a local Khed computer shop into the most trusted rural educational hardware partner across Konkan.
           </p>
         </div>
@@ -168,11 +172,11 @@ export default function TimelineSection() {
         {/* Dual-Column Responsive Scrollytelling Container */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
-          {/* Left Column: Narrative Text Steps (~45% width -> 5 cols on lg) */}
+          {/* Left Column: The Slate Blackboard (~45% width -> 5 cols on lg) */}
           <div className="lg:col-span-5 relative pb-20">
             
-            {/* Vertical Cobalt Milestone Line */}
-            <div className="absolute left-6 top-8 bottom-16 w-0.5 bg-gradient-to-b from-[#103B9B] via-[#E63956] to-[#FFD200] pointer-events-none hidden sm:block opacity-60" />
+            {/* Vertical Canary Gold Milestone Progress Spine */}
+            <div className="absolute left-6 top-8 bottom-16 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden sm:block opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.4)]" />
 
             <div className="space-y-20 lg:space-y-28">
               {timelineData.map((era, index) => {
@@ -188,62 +192,65 @@ export default function TimelineSection() {
                     {/* Glowing Canary Node on Timeline Rail */}
                     <div className="hidden sm:flex absolute left-0 top-6 items-center justify-center w-12 h-12 -translate-x-1/2 z-10">
                       <div
-                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
                           isActive
-                            ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-lg shadow-[#FFD200]/50'
-                            : 'bg-slate-300 ring-2 ring-white scale-90'
+                            ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-[0_0_20px_#FFD200]'
+                            : 'bg-slate-700 ring-2 ring-slate-800 scale-90'
                         }`}
                       >
                         <div
-                          className={`w-2 h-2 rounded-full ${
-                            isActive ? 'bg-[#081438] animate-ping' : 'bg-slate-500'
+                          className={`w-2.5 h-2.5 rounded-full ${
+                            isActive ? 'bg-[#061033] animate-ping' : 'bg-slate-500'
                           }`}
                         />
                       </div>
                     </div>
 
-                    {/* Narrative Card */}
+                    {/* The Slate Blackboard Narrative Card */}
                     <div
-                      className={`transition-all duration-500 rounded-3xl p-6 sm:p-8 bg-white ${
+                      className={`transition-all duration-500 rounded-3xl p-6 sm:p-8 bg-[#0F172A] border border-[#1E293B] border-b-4 border-b-[#334155] shadow-2xl relative overflow-hidden ${
                         isActive
-                          ? 'opacity-100 shadow-2xl shadow-[#103B9B]/15 border-2 border-[#103B9B] scale-[1.02] ring-2 ring-[#FFD200]/40'
-                          : 'opacity-30 border border-slate-200 hover:opacity-75 scale-100'
+                          ? 'opacity-100 ring-2 ring-[#FFD200]/40 scale-[1.02]'
+                          : 'opacity-30 hover:opacity-75 scale-100'
                       }`}
                     >
+                      {/* Faint chalk dust ambient texture */}
+                      <div className="absolute inset-0 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:16px_16px] opacity-5 pointer-events-none" />
+
                       {/* Era Header & Year Badge */}
-                      <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="relative z-10 flex items-center justify-between gap-3 mb-4">
                         <span
                           className={`inline-flex items-center gap-1.5 text-xs sm:text-sm font-black px-3.5 py-1 rounded-full ${
                             isActive
-                              ? 'bg-[#103B9B] text-white shadow-sm'
-                              : 'bg-slate-100 text-slate-700'
+                              ? 'bg-[#103B9B] text-white shadow-sm border border-[#FFD200]/40'
+                              : 'bg-slate-800 text-slate-300'
                           }`}
                         >
                           <Calendar className="w-3.5 h-3.5 text-[#FFD200]" />
                           {era.year}
                         </span>
-                        <span className="text-xs font-black uppercase tracking-widest text-[#E63956]">
+                        <span className="text-xs font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-md border border-[#FEF08A]/70 text-[#FEF08A] bg-[#FEF08A]/10">
                           Era 0{era.id}
                         </span>
                       </div>
 
-                      {/* Title */}
-                      <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438] tracking-tight">
+                      {/* Title: Crisp Chalk White with diffuse glow */}
+                      <h3 className="relative z-10 text-2xl sm:text-3xl font-heading font-extrabold text-[#F8FAFC] tracking-tight drop-shadow-[0_0_8px_rgba(248,250,252,0.35)]">
                         {era.title}
                       </h3>
 
-                      {/* Narrative Body */}
-                      <p className="mt-4 text-slate-700 text-base leading-relaxed font-normal">
+                      {/* Narrative Body: Soft chalk silver */}
+                      <p className="relative z-10 mt-4 text-[#CBD5E1] text-base leading-relaxed font-normal">
                         {era.description}
                       </p>
 
-                      {/* Key Highlights Checklist */}
-                      <div className="mt-6 pt-5 border-t border-slate-100 space-y-3">
+                      {/* Key Highlights Checklist: Pale chalk dust yellow bullets */}
+                      <div className="relative z-10 mt-6 pt-5 border-t border-[#1E293B] space-y-3">
                         {visual.deliverables.map((item, dIdx) => (
-                          <div key={dIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-800">
+                          <div key={dIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#CBD5E1]">
                             <CheckCircle
                               className={`w-4 h-4 shrink-0 mt-0.5 ${
-                                isActive ? 'text-[#103B9B]' : 'text-slate-400'
+                                isActive ? 'text-[#FEF08A]' : 'text-slate-500'
                               }`}
                             />
                             <span className="font-medium leading-normal">{item}</span>
@@ -251,13 +258,16 @@ export default function TimelineSection() {
                         ))}
                       </div>
 
-                      {/* Active Indicator with Canary Gold badge */}
+                      {/* Chalk-rail Active Indicator */}
                       {isActive && (
-                        <div className="mt-6 inline-flex items-center gap-2 text-xs font-black text-[#081438] bg-[#FFD200] px-3.5 py-1.5 rounded-xl border border-[#FFD200] shadow-xs">
-                          <span className="w-2 h-2 rounded-full bg-[#E63956] animate-ping" />
+                        <div className="relative z-10 mt-6 inline-flex items-center gap-2 text-xs font-mono font-bold text-[#061033] bg-[#FEF08A] px-3.5 py-1.5 rounded-xl border border-[#FEF08A] shadow-xs">
+                          <span className="w-2 h-2 rounded-full bg-[#C41230] animate-ping" />
                           <span>Active Milestone in View</span>
                         </div>
                       )}
+
+                      {/* Bottom Chalk-rail Accent Line */}
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#CBD5E1]/30 to-transparent" />
                     </div>
                   </div>
                 )
@@ -265,15 +275,21 @@ export default function TimelineSection() {
             </div>
           </div>
 
-          {/* Right Column: Pinned High-Contrast White Plaque Container (~55% width -> 7 cols on lg) */}
+          {/* Right Column: The Luminous Projector Screen (~55% width -> 7 cols on lg) */}
           <div className="lg:col-span-7 sticky top-24 h-[calc(100vh-7rem)] min-h-[580px] max-h-[780px] flex flex-col justify-between">
-            <div className="h-full rounded-3xl bg-white text-[#081438] p-6 sm:p-8 lg:p-9 shadow-2xl border-2 border-[#103B9B] ring-4 ring-[#103B9B]/10 flex flex-col justify-between relative overflow-hidden">
-              
-              {/* Subtle Ambient Brand Glow */}
-              <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full blur-3xl opacity-10 bg-[#103B9B] pointer-events-none" />
+            {/* Luminous 16:9 Screen Bezel with Outer Ambient Light Cast */}
+            <div
+              className="h-full rounded-3xl bg-white text-[#081438] p-6 sm:p-8 lg:p-9 border-4 sm:border-8 border-slate-800 ring-1 ring-slate-700/60 flex flex-col justify-between relative overflow-hidden"
+              style={{
+                boxShadow: '0 0 50px rgba(16, 59, 155, 0.4), 0 20px 40px rgba(0, 0, 0, 0.6)',
+              }}
+            >
+              {/* Overhead Projector Light Beam Simulation */}
+              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#103B9B]/12 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full blur-3xl opacity-15 bg-[#103B9B] pointer-events-none" />
               <div className="absolute -left-20 -bottom-20 w-72 h-72 rounded-full blur-3xl opacity-10 bg-[#FFD200] pointer-events-none" />
 
-              {/* Card Header & Era Badge */}
+              {/* Screen Header & Era Badge */}
               <div className="relative z-10 space-y-3 border-b border-slate-100 pb-4">
                 <div className="flex items-center justify-between">
                   <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#103B9B] text-white text-xs font-bold uppercase tracking-wider shadow-sm">
@@ -299,7 +315,7 @@ export default function TimelineSection() {
                   <h4 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438] tracking-tight">
                     {currentTimelineItem.title}
                   </h4>
-                  <p className="mt-1 text-sm font-semibold text-[#E63956]">
+                  <p className="mt-1 text-sm font-semibold text-[#103B9B]">
                     {currentVisual.tagline}
                   </p>
                 </div>
@@ -323,7 +339,7 @@ export default function TimelineSection() {
                     onClick={() => setActiveMediaTab('salvi')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
                       activeMediaTab === 'salvi'
-                        ? 'bg-[#E63956] text-white shadow-sm'
+                        ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -336,7 +352,7 @@ export default function TimelineSection() {
                     onClick={() => setActiveMediaTab('impact')}
                     className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1.5 ${
                       activeMediaTab === 'impact'
-                        ? 'bg-[#E63956] text-white shadow-sm'
+                        ? 'bg-[#C41230] text-white shadow-sm ring-2 ring-[#C41230]/30'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -369,7 +385,7 @@ export default function TimelineSection() {
                       <span>RESOLUTION: 1080P UHD</span>
                     </div>
 
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#E63956] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg border border-[#FFD200]/50 animate-pulse">
                       <Award className="w-8 h-8 text-[#FFD200]" />
                     </div>
 
@@ -392,7 +408,7 @@ export default function TimelineSection() {
                         <span className="text-emerald-400 font-bold">READY</span>
                       </div>
                       <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
-                        <div className="w-full h-full bg-gradient-to-r from-[#E63956] via-[#FFD200] to-emerald-400 rounded-full" />
+                        <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
                       </div>
                     </div>
 
@@ -522,7 +538,7 @@ export default function TimelineSection() {
                       }}
                       className={`h-2.5 rounded-full transition-all duration-300 ${
                         i === activeEraIndex
-                          ? 'bg-[#E63956] shadow-sm scale-y-125'
+                          ? 'bg-[#C41230] shadow-sm scale-y-125'
                           : i < activeEraIndex
                           ? 'bg-[#103B9B]'
                           : 'bg-slate-200 hover:bg-slate-300'

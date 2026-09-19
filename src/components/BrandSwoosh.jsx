@@ -7,7 +7,7 @@
 export default function BrandSwoosh({
   topColor = 'transparent',
   bottomColor = '#F8FAFC',
-  crimson = '#E63956',
+  crimson = '#C41230',
   gold = '#FFD200',
   flip = false,
   reverse = false,

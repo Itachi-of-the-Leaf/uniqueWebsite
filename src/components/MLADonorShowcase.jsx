@@ -58,7 +58,7 @@ export default function MLADonorShowcase() {
         {/* Section Header with Warm Hierarchy */}
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#103B9B]/10 border border-[#103B9B]/30 text-[#103B9B] text-xs font-black uppercase tracking-widest shadow-xs">
-            <Flame className="w-4 h-4 text-[#E63956]" />
+            <Flame className="w-4 h-4 text-[#C41230]" />
             <span>Sovereign Donor Recognition Architecture</span>
           </div>
 
@@ -140,7 +140,7 @@ export default function MLADonorShowcase() {
                       text={`DONOR-ID #${selectedDonorType.toUpperCase()}-2026-KONKAN`}
                       animateOn="hover"
                       speed={25}
-                      className="text-[#E63956]"
+                      className="text-[#C41230]"
                     />
                   </div>
                 </div>
@@ -164,7 +164,7 @@ export default function MLADonorShowcase() {
                 <div className="pt-2">
                   <a
                     href="#solutions"
-                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-[#E63956] hover:bg-[#C72440] text-white font-extrabold text-sm shadow-md shadow-[#E63956]/30 border border-[#FFD200]/60 transition-all"
+                    className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-sm shadow-md shadow-[#C41230]/30 border border-[#FFD200]/60 transition-all"
                   >
                     <span>Request Donor Branding Spec Sheet</span>
                     <ChevronRight className="w-4 h-4 text-[#FFD200]" />
@@ -199,7 +199,7 @@ export default function MLADonorShowcase() {
                 <div className="absolute inset-0 bg-radial from-[#103B9B]/20 via-transparent to-transparent pointer-events-none" />
 
                 {/* State Emblem / Donor Icon */}
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#E63956] flex items-center justify-center shadow-lg shadow-[#103B9B]/40 ring-4 ring-[#FFD200]/40 animate-pulse">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#103B9B] to-[#C41230] flex items-center justify-center shadow-lg shadow-[#103B9B]/40 ring-4 ring-[#FFD200]/40 animate-pulse">
                   <Award className="w-9 h-9 text-[#FFD200]" />
                 </div>
 
@@ -227,7 +227,7 @@ export default function MLADonorShowcase() {
                     <span className="text-emerald-400 font-bold">100% READY</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
-                    <div className="w-full h-full bg-gradient-to-r from-[#E63956] via-[#FFD200] to-emerald-400 rounded-full" />
+                    <div className="w-full h-full bg-gradient-to-r from-[#C41230] via-[#FFD200] to-emerald-400 rounded-full" />
                   </div>
                 </div>
 
