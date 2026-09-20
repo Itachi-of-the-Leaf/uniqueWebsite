@@ -129,6 +129,49 @@ const ERAS = [
   },
 ]
 
+// Era card content — extracted so the same eyebrow / title /
+// lead / specs markup can be rendered inside both the desktop
+// (absolute-positioned GSAP crossfade) and mobile (natural-flow
+// stacked blocks) layouts without duplication. Padding, sizing,
+// and className differences between the two paths live in their
+// own wrappers; the inner content stays identical.
+function renderEraCardBody(era) {
+  return (
+    <>
+      {/* Phase eyebrow */}
+      <div className="text-[13px] lg:text-[14px] font-bold tracking-[0.18em] text-brand-gold uppercase mb-3">
+        {era.phase}
+      </div>
+
+      {/* Era title — drop-shadow glow gives a futuristic luminance
+          bloom on the white title against the dark glass surface. */}
+      <h3 className="text-[30px] lg:text-[36px] font-bold text-white tracking-[-0.02em] leading-[1.08] mb-4 drop-shadow-[0_0_8px_rgba(255,255,255,0.06)]">
+        {era.title}
+      </h3>
+
+      {/* Lead paragraph */}
+      <p className="text-[16px] lg:text-[17px] text-slate-100 leading-[1.7] mb-6">
+        {era.lead}
+      </p>
+
+      {/* Specs list */}
+      <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
+        {era.specs.map((spec, j) => (
+          <p
+            key={j}
+            className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.65] m-0"
+          >
+            <strong className="text-brand-gold font-semibold mr-2">
+              {spec.label}:
+            </strong>
+            {spec.text}
+          </p>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function TimelineSection() {
   const { t } = useLanguage()
   const sectionRef = useRef(null)
@@ -321,7 +364,35 @@ export default function TimelineSection() {
               tl.to({}, { duration: 0.24 }, 0.76)
             }
 
-      mm.add('(prefers-reduced-motion: no-preference)', buildScene)
+            // Mobile fallback: ensure all cards and backdrops render
+            // visible on viewports where the GSAP scene never runs
+            // (< md, or reduced-motion). Without this, cards 1..N
+            // stay invisible on mobile because the desktop scene's
+            // initial state (gsap.set(cards[1..N], { opacity: 0 }))
+            // would otherwise be applied at module load regardless.
+            // Setting opacity: 1 here is harmless on desktop because
+            // buildScene() overrides it back to 0 inside its own
+            // gsap.set block when the scene activates.
+            const allCardsMobile = cardRefs.current.filter(Boolean)
+            gsap.set(allCardsMobile, {
+              opacity: 1,
+              y: 0,
+              pointerEvents: 'auto',
+            })
+            const allBackdropsMobile = backdropRefs.current.filter(Boolean)
+            if (allBackdropsMobile.length) {
+              gsap.set(allBackdropsMobile, { opacity: 1, scale: 1.04 })
+            }
+
+            // Desktop + reduced-motion gate: only desktop (≥ md)
+            // uses the pin-and-scrub architecture. On mobile the JSX
+            // renders cards in natural document flow (one section per
+            // era with its own backdrop + card stacked), so the scene's
+            // pin, scrub, and crossfade are not needed.
+            mm.add(
+              '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+              buildScene,
+            )
     }, sectionRef)
 
     return () => ctx.revert()
@@ -338,13 +409,23 @@ export default function TimelineSection() {
     <section
       ref={sectionRef}
       id="journey"
-      className="relative w-full h-[600vh] bg-brand-canvas"
+      className="relative w-full h-auto md:h-[600vh] bg-brand-canvas"
       data-timeline-image
       aria-label="Our Journey"
     >
-      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* ─── Backdrop Layer (stacked, crossfaded) ─── */}
-        <div className="absolute inset-0">
+      {/* ─── Section wrapper ───
+          h-auto on mobile: the section grows naturally as 5
+          independent era blocks stack vertically. md:h-[600vh] on
+          desktop: the section is a tall pinned scroll-stage with 5
+          eras worth of scroll distance plus a 0.8-era trailing buffer.
+          The pinned stage only activates at ≥ md (see the gsap
+          matchMedia gate inside the useEffect above). */}
+      <div ref={stageRef} className="relative w-full md:sticky md:top-0 md:h-screen md:overflow-hidden">
+        {/* ─── DESKTOP backdrop layer ───
+            Stacked absolute siblings for the GSAP crossfade. Hidden
+            on mobile because each era's backdrop is rendered inline
+            above its card in natural document flow there. */}
+        <div className="absolute inset-0 hidden md:block">
           {ERAS.map((era, i) => (
             <div
               key={`backdrop-${era.id}`}
@@ -381,8 +462,12 @@ export default function TimelineSection() {
           ))}
         </div>
 
-        {/* ─── Narrative Layer ─── */}
-        <div className="relative z-10 flex h-full items-center">
+        {/* ─── DESKTOP narrative layer ───
+            Pinned-stage grid: 5 absolutely-positioned cards stacked
+            on top of each other for the GSAP crossfade. Hidden on
+            mobile because each era renders as its own natural-flow
+            block in the mobile narrative layer below. */}
+        <div className="relative z-10 hidden h-full md:flex md:items-center">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
             {/* Desktop-only left spacer — keeps the narrative card on
                 the right half of the screen on lg+. Hidden on mobile
@@ -417,6 +502,12 @@ export default function TimelineSection() {
                     // Padding bumped to p-[32px] lg:p-[40px] for a
                     // premium feel — gives the content significant
                     // breathing room inside the card.
+                    //
+                    // The position:absolute + inset:0 + opacity:0 +
+                    // y:24px initial state is what allows the GSAP
+                    // crossfade to work on desktop: all 5 cards
+                    // overlap at the same location and GSAP flips
+                    // opacity/transform as scroll progresses.
                     className="timeline-card w-full max-w-xl h-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-[32px] lg:px-[40px] pt-[32px] lg:pt-[40px] pb-[36px] lg:pb-[44px] pointer-events-auto select-text text-left will-change-transform"
                     style={{
                       position: 'absolute',
@@ -426,65 +517,74 @@ export default function TimelineSection() {
                       backgroundColor: 'rgba(11, 27, 79, 0.35)',
                     }}
                     aria-hidden={i !== 0}
-                  >
-                    {/* Phase eyebrow — bumped to 13/14px (was 12/13)
-                        for better scan-ability. Wider tracking
-                        tracking-[0.18em] (was tracking-widest = 0.1em)
-                        gives a futuristic-tech look with more
-                        breathing room between glyphs. mb-3 (12px)
-                        gap to the title. */}
-                    <div className="text-[13px] lg:text-[14px] font-bold tracking-[0.18em] text-brand-gold uppercase mb-3">
-                      {era.phase}
-                    </div>
-
-                    {/* Era title — bumped to 30/36px (was 28/34px)
-                        for stronger hierarchy. Tighter tracking
-                        tracking-[-0.02em] + a subtle drop-shadow
-                        glow gives a modern futuristic-tech look
-                        (white text with a barely-there luminance
-                        bloom). leading-[1.08] keeps the title
-                        compact while mb-4 (16px) gives the lead
-                        paragraph clear separation. */}
-                    <h3 className="text-[30px] lg:text-[36px] font-bold text-white tracking-[-0.02em] leading-[1.08] mb-4 drop-shadow-[0_0_8px_rgba(255,255,255,0.06)]">
-                      {era.title}
-                    </h3>
-
-                    {/* Lead paragraph — bumped to 16/17px (was 15/16px)
-                        for better readability with the bumped card
-                        sizes. slate-100 (high contrast) + leading-[1.7]
-                        gives comfortable line spacing. mb-6 (24px)
-                        gives the spec section generous separation. */}
-                    <p className="text-[16px] lg:text-[17px] text-slate-100 leading-[1.7] mb-6">
-                      {era.lead}
-                    </p>
-
-                    {/*
-                      Specs list — bumped from 14/15px to 15/16px for
-                      better readability with the bumped card sizes.
-                      label mr-2 (was mr-1.5) gives more space after
-                      the colon. gap-4 (16px) between specs, pt-5 +
-                      border-white/15 for clear visual separation.
-                      leading-[1.65] (was 1.6) keeps the rhythm
-                      consistent with the slightly larger type.
-                    */}
-                    <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
-                      {era.specs.map((spec, j) => (
-                        <p
-                          key={j}
-                          className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.65] m-0"
-                        >
-                          <strong className="text-brand-gold font-semibold mr-2">
-                            {spec.label}:
-                          </strong>
-                          {spec.text}
-                        </p>
-                      ))}
-                    </div>
-                  </article>
+                  >{renderEraCardBody(era)}</article>
                 ))}
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ─── MOBILE narrative layer ───
+            Each era is rendered as its own natural-flow block: a
+            short backdrop banner (16:9, eager for era 1, lazy for
+            the rest) followed by the glassmorphic card. The cards
+            stack vertically with no absolute positioning, no GSAP
+            pin, and no crossfade — just one card per era in the
+            order the user reads them.
+            Hidden on desktop where the pinned-stage GSAP path runs. */}
+        <div className="md:hidden">
+          {ERAS.map((era, i) => (
+            <div
+              key={`mobile-era-${era.id}`}
+              className="relative w-full"
+            >
+              {/* Mobile backdrop banner — short and tall enough to
+                  set the era's mood without dominating the viewport
+                  on a phone. 16:9 keeps the image recognizable. */}
+              <div className="relative w-full aspect-[16/10] overflow-hidden bg-brand-midnight">
+                {era.backdrop ? (
+                  <img
+                    src={era.backdrop}
+                    alt=""
+                    // Era 1 stays eager (LCP candidate on mobile
+                    // timeline landing). Other eras defer through
+                    // vanilla-lazyload — see useLazyBackdrop().
+                    {...(i !== 0 ? { 'data-src': era.backdrop } : {})}
+                    className="absolute inset-0 size-full object-cover lazy-bg"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
+                )}
+                {/* Veil for text legibility against the photo. */}
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-midnight/85 via-brand-midnight/40 to-brand-midnight/30" />
+                {/* Era number pinned bottom-left of the banner so the
+                    user knows where they are in the arc. */}
+                <div className="absolute bottom-3 left-4 right-4 pointer-events-none">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
+                    Era {era.id} of {ERAS.length}
+                  </p>
+                </div>
+              </div>
+
+              {/* Card — natural document flow, not absolute. Sits
+                  below the banner with mobile padding and a
+                  comfortable gap between eras. The glassmorphic
+                  surface stays consistent with desktop so the user
+                  gets the same visual identity on phones. */}
+              <div className="px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-16">
+                <article
+                  className="timeline-card relative w-full max-w-xl mx-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-6 pt-7 pb-8 sm:px-7 sm:pt-8 sm:pb-9 pointer-events-auto select-text text-left"
+                  style={{
+                    backgroundColor: 'rgba(11, 27, 79, 0.45)',
+                  }}
+                >
+                  {renderEraCardBody(era)}
+                </article>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ─── Section Heading (always visible) ─── */}
