@@ -394,68 +394,78 @@ export default function TimelineSection() {
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
-                    // Glassmorphic card surface. The previous
-                    // `bg-brand-navy/85` was failing to parse the
-                    // opacity modifier on the custom theme color in
-                    // Tailwind 4, rendering as solid fill. We tried
-                    // `bg-[#0B1B4F]/65` and `bg-[#0B1B4F]/[65%]`
-                    // but Tailwind 4's minifier collapsed both to
-                    // solid `#0b1b4f` without the alpha channel.
-                    // As a fallback, we apply the translucent color
-                    // directly via the style prop using rgba() —
-                    // guaranteed to apply the 65% alpha. The
-                    // backdrop-blur-2xl + border-white/20 layers
-                    // remain Tailwind utilities since they don't
-                    // hit the opacity-modifier quirk.
-                    className="timeline-card w-full max-w-xl rounded-3xl backdrop-blur-2xl border border-white/20 p-[24px] lg:p-[32px] shadow-2xl flex flex-col justify-center overflow-hidden pointer-events-auto select-text text-left will-change-transform"
+                    // Glassmorphic card surface with high translucency.
+                    // The directive calls for `bg-[#0B1B4F]/35` but
+                    // Tailwind 4's minifier collapses arbitrary hex +
+                    // opacity-modifier classes to solid hex without
+                    // alpha. As a fallback, we apply the translucent
+                    // color directly via the style prop using rgba()
+                    // — the 35% opacity matches the directive's
+                    // intended high-translucency frosted-glass look.
+                    //
+                    // Sizing: h-auto + w-full max-w-xl lets the card
+                    // naturally hug its content (was artificially
+                    // stretching before). The directive explicitly
+                    // removes any h-full or height-stretching flex
+                    // properties so the card's height is driven
+                    // purely by its inner content.
+                    //
+                    // Shadow: shadow-[0_8px_32px_rgba(0,0,0,0.5)]
+                    // gives a strong ambient drop shadow that
+                    // enhances the glass-floating-on-image effect.
+                    //
+                    // Padding bumped to p-[32px] lg:p-[40px] for a
+                    // premium feel — gives the content significant
+                    // breathing room inside the card.
+                    className="timeline-card w-full max-w-xl h-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[32px] lg:p-[40px] pointer-events-auto select-text text-left will-change-transform"
                     style={{
                       position: 'absolute',
                       inset: 0,
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',
-                      backgroundColor: 'rgba(11, 27, 79, 0.65)',
+                      backgroundColor: 'rgba(11, 27, 79, 0.35)',
                     }}
                     aria-hidden={i !== 0}
                   >
-                    {/* Phase eyebrow — pixel-locked. mb-2 (8px)
-                        gap to the title. */}
-                    <div className="text-[11px] font-bold tracking-widest text-brand-gold uppercase mb-2">
+                    {/* Phase eyebrow — bumped to 12/13px (was 11px)
+                        for better scan-ability. mb-3 (12px) gap. */}
+                    <div className="text-[12px] lg:text-[13px] font-bold tracking-widest text-brand-gold uppercase mb-3">
                       {era.phase}
                     </div>
 
-                    {/* Era title — pixel-locked, bold, tight
-                        tracking. h3 (not h2) matches the directive's
-                        semantic level for this card subsection. */}
-                    <h3 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight mb-3">
+                    {/* Era title — bumped to 28/34px (was 24/28px)
+                        for stronger hierarchy. leading-[1.1] keeps
+                        the title compact while mb-4 (16px) gives
+                        the lead paragraph clear separation. */}
+                    <h3 className="text-[28px] lg:text-[34px] font-bold text-white tracking-tight leading-[1.1] mb-4">
                       {era.title}
                     </h3>
 
-                    {/* Lead paragraph — single sentence of context
-                        in slate-200 at 14px with 1.6 line-height.
-                        mb-4 (16px) gives the spec section clear
-                        separation. */}
-                    <p className="text-[14px] text-slate-200 leading-[1.6] mb-4">
+                    {/* Lead paragraph — bumped to 15/16px (was 14px)
+                        in slate-100 (was slate-200) for higher
+                        contrast. leading-[1.7] (was 1.6) gives
+                        comfortable line spacing. mb-6 (24px) gives
+                        the spec section generous separation. */}
+                    <p className="text-[15px] lg:text-[16px] text-slate-100 leading-[1.7] mb-6">
                       {era.lead}
                     </p>
 
                     {/*
-                      Specs list — natural inline paragraphs (not
-                      flex containers). The previous flex items-start
-                      layout created an unnatural column boundary
-                      between label and body. By using inline
-                      <strong>label:</strong> + body text inside a
-                      <p>, the text flows like a book — the label
-                      and value wrap naturally as one continuous
-                      paragraph. space-y-3 (12px) keeps the three
-                      specs visually separated.
+                      Specs list — switched from space-y-3 to flex
+                      flex-col gap-4 (16px gap) for explicit, larger
+                      gaps between specs. Each spec text bumped from
+                      13/14px to 14/15px, label mr-2 (was mr-1.5) for
+                      slightly more space after the colon. Border-t
+                      opacity bumped from /10 to /15 so the divider
+                      is clearly visible.
                     */}
-                    <div className="pt-4 border-t border-white/10 space-y-3">
+                    <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
                       {era.specs.map((spec, j) => (
                         <p
                           key={j}
-                          className="text-[13px] lg:text-[14px] text-slate-200 leading-[1.6] m-0"
+                          className="text-[14px] lg:text-[15px] text-slate-200 leading-[1.6] m-0"
                         >
-                          <strong className="text-brand-gold font-semibold mr-1.5">
+                          <strong className="text-brand-gold font-semibold mr-2">
                             {spec.label}:
                           </strong>
                           {spec.text}
