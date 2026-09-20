@@ -5,6 +5,7 @@ import TimelineSection from './components/TimelineSection'
 import ProductGallery from './components/ProductGallery'
 import TestimonialsSection from './components/TestimonialsSection'
 import ContactSection from './components/ContactSection'
+import MobileLeadSheet from './components/MobileLeadSheet'
 import SpotlightCard from './components/SpotlightCard'
 import DecryptedText from './components/DecryptedText'
 import BrandSwoosh from './components/BrandSwoosh'
@@ -178,6 +179,12 @@ function AppContent() {
             </div>
           </div>
         </footer>
+        {/* Mobile-only floating WhatsApp CTA + Vaul quick-enquiry
+            drawer. Mounted last so it sits above all section content
+            (z-40 button / z-50 sheet) without affecting stacking
+            elsewhere. Hidden via CSS once the user scrolls into the
+            contact section or inside a pinned story section. */}
+        <MobileLeadSheet />
       </div>
     </ScrollyTellingWrapper>
   )

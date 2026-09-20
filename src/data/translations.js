@@ -395,6 +395,21 @@ const translations = {
         'Submitting opens WhatsApp with your message pre-filled — just hit Send.',
       successHint:
         'You will see your message in the WhatsApp composer. Press Enter or click Send.',
+      // Bottom-sheet copy rendered inside MobileLeadSheet on phones.
+      // Topics appear as one-tap WhatsApp composers — no form, no
+      // scrolling. The `message` field is the pre-fill text passed
+      // to wa.me; leave it empty for the "blank chat" entry.
+      mobileSheet: {
+        heading: 'Reach us on WhatsApp',
+        subheading:
+          'Tap a topic to start a chat with our Khed team. Replies usually within one working day.',
+        topics: [
+          { key: 'classroom', label: 'Classroom Deployment', message: 'Hi! I would like to discuss a classroom deployment for our school.' },
+          { key: 'hardware', label: 'Hardware Specification', message: 'Hi! I have a question about hardware specifications.' },
+          { key: 'partner', label: 'Partnership / CSR', message: 'Hi! I would like to explore a partnership opportunity.' },
+          { key: 'blank', label: 'Blank Chat', message: '' },
+        ],
+      },
       directCard: {
         eyebrow: 'Reach Us Directly',
         heading: 'Konkan Regional Deployment Hub',
@@ -821,6 +836,18 @@ const translations = {
         'सबमिट केल्यावर WhatsApp उघडेल — आपला संदेश पूर्व-भरलेला असेल, फक्त Send दाबा.',
       successHint:
         'WhatsApp कंपोझरमध्ये आपला संदेश दिसेल. Enter दाबा किंवा Send वर क्लिक करा.',
+      // MobileLeadSheet — bottom-sheet copy (phones only).
+      mobileSheet: {
+        heading: 'WhatsApp वर संपर्क करा',
+        subheading:
+          'खेड टीमशी चॅट सुरू करण्यासाठी विषय निवडा. साधारण एक कार्यदिवसात उत्तर मिळते.',
+        topics: [
+          { key: 'classroom', label: 'वर्ग तैनाती', message: 'नमस्कार! मला आमच्या शाळेसाठी वर्ग तैनातीबद्दल चर्चा करायची आहे.' },
+          { key: 'hardware', label: 'हार्डवेअर तपशील', message: 'नमस्कार! मला हार्डवेअर तपशीलांबद्दल प्रश्न विचारायचा आहे.' },
+          { key: 'partner', label: 'भागीदारी / CSR', message: 'नमस्कार! मला भागीदारीची संधी जाणून घ्यायची आहे.' },
+          { key: 'blank', label: 'रिक्त चॅट', message: '' },
+        ],
+      },
       directCard: {
         eyebrow: 'थेट संपर्क',
         heading: 'कोकण प्रादेशिक तैनाती केंद्र',
