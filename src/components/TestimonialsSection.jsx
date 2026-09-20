@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Star, Quote, MapPin, PlayCircle } from 'lucide-react'
+import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
 /* ════════════════════════════════════════════════════════════════════════
    TESTIMONIALS — Scroll-driven story section
@@ -350,6 +351,13 @@ export default function TestimonialsSection() {
   const dotRefs = useRef([])
   const progressRef = useRef(0)
 
+  // Lazy-load observer for stage backdrops 2-4 (stage 1 is eager).
+  // `.lazy-bg` selector catches both this section and TimelineSection
+  // since each <img> with the class registers with the same observer
+  // — but each section's instance is its own and tears down on
+  // unmount, so no cross-section interference.
+  useLazyBackdrop('.lazy-bg')
+
   // Reset refs each render so we don't accumulate stale DOM nodes.
   backdropRefs.current = []
   cardRefs.current = []
@@ -562,10 +570,16 @@ export default function TestimonialsSection() {
               aria-hidden="true"
             >
               <img
-                src={stage.backdrop}
+                // Same pattern as TimelineSection: backdrop 01 stays
+                // eager (LCP candidate for the testimonials pin range);
+                // the rest defer through vanilla-lazyload — see
+                // useLazyBackdrop() in this file.
+                data-src={stage.backdrop}
                 alt=""
-                className="absolute inset-0 size-full object-cover"
-                loading={i === 0 ? 'eager' : 'lazy'}
+                className="absolute inset-0 size-full object-cover lazy-bg"
+                {...(i === 0
+                  ? { src: stage.backdrop, loading: 'eager' }
+                  : {})}
                 decoding="async"
               />
               {/* Dark navy veil so the white glassmorphic card is

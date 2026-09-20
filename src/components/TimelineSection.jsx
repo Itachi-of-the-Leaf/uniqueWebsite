@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
+import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -135,6 +136,13 @@ export default function TimelineSection() {
   const backdropRefs = useRef([])
   const cardRefs = useRef([])
   const progressRef = useRef(0)
+
+  // Mount the lazy-load observer for era backdrops 2-5. Era 01 is
+  // already eager-loaded by the spread above. The deps list
+  // re-initializes only when the era count actually changes (never
+  // in practice) — the selector alone is enough to find the new
+  // `.lazy-bg` elements on mount.
+  useLazyBackdrop('.lazy-bg')
 
   // Reset ref arrays so StrictMode dev re-runs don't double-bind.
   backdropRefs.current = []
@@ -350,10 +358,17 @@ export default function TimelineSection() {
             >
               {era.backdrop ? (
                 <img
-                  src={era.backdrop}
+                  // Era 01 stays eager (it's the LCP candidate on the
+                  // timeline's first paint). Other eras defer through
+                  // vanilla-lazyload — see useLazyBackdrop() — so the
+                  // browser only fetches them as the GSAP pin-scroll
+                  // carries the user into their scroll range.
+                  data-src={era.backdrop}
                   alt=""
-                  className="absolute inset-0 size-full object-cover"
-                  loading={i === 0 ? 'eager' : 'lazy'}
+                  className="absolute inset-0 size-full object-cover lazy-bg"
+                  {...(i === 0
+                    ? { src: era.backdrop, loading: 'eager' }
+                    : {})}
                   decoding="async"
                 />
               ) : (

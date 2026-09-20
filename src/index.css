@@ -171,3 +171,19 @@ html.lenis body {
 .yt-facade:hover .yt-facade-play {
   animation-play-state: paused;
 }
+
+/* ─── Lazy backdrop images ───────────────────────────────────────
+   `.lazy-bg` is the empty-state class on a backdrop <img>; opacity
+   sits at 0 with a slow crossfade. vanilla-lazyload adds `.is-loaded`
+   inside `callback_loaded` once the image bytes actually paint,
+   so the fade-in happens after the network round-trip, not before.
+   Placeholder background-color matches the dominant dark blue so
+   the empty space doesn't flash white during the brief load window. */
+.lazy-bg {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  background-color: #081438; /* brand-navy / brand-midnight */
+}
+.lazy-bg.is-loaded {
+  opacity: 1;
+}
