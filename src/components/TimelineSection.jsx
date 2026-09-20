@@ -50,7 +50,7 @@ const ERAS = [
       },
       {
         label: 'Institutional Grant Fit',
-        body: "Aligned the rig's total cost with standard ZP annual discretionary funding caps — proving rural digitization didn't require expensive corporate vendor contracts.",
+        body: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization did not need expensive corporate vendor contracts.",
       },
     ],
   },
@@ -66,7 +66,7 @@ const ERAS = [
     phases: [
       {
         label: 'Strategic Curriculum Alignment',
-        body: 'Partnered with Maharashtra-State-Board-aligned content curators to distribute pre-loaded, syllabus-mapped multimedia via solid-state media and high-speed pen drives — enabling zero-latency playback on diskless projectors.',
+        body: 'Partnered with Maharashtra-State-Board-aligned curators to deliver pre-loaded, syllabus-mapped multimedia via high-speed pen drives — zero-latency playback on diskless projectors.',
       },
       {
         label: 'Civic & CSR Coalitions',
@@ -74,7 +74,7 @@ const ERAS = [
       },
       {
         label: '100+ School Milestone',
-        body: 'Scaled beyond Khed into Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proving reliability in coastal high-humidity environments with erratic grid power.',
+        body: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proving reliability in coastal, high-humidity areas with erratic power.',
       },
     ],
   },
