@@ -178,6 +178,7 @@ export default function TimelineSection() {
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
   const cardRefs = useRef([])
+  const dotRefs = useRef([])
   const progressRef = useRef(0)
 
   // Mount the lazy-load observer for era backdrops 2-5. Era 01 is
@@ -190,6 +191,7 @@ export default function TimelineSection() {
   // Reset ref arrays so StrictMode dev re-runs don't double-bind.
   backdropRefs.current = []
   cardRefs.current = []
+  dotRefs.current = []
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -198,6 +200,7 @@ export default function TimelineSection() {
       const buildScene = () => {
               const backdrops = backdropRefs.current.filter(Boolean)
               const cards = cardRefs.current.filter(Boolean)
+              const dots = dotRefs.current.filter(Boolean)
               if (backdrops.length === 0 || cards.length === 0) return
 
               // ─── Spec-driven lifecycle ────────────────────────────────────────────
@@ -232,6 +235,13 @@ export default function TimelineSection() {
               for (let i = 1; i < cards.length; i++) {
                 gsap.set(cards[i], { opacity: 0, y: 24, pointerEvents: 'none' })
               }
+
+              // Progress dots — same pattern as Testimonials. Dot 1
+              // is bright + scaled up; the rest are dim. Lit-dot logic
+              // happens in onUpdate below.
+              dots.forEach((d, i) => {
+                gsap.set(d, { opacity: i === 0 ? 1 : 0.35, scale: i === 0 ? 1.15 : 1 })
+              })
 
               // Single timeline, scrubbed evenly across 5 eras. ScrollTrigger pins
               // the INNER sticky stage with pinSpacing:true so the next section
@@ -288,6 +298,29 @@ export default function TimelineSection() {
                     progressRef.current = self.progress
                     if (typeof window !== 'undefined') {
                       window.__timelineProgress = self.progress
+                    }
+                    // Drive the progress dots live — same pattern as
+                    // Testimonials. Explicit thresholds at 0.20, 0.40,
+                    // 0.60, 0.80 so each dot lights up in lockstep with
+                    // its corresponding era's dwell window.
+                    const p = self.progress
+                    let active
+                    if (p < 0.20) active = 0
+                    else if (p < 0.40) active = 1
+                    else if (p < 0.60) active = 2
+                    else if (p < 0.80) active = 3
+                    else active = 4
+                    active = Math.min(ERAS.length - 1, active)
+                    for (let i = 0; i < ERAS.length; i++) {
+                      const d = dots[i]
+                      if (!d) continue
+                      if (i === active) {
+                        gsap.set(d, { opacity: 1, scale: 1.25 })
+                      } else if (i < active) {
+                        gsap.set(d, { opacity: 0.45, scale: 1 })
+                      } else {
+                        gsap.set(d, { opacity: 0.25, scale: 1 })
+                      }
                     }
                   },
                 },
@@ -364,34 +397,13 @@ export default function TimelineSection() {
               tl.to({}, { duration: 0.24 }, 0.76)
             }
 
-            // Mobile fallback: ensure all cards and backdrops render
-            // visible on viewports where the GSAP scene never runs
-            // (< md, or reduced-motion). Without this, cards 1..N
-            // stay invisible on mobile because the desktop scene's
-            // initial state (gsap.set(cards[1..N], { opacity: 0 }))
-            // would otherwise be applied at module load regardless.
-            // Setting opacity: 1 here is harmless on desktop because
-            // buildScene() overrides it back to 0 inside its own
-            // gsap.set block when the scene activates.
-            const allCardsMobile = cardRefs.current.filter(Boolean)
-            gsap.set(allCardsMobile, {
-              opacity: 1,
-              y: 0,
-              pointerEvents: 'auto',
-            })
-            const allBackdropsMobile = backdropRefs.current.filter(Boolean)
-            if (allBackdropsMobile.length) {
-              gsap.set(allBackdropsMobile, { opacity: 1, scale: 1.04 })
-            }
-
-            // Desktop + reduced-motion gate: only desktop (≥ md)
-            // uses the pin-and-scrub architecture. On mobile the JSX
-            // renders cards in natural document flow (one section per
-            // era with its own backdrop + card stacked), so the scene's
-            // pin, scrub, and crossfade are not needed.
-            mm.add(
-              '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
-              buildScene,
+            // Desktop + reduced-motion gate: same pattern as
+            // Testimonials — run on any viewport that hasn't opted
+            // out of motion. Both scrollytelling sections use the
+            // same pin+scrub architecture on all viewports; the
+            // min-width gate is removed because Timeline's card is
+            // short enough to fit in a mobile viewport.
+            mm.add('(prefers-reduced-motion: no-preference)', buildScene,
             )
     }, sectionRef)
 
@@ -404,28 +416,21 @@ export default function TimelineSection() {
   const setCardRef = (el, index) => {
     cardRefs.current[index] = el
   }
+  const setDotRef = (el, index) => {
+    dotRefs.current[index] = el
+  }
 
   return (
     <section
       ref={sectionRef}
       id="journey"
-      className="relative w-full h-auto md:h-[600vh] bg-brand-canvas"
+      className="relative w-full h-[600vh] bg-brand-canvas"
       data-timeline-image
       aria-label="Our Journey"
     >
-      {/* ─── Section wrapper ───
-          h-auto on mobile: the section grows naturally as 5
-          independent era blocks stack vertically. md:h-[600vh] on
-          desktop: the section is a tall pinned scroll-stage with 5
-          eras worth of scroll distance plus a 0.8-era trailing buffer.
-          The pinned stage only activates at ≥ md (see the gsap
-          matchMedia gate inside the useEffect above). */}
-      <div ref={stageRef} className="relative w-full md:sticky md:top-0 md:h-screen md:overflow-hidden">
-        {/* ─── DESKTOP backdrop layer ───
-            Stacked absolute siblings for the GSAP crossfade. Hidden
-            on mobile because each era's backdrop is rendered inline
-            above its card in natural document flow there. */}
-        <div className="absolute inset-0 hidden md:block">
+      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden">
+        {/* ─── Backdrop Layer (stacked, crossfaded) ─── */}
+        <div className="absolute inset-0">
           {ERAS.map((era, i) => (
             <div
               key={`backdrop-${era.id}`}
@@ -462,12 +467,14 @@ export default function TimelineSection() {
           ))}
         </div>
 
-        {/* ─── DESKTOP narrative layer ───
-            Pinned-stage grid: 5 absolutely-positioned cards stacked
-            on top of each other for the GSAP crossfade. Hidden on
-            mobile because each era renders as its own natural-flow
-            block in the mobile narrative layer below. */}
-        <div className="relative z-10 hidden h-full md:flex md:items-center">
+        {/* ─── Narrative Layer ───
+            Same as Testimonials — pin a single grid with 5 absolutely-
+            positioned cards stacked at the same location, and let GSAP
+            crossfade opacity/transform as scroll progresses. The
+            desktop-only left spacer (lg:col-span-7) keeps the card
+            in the right column on lg+; on mobile the card fills the
+            viewport. */}
+        <div className="relative z-10 flex h-full items-center">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
             {/* Desktop-only left spacer — keeps the narrative card on
                 the right half of the screen on lg+. Hidden on mobile
@@ -479,42 +486,30 @@ export default function TimelineSection() {
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
-                    // Glassmorphic card surface with high translucency.
-                    // The directive calls for `bg-[#0B1B4F]/35` but
-                    // Tailwind 4's minifier collapses arbitrary hex +
-                    // opacity-modifier classes to solid hex without
-                    // alpha. As a fallback, we apply the translucent
-                    // color directly via the style prop using rgba()
-                    // — the 35% opacity matches the directive's
-                    // intended high-translucency frosted-glass look.
+                    // Glassmorphic surface — mirrors Testimonials
+                    // section exactly (bg-white/10 backdrop-blur-md
+                    // border-white/15 + soft outer shadow +
+                    // rounded-2xl). The white-tint translucent
+                    // glass refracts the era's dark backdrop image
+                    // through the card and the user reads the
+                    // gold-on-white text labels as crisp layered
+                    // hierarchy rather than dark navy fill.
                     //
-                    // Sizing: h-auto + w-full max-w-xl lets the card
-                    // naturally hug its content (was artificially
-                    // stretching before). The directive explicitly
-                    // removes any h-full or height-stretching flex
-                    // properties so the card's height is driven
-                    // purely by its inner content.
+                    // Padding: p-6 sm:p-7 lg:p-8 matches Testimonials
+                    // exactly — same rhythm, same line-height
+                    // baselines across the two scrollytelling
+                    // sections so the user's eye reads them as one
+                    // visual system.
                     //
-                    // Shadow: shadow-[0_8px_32px_rgba(0,0,0,0.5)]
-                    // gives a strong ambient drop shadow that
-                    // enhances the glass-floating-on-image effect.
-                    //
-                    // Padding bumped to p-[32px] lg:p-[40px] for a
-                    // premium feel — gives the content significant
-                    // breathing room inside the card.
-                    //
-                    // The position:absolute + inset:0 + opacity:0 +
+                    // position: absolute + inset:0 + opacity:0 +
                     // y:24px initial state is what allows the GSAP
-                    // crossfade to work on desktop: all 5 cards
-                    // overlap at the same location and GSAP flips
-                    // opacity/transform as scroll progresses.
-                    className="timeline-card w-full max-w-xl h-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-[32px] lg:px-[40px] pt-[32px] lg:pt-[40px] pb-[36px] lg:pb-[44px] pointer-events-auto select-text text-left will-change-transform"
+                    // crossfade to work: all 5 cards overlap at the
+                    // same location and GSAP flips opacity/transform
+                    // as scroll progresses.
+                    className="timeline-card absolute inset-0 will-change-transform overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-6 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 lg:p-8"
                     style={{
-                      position: 'absolute',
-                      inset: 0,
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',
-                      backgroundColor: 'rgba(11, 27, 79, 0.35)',
                     }}
                     aria-hidden={i !== 0}
                   >{renderEraCardBody(era)}</article>
@@ -524,90 +519,31 @@ export default function TimelineSection() {
           </div>
         </div>
 
-        {/* ─── MOBILE narrative layer ───
-            Each era is rendered as its own natural-flow block.
-            The backdrop image fills the ENTIRE era block (banner
-            + card behind it), not just the top banner. This way
-            the glassmorphic card sits on top of the same dark
-            photo and the backdrop-blur-2xl has something to
-            refract — without this, the blur picks up the
-            light-gray section background instead of a photo and
-            the card reads as a disconnected floating panel.
-
-            Era 1 backdrop stays eager (LCP candidate on mobile).
-            Other eras defer through vanilla-lazyload. The card
-            itself is in natural document flow (not absolute),
-            so the user just scrolls past 5 self-contained era
-            blocks. Hidden on desktop where the GSAP pinned-stage
-            crossfade runs. */}
-        <div className="md:hidden">
-          {ERAS.map((era, i) => (
-            <div
-              key={`mobile-era-${era.id}`}
-              className="relative w-full overflow-hidden"
-            >
-              {/* Full-bleed backdrop layer — covers the entire
-                  era block including the card area behind it.
-                  This is what the card's backdrop-blur refracts
-                  for the frosted-glass effect. */}
-              <div
-                className="absolute inset-0 pointer-events-none will-change-transform"
-                aria-hidden="true"
-              >
-                {era.backdrop ? (
-                  <img
-                    src={i === 0 ? era.backdrop : undefined}
-                    {...(i !== 0 ? { 'data-src': era.backdrop } : {})}
-                    alt=""
-                    className="absolute inset-0 size-full object-cover lazy-bg"
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
-                )}
-                {/* Veil — darker than desktop's because the card
-                    sits over the same image. Without this the
-                    backdrop is too bright behind the glass. */}
-                <div className="absolute inset-0 bg-gradient-to-b from-brand-midnight/85 via-brand-midnight/75 to-brand-midnight/85" />
-              </div>
-
-              {/* Top label band — gives the era its visible identity
-                  at the top of the block before the card. */}
-              <div className="relative z-10 pt-10 pb-6 px-5 sm:px-7">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 mb-2">
-                  Era {era.id} of {ERAS.length}
-                </p>
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/60">
-                  Our Journey
-                </p>
-              </div>
-
-              {/* Card — natural document flow, not absolute. Sits
-                  directly on top of the full-bleed backdrop so
-                  the glassmorphic surface has the era photo
-                  to refract through. Mobile-tuned padding (smaller
-                  than desktop's lg:p-[40px]) since the card width
-                  is constrained by the phone viewport. */}
-              <div className="relative z-10 px-4 pb-12 sm:px-6 sm:pb-16">
-                <article
-                  className="timeline-card relative w-full max-w-xl mx-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-6 pt-7 pb-8 sm:px-7 sm:pt-8 sm:pb-9 pointer-events-auto select-text text-left"
-                  style={{
-                    backgroundColor: 'rgba(11, 27, 79, 0.45)',
-                  }}
-                >
-                  {renderEraCardBody(era)}
-                </article>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* ─── Section Heading (always visible) ─── */}
         <div className="pointer-events-none absolute left-6 top-6 z-20 lg:left-10 lg:top-10">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/70">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/85">
             Our Journey
           </p>
+        </div>
+
+        {/* ─── Progress dots (bottom-center) ───
+            Same pattern as TestimonialsSection — five gold dots
+            that light up in lockstep with the active era as the
+            user scrolls. Active dot scales up to 1.25× and reads
+            at full opacity; passed dots dim to 0.45; future dots
+            dim to 0.25. Driven by onUpdate in the GSAP scene. */}
+        <div
+          className="pointer-events-none absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 lg:bottom-8"
+          aria-hidden="true"
+        >
+          {ERAS.map((era, i) => (
+            <span
+              key={`dot-${era.id}`}
+              ref={(el) => setDotRef(el, i)}
+              className="block h-1.5 rounded-full bg-[#FFD200] will-change-transform"
+              style={{ width: '24px' }}
+            />
+          ))}
         </div>
       </div>
     </section>
