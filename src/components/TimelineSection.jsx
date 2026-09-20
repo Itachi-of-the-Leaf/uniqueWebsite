@@ -1,252 +1,326 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import {
-  Monitor,
-  HardDrive,
-  Film,
-  Award,
-  Calendar,
-  Zap,
-  TrendingUp,
-} from 'lucide-react'
-import ProjectorScreen from './ProjectorScreen'
 import { useLanguage } from '../context/LanguageContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const eraIcons = [Monitor, HardDrive, Film, Zap, Award]
+const ERAS = [
+  {
+    id: 1,
+    yearStart: 1998,
+    yearEnd: 2013,
+    eraLabel: 'Era 01',
+    title: 'Ground Zero in Khed',
+    backdrop: '/ShopFront.jpeg', // Era 01: Khed shop origin / institutional tech storefront.
+    narrative:
+      "Founded Khed's first dedicated computer assembly and service center, eliminating the 150 km repair bottleneck to Mumbai and Pune for rural institutions.",
+  },
+  {
+    id: 2,
+    yearStart: 2014,
+    yearEnd: 2016,
+    eraLabel: 'Era 02',
+    title: 'The ₹25,000 Breakthrough',
+    backdrop: '/Projector_in_action.jpeg',
+    narrative:
+      'Challenged ₹1 Lakh+ smart-classroom vendor quotes by engineering an offline, ruggedized LED ceiling-projection rig built within ZP grant caps.',
+  },
+  {
+    id: 3,
+    yearStart: 2017,
+    yearEnd: 2024,
+    eraLabel: 'Era 03',
+    title: 'Institutional Deployments & Reach',
+    backdrop: '/HappyKids1.jpeg',
+    narrative:
+      'Scaled deployments across 100+ schools in partnership with regional CSR foundations, institutional training under Mahad MMACETP (Mahad MIDC), and State-Board-aligned educational curriculum curators.',
+  },
+  {
+    id: 4,
+    yearStart: 2025,
+    yearEnd: 2026,
+    eraLabel: 'Era 04',
+    title: 'Zero-Bandwidth High-Definition Ecosystems',
+    backdrop: '/HappyFaculty3.jpeg',
+    narrative:
+      'Deployed 4K interactive anti-glare touch panels with zero-latency digital blackboard software and high-lumen FHD projection designed for zero-connectivity classrooms.',
+  },
+  {
+    id: 5,
+    yearStart: null,
+    yearEnd: null,
+    eraLabel: 'Era 05',
+    title: 'The Regional Benchmark (150+ Schools)',
+    backdrop: '/KidsCelebrating.jpeg',
+    narrative:
+      'Outcompeting generic multinational equipment with ruggedized hardware, zero mandatory subscriptions, and guaranteed 24-hour local on-site support across Konkan.',
+  },
+]
 
 export default function TimelineSection() {
-  const [activeEraIndex, setActiveEraIndex] = useState(0)
-  const containerRef = useRef(null)
-  const boardRefs = useRef([])
   const { t } = useLanguage()
+  const sectionRef = useRef(null)
+  const stageRef = useRef(null)
+  const backdropRefs = useRef([])
+  const cardRefs = useRef([])
+  const progressRef = useRef(0)
 
-  const rawEras = t('timeline.eras') || []
-  const mergedEraData = rawEras.map((era, i) => ({
-    timeline: {
-      id: era.id,
-      year: era.year,
-      title: era.title,
-      description: era.description,
-    },
-    visual: {
-      badge: era.badge,
-      tagline: era.tagline,
-      icon: eraIcons[i] || Monitor,
-      stats: era.stats || [],
-      deliverables: era.deliverables || [],
-      specHighlight: era.specHighlight || '',
-      defaultTab: era.defaultTab || 'specs',
-    },
-  }))
+  // Reset ref arrays so StrictMode dev re-runs don't double-bind.
+  backdropRefs.current = []
+  cardRefs.current = []
 
-  /* ── GSAP ScrollTrigger wiring for era synchronization ── */
   useEffect(() => {
-    const mm = gsap.matchMedia()
+    const ctx = gsap.context(() => {
+      const mm = gsap.matchMedia()
 
-    mm.add('(min-width: 1024px)', () => {
-      const ctx = gsap.context(() => {
-        boardRefs.current.forEach((boardEl, index) => {
-          if (!boardEl) return
+      const buildScene = () => {
+              const backdrops = backdropRefs.current.filter(Boolean)
+              const cards = cardRefs.current.filter(Boolean)
+              if (backdrops.length === 0 || cards.length === 0) return
 
-          ScrollTrigger.create({
-            trigger: boardEl,
-            start: 'top 60%',
-            end: 'bottom 40%',
-            onEnter: () => setActiveEraIndex(index),
-            onEnterBack: () => setActiveEraIndex(index),
-          })
-        })
-      }, containerRef)
+              // ─── Spec-driven lifecycle ────────────────────────────────────────────
+              // Each era has explicit, non-overlapping "active" windows with strict
+              // opacity clamping. Era N's backdrop becomes fully visible at
+              // 0.20*(N-1) + 0.05, holds there for 0.15 of progress, then fades to
+              // opacity 0 over the next 0.05. Era 1 has no fade-in (it's the entry
+              // to the section). Era 5 has no fade-out (it's the exit — we want a
+              // stable final frame for the user to read). This eliminates the
+              // "double-exposure ghosting" and the white bottom-bar bleed-through
+              // that the previous crossfade approach produced with pinSpacing:false.
+              //
+              //   Backdrop 1 active:  0.00 .. 0.20   fade-out: 0.20 .. 0.25
+              //   Backdrop 2 active:  0.25 .. 0.40   fade-out: 0.40 .. 0.45
+              //   Backdrop 3 active:  0.45 .. 0.60   fade-out: 0.60 .. 0.65
+              //   Backdrop 4 active:  0.65 .. 0.80   fade-out: 0.80 .. 0.85
+              //   Backdrop 5 active:  0.85 .. 1.00   (no fade-out)
+              //
+              // All backdrops start with pointerEvents:'none' so they never
+              // intercept clicks — only the narrative card layer is interactive
+              // (and even then, only the active card, see gsap.set below).
+              gsap.set(backdrops[0], { opacity: 1, scale: 1.04, pointerEvents: 'none' })
+              for (let i = 1; i < backdrops.length; i++) {
+                gsap.set(backdrops[i], { opacity: 0, scale: 1.04, pointerEvents: 'none' })
+              }
 
-      return () => ctx.revert()
-    })
+              // Cards: only the first one is interactive initially. Tweening flips
+              // pointer-events in lockstep with the opacity phases so inactive
+              // cards never capture clicks even when they happen to be opaque
+              // during the brief crossfade window.
+              gsap.set(cards[0], { opacity: 1, y: 0, pointerEvents: 'auto' })
+              for (let i = 1; i < cards.length; i++) {
+                gsap.set(cards[i], { opacity: 0, y: 24, pointerEvents: 'none' })
+              }
 
-    // Mobile viewport triggers
-    mm.add('(max-width: 1023px)', () => {
-      const ctx = gsap.context(() => {
-        boardRefs.current.forEach((boardEl, index) => {
-          if (!boardEl) return
+              // Single timeline, scrubbed evenly across 5 eras. ScrollTrigger pins
+              // the INNER sticky stage with pinSpacing:true so the next section
+              // starts naturally below the pinned stage once the section's bottom
+              // edge scrolls fully past the viewport — no white bleed-through.
+              //
+              // scrub:true (no numeric value) ties the timeline directly to the
+              // scroll position with no smoothing delay — pointer-to-pixel.
+              // scrub:0.8 was making the page feel like it had inertia even when
+              // it shouldn't; the lag manifested as the timeline "catching up"
+              // after a release, which read as something moving the scroll.
+              //
+              // Snap is intentionally DISABLED. GSAP's snap tweens the SCROLL
+              // POSITION on release, which the user experienced as the page
+              // being yanked between eras. Pure scrub means the timeline only
+              // ever reads scroll position — it never writes it back. Lenis
+              // owns all scroll-position animation 100%.
+              const ENABLE_SNAP = false
 
-          ScrollTrigger.create({
-            trigger: boardEl,
-            start: 'top 70%',
-            end: 'bottom 30%',
-            onEnter: () => setActiveEraIndex(index),
-            onEnterBack: () => setActiveEraIndex(index),
-          })
-        })
-      }, containerRef)
+              const tl = gsap.timeline({
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: 'top top',
+                  end: 'bottom bottom',
+                  scrub: true,
+                  pin: stageRef.current,
+                  pinSpacing: true,
+                  anticipatePin: 1,
+                  invalidateOnRefresh: true,
+                  onUpdate: (self) => {
+                    // Stream live progress to window.__timelineProgress for ad-hoc
+                    // dev inspection. Production cost is negligible (one assignment
+                    // per ScrollTrigger tick).
+                    progressRef.current = self.progress
+                    if (typeof window !== 'undefined') {
+                      window.__timelineProgress = self.progress
+                    }
+                  },
+                },
+              })
 
-      return () => ctx.revert()
-    })
+              // ─── Explicit phase tweens (backdrops + cards) ────────────────────
+              // Per spec: 5 backdrop fades-in, 4 fades-out (Era 5 has no fade-out).
+              // Each fade is 0.05 wide and starts exactly on a 0.05-grid boundary.
+              // We also drive scale 1.04 -> 1.0 on every backdrop's fade-in for the
+              // subtle drift start, and scale 1.04 -> 1.0 on every fade-out mirror.
+              const FADE = 0.05
+              const PHASES = [
+                // [fadeInEnd, fadeOutStart, fadeOutEnd, hasFadeOut]
+                // Era 1:    no fade-in (entry), fades out at 0.20..0.25
+                // Eras 2-4: fade in at (prev fadeOutEnd)..(prev fadeOutEnd+0.05), fade out
+                // Era 5:    fades in at 0.80..0.85, no fade-out
+                { fadeInStart: 0.00, fadeInEnd: 0.00, fadeOutStart: 0.20, fadeOutEnd: 0.25 }, // Era 1
+                { fadeInStart: 0.20, fadeInEnd: 0.25, fadeOutStart: 0.40, fadeOutEnd: 0.45 }, // Era 2
+                { fadeInStart: 0.40, fadeInEnd: 0.45, fadeOutStart: 0.60, fadeOutEnd: 0.65 }, // Era 3
+                { fadeInStart: 0.60, fadeInEnd: 0.65, fadeOutStart: 0.80, fadeOutEnd: 0.85 }, // Era 4
+                { fadeInStart: 0.80, fadeInEnd: 0.85, fadeOutStart: null, fadeOutEnd: null }, // Era 5
+              ]
 
-    return () => mm.revert()
+              for (let i = 0; i < ERAS.length; i++) {
+                const phase = PHASES[i]
+                const backdrop = backdrops[i]
+                const card = cards[i]
+
+                // Scale tweens — both fade-in and fade-out use the same scale drift.
+                // Skip on Era 1 (no fade-in) and Era 5 (no fade-out).
+                if (i > 0) {
+                  tl.to(
+                    backdrop,
+                    { opacity: 1, scale: 1, ease: 'none', duration: FADE },
+                    phase.fadeInStart
+                  )
+                  // Card matches: fade in during the same window with a subtle lift.
+                  tl.to(
+                    card,
+                    { opacity: 1, y: 0, ease: 'none', duration: FADE },
+                    phase.fadeInStart
+                  )
+                  tl.set(card, { pointerEvents: 'auto' }, phase.fadeInEnd)
+                }
+                if (phase.fadeOutStart !== null) {
+                  tl.to(
+                    backdrop,
+                    { opacity: 0, scale: 1, ease: 'none', duration: FADE },
+                    phase.fadeOutStart
+                  )
+                  tl.to(
+                    card,
+                    { opacity: 0, y: -24, ease: 'none', duration: FADE },
+                    phase.fadeOutStart
+                  )
+                  tl.set(card, { pointerEvents: 'none' }, phase.fadeOutEnd)
+                }
+              }
+
+              // Eras 02..05 are initialized hidden; their first tween above brings
+              // them in. Era 05's tail (0.85..1.00) has no fade-out — it simply
+              // holds the final state until the section releases.
+            }
+
+      mm.add('(prefers-reduced-motion: no-preference)', buildScene)
+    }, sectionRef)
+
+    return () => ctx.revert()
   }, [])
+
+  const setBackdropRef = (el, index) => {
+    backdropRefs.current[index] = el
+  }
+  const setCardRef = (el, index) => {
+    cardRefs.current[index] = el
+  }
 
   return (
     <section
-      id="journey"
-      ref={containerRef}
-      className="relative py-20 lg:py-28 text-white overflow-x-clip border-t border-slate-800"
-      style={{
-        background:
-          'radial-gradient(circle at 15% 25%, rgba(16, 59, 155, 0.22) 0%, transparent 45%), radial-gradient(circle at 85% 75%, rgba(16, 59, 155, 0.18) 0%, transparent 50%), #061033',
-      }}
+      ref={sectionRef}
+      id="our-journey"
+      className="relative w-full h-[600vh] bg-brand-canvas"
+      data-timeline-image
+      aria-label="Our Journey"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="max-w-3xl mb-14 lg:mb-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFD200]/15 text-[#FFD200] text-xs font-black uppercase tracking-wider mb-3 border border-[#FFD200]/40 shadow-xs">
-            <TrendingUp className="w-3.5 h-3.5 text-[#FFD200]" />
-            <span>{t('timeline.badge')}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#FFFFFF] tracking-tight drop-shadow-sm">
-            {t('timeline.heading')}
-          </h2>
-          <p className="mt-3 text-base sm:text-lg text-slate-300 font-normal leading-relaxed">
-            {t('timeline.subheading')}
-          </p>
+      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden">
+        {/* ─── Backdrop Layer (stacked, crossfaded) ─── */}
+        <div className="absolute inset-0">
+          {ERAS.map((era, i) => (
+            <div
+              key={`backdrop-${era.id}`}
+              ref={(el) => setBackdropRef(el, i)}
+              className="absolute inset-0 will-change-transform pointer-events-none"
+              style={{
+                opacity: i === 0 ? 1 : 0,
+                transform: 'translate3d(0,0,0) scale(1.04)',
+              }}
+              aria-hidden="true"
+            >
+              {era.backdrop ? (
+                <img
+                  src={era.backdrop}
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                // Era 01 fallback: institutional atmospheric gradient
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
+              )}
+              {/* Veil for text legibility — opacity only, no blur. */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-midnight/85 via-brand-midnight/40 to-brand-midnight/30" />
+            </div>
+          ))}
         </div>
 
-        {/* ═══ SCROLLYTELLING: Two-Column Layout (lg+) / Stacked (mobile) ═══ */}
-        <div className="relative flex flex-col lg:flex-row lg:gap-10 items-start">
-          {/* ── Vertical Canary Gold Milestone Spine (visible on sm+) ── */}
-          <div className="absolute left-4 sm:left-6 top-6 bottom-12 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden sm:block lg:hidden opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.45)]" />
-
-          {/* ═══ LEFT COLUMN: Scrolling Static Blackboard Cards ═══ */}
-          <div className="relative w-full lg:w-[45%] space-y-[25vh] lg:space-y-[40vh]">
-            {/* Spine visible on lg+ only, inside the left col */}
-            <div className="absolute left-4 sm:left-6 top-6 bottom-12 w-1 bg-gradient-to-b from-[#FFD200] via-[#FFD200]/60 to-[#FFD200]/20 pointer-events-none hidden lg:block opacity-80 shadow-[0_0_12px_rgba(255,210,0,0.45)]" />
-
-            {mergedEraData.map((eraObj, index) => {
-              const { timeline: era, visual } = eraObj
-              const isActive = activeEraIndex === index
-
-              return (
-                <div key={era.id} className="relative sm:pl-16">
-                  {/* Indicator Node on Timeline Spine */}
-                  <div className="hidden sm:flex absolute left-0 top-10 items-center justify-center w-12 h-12 -translate-x-1/2 z-20 pointer-events-none">
-                    <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        isActive
-                          ? 'bg-[#FFD200] ring-4 ring-[#103B9B] scale-125 shadow-[0_0_22px_#FFD200]'
-                          : 'bg-[#103B9B] ring-2 ring-[#FFD200]/40 scale-100'
-                      }`}
-                    >
-                      <div
-                        className={`w-2.5 h-2.5 rounded-full ${
-                          isActive
-                            ? 'bg-[#061033] animate-ping'
-                            : 'bg-white/80'
-                        }`}
-                      />
-                    </div>
-                  </div>
-
-                  {/* ── Blackboard Card (Authentic Classroom Green Slate #121C17 with Wooden Frame) ── */}
-                  <div
-                    ref={(el) => (boardRefs.current[index] = el)}
-                    className={`blackboard-panel flex flex-col rounded-2xl sm:rounded-3xl border-[6px] sm:border-[8px] border-[#3E2314] ring-1 ring-[#5C3A21] bg-[#121C17] shadow-[inset_0_0_28px_rgba(0,0,0,0.85),0_18px_40px_rgba(0,0,0,0.6)] relative overflow-hidden transition-opacity duration-300 ease-out select-text ${
-                      isActive
-                        ? 'opacity-100 ring-2 ring-[#FEF08A]/40'
-                        : 'opacity-30'
-                    }`}
+        {/* ─── Narrative Layer ─── */}
+        <div className="relative z-10 flex h-full items-center">
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
+            <div className="lg:col-span-7" />
+            <div className="lg:col-span-5">
+              <div className="relative h-auto min-h-[30rem] sm:min-h-[34rem]">
+                {ERAS.map((era, i) => (
+                  <article
+                    key={`card-${era.id}`}
+                    ref={(el) => setCardRef(el, i)}
+                    className="absolute inset-0 will-change-transform rounded-2xl border border-white/15 bg-white/10 p-7 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-md lg:p-8"
+                    style={{ opacity: 0, transform: 'translate3d(0,24px,0)' }}
+                    aria-hidden={i !== 0}
                   >
-                    {/* Faint slate chalk haze textures */}
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.05)_0%,transparent_65%)] pointer-events-none" />
-                    <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(255,255,255,0.015)_40%,transparent_60%)] pointer-events-none" />
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-brand-gold">
+                      {era.eraLabel} ·{' '}
+                      {era.yearStart === null
+                        ? 'Present'
+                        : `${era.yearStart} – ${era.yearEnd}`}
+                    </p>
+                    <h2 className="mt-2 font-heading text-2xl leading-tight sm:text-3xl lg:text-4xl">
+                      {era.title}
+                    </h2>
+                    <p className="mt-4 text-sm leading-relaxed text-white/85 lg:text-base">
+                      {era.narrative}
+                    </p>
 
-                    {/* Content Container */}
-                    <div className="p-5 sm:p-7 flex-1 flex flex-col space-y-4 relative z-10">
-                      {/* 1. Era pill bar & badge */}
-                      <div className="flex items-center justify-between border-b border-white/15 pb-3">
-                        <div className="inline-flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-[#FEF08A] shrink-0" />
-                          <span className="font-chalk text-xl sm:text-2xl font-bold text-[#FEF08A] tracking-wider">
-                            {era.year}
-                          </span>
-                        </div>
-                        <span className="font-chalk text-sm sm:text-base font-bold text-[#FEF08A] border border-dashed border-[#FEF08A]/60 px-2.5 py-0.5 rounded-md bg-[#FEF08A]/10">
-                          ★ {t('timeline.eraPill')}{era.id}
-                        </span>
+                    {/* Hardware Attribution Feature Callout — present on every era card.
+                        Rendered inline (no bordered frame) so it reads as a continuation
+                        of the narrative rather than a separate misplaced element. */}
+                    {i === ERAS.length - 1 && (
+                      <div className="mt-5 border-t border-white/15 pt-3">
+                        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-brand-gold">
+                          Hardware Capability
+                        </p>
+                        <p className="mt-2 text-xs font-medium leading-relaxed text-white/95 lg:text-sm">
+                          <span className="text-white">Custom BIOS &amp; Firmware Attribution</span>
+                          {' — '}
+                          hardware firmware pre-flashed to display institutional patron crests,
+                          CSR foundations, or public donor attribution screens upon startup.
+                        </p>
                       </div>
-
-                      {/* 2. Main title (Silverish / Grey chalk on green slate) */}
-                      <h3 className="font-chalk text-2xl sm:text-3xl lg:text-4xl text-[#CBD5E1] font-bold tracking-wide leading-tight">
-                        {era.title}
-                      </h3>
-
-                      {/* 3. Subtitle (Warm chalk yellow) */}
-                      <p className="font-chalk text-base sm:text-lg text-[#FEF08A]/90">
-                        ~ {visual.tagline} ~
-                      </p>
-
-                      {/* 4. Narrative description (Silverish chalk text) */}
-                      <p className="font-chalk text-base sm:text-lg text-[#CBD5E1] leading-relaxed">
-                        {era.description}
-                      </p>
-
-                      {/* 5. Directives checklist */}
-                      <div className="pt-3 border-t border-white/15 space-y-2.5">
-                        <div className="text-[11px] font-mono uppercase tracking-widest text-[#FEF08A] font-bold">
-                          {t('timeline.directivesHeader')}
-                        </div>
-                        {visual.deliverables.map((item, dIdx) => (
-                          <div
-                            key={dIdx}
-                            className="flex items-start gap-2.5 text-sm sm:text-base font-chalk text-[#CBD5E1]"
-                          >
-                            <span className="text-[#FEF08A] font-bold text-lg shrink-0 leading-none select-none">
-                              ✓
-                            </span>
-                            <span className="leading-snug">
-                              {item}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Authentic Wooden Bottom Chalk Rail / Trough */}
-                    <div className="h-3.5 w-full bg-[#2A180D] border-t-2 border-[#4A2C18] shadow-inner flex items-center justify-between px-4 shrink-0 z-10">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-1 bg-[#CBD5E1]/90 rounded-xs shadow-xs" />
-                        <div className="w-3 h-1 bg-[#FEF08A]/90 rounded-xs shadow-xs" />
-                      </div>
-                      <div className="w-8 h-1.5 bg-[#5C3A21] rounded-xs border border-[#3E2314]" />
-                    </div>
-                  </div>
-
-                  {/* ── Mobile-only inline projector card ── */}
-                  <div className="lg:hidden mt-8">
-                    <ProjectorScreen
-                      activeEraIndex={index}
-                      eraData={mergedEraData}
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* ═══ RIGHT COLUMN: Single Pinned Projector Screen (lg+ only, GPU Isolated) ═══ */}
-          <div
-            className="hidden lg:block lg:w-[55%] sticky top-24 self-start will-change-transform"
-            style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}
-          >
-            <div className="h-[calc(100vh-8rem)]">
-              <ProjectorScreen
-                activeEraIndex={activeEraIndex}
-                eraData={mergedEraData}
-              />
+                    )}
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* ─── Section Heading (always visible) ─── */}
+        <div className="pointer-events-none absolute left-6 top-6 z-20 lg:left-10 lg:top-10">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/70">
+            Our Journey
+          </p>
         </div>
       </div>
     </section>
   )
 }
-

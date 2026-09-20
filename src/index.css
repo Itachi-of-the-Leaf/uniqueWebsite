@@ -1,9 +1,27 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════
+   Desktop Scale (125% rem feel)
+   Top-level (not @layer base) for Tailwind 4 cascade ordering.
+   ═══════════════════════════════════════ */
+
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 20px; /* 125% scale for desktop Tailwind rem calculations */
+  }
+}
+
+/* ═══════════════════════════════════════
+   Theme Tokens
+   ═══════════════════════════════════════ */
+
 @theme {
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-heading: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
-  --font-chalk: 'Kalam', 'Patrick Hand', cursive;
   --color-brand-canvas: #F8FAFC;
   --color-brand-white: #FFFFFF;
   --color-brand-navy: #0A1E5C;
@@ -31,6 +49,10 @@ h1, h2, h3, .font-heading {
   font-family: 'Baloo 2', 'Plus Jakarta Sans', sans-serif;
 }
 
+/* ═══════════════════════════════════════
+   Lenis Integration (legacy @studio-freight/react-lenis)
+   ═══════════════════════════════════════ */
+
 html.lenis,
 html.lenis body {
   height: auto;
@@ -50,86 +72,4 @@ html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
-}
-
-/* ═══════════════════════════════════════
-   Blackboard Chalk System
-   ═══════════════════════════════════════ */
-
-/* Chalk handwriting font family */
-.font-chalk {
-  font-family: 'Kalam', 'Patrick Hand', cursive;
-  letter-spacing: 0.02em;
-}
-
-/* ═══════════════════════════════════════
-   Blackboard Panel GPU Optimization (Static Realism)
-   ═══════════════════════════════════════ */
-
-.blackboard-panel {
-  will-change: opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  transition: opacity 0.3s ease-out;
-}
-
-/* ═══════════════════════════════════════
-   Cinema Projector Light Leak
-   ═══════════════════════════════════════ */
-
-@keyframes cinemaFlicker {
-  0%, 100% {
-    opacity: 0.85;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.98;
-    transform: scale(1.015);
-  }
-}
-
-.cinema-light-leak {
-  position: relative;
-}
-
-.cinema-light-leak::before,
-.cinema-light-leak::after {
-  content: '';
-  position: absolute;
-  top: 5%;
-  bottom: 5%;
-  width: 90px;
-  pointer-events: none;
-  z-index: 0;
-  border-radius: 50%;
-  filter: blur(35px);
-  animation: cinemaFlicker 4s infinite ease-in-out;
-}
-
-/* Left side light leak */
-.cinema-light-leak::before {
-  left: -45px;
-  background: radial-gradient(ellipse at center, rgba(120, 180, 255, 0.45) 0%, rgba(16, 59, 155, 0.25) 50%, transparent 80%);
-}
-
-/* Right side light leak */
-.cinema-light-leak::after {
-  right: -45px;
-  background: radial-gradient(ellipse at center, rgba(140, 200, 255, 0.45) 0%, rgba(16, 59, 155, 0.25) 50%, transparent 80%);
-}
-
-/* ═══════════════════════════════════════
-   Video Skeleton Shimmer Loader
-   ═══════════════════════════════════════ */
-
-@keyframes shimmer {
-  0% { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-
-.video-skeleton {
-  background: linear-gradient(90deg, #1e2a3a 25%, #2a3a50 50%, #1e2a3a 75%);
-  background-size: 800px 100%;
-  animation: shimmer 1.6s infinite linear;
-  border-radius: 0.75rem;
 }
