@@ -525,31 +525,40 @@ export default function TimelineSection() {
         </div>
 
         {/* ─── MOBILE narrative layer ───
-            Each era is rendered as its own natural-flow block: a
-            short backdrop banner (16:9, eager for era 1, lazy for
-            the rest) followed by the glassmorphic card. The cards
-            stack vertically with no absolute positioning, no GSAP
-            pin, and no crossfade — just one card per era in the
-            order the user reads them.
-            Hidden on desktop where the pinned-stage GSAP path runs. */}
+            Each era is rendered as its own natural-flow block.
+            The backdrop image fills the ENTIRE era block (banner
+            + card behind it), not just the top banner. This way
+            the glassmorphic card sits on top of the same dark
+            photo and the backdrop-blur-2xl has something to
+            refract — without this, the blur picks up the
+            light-gray section background instead of a photo and
+            the card reads as a disconnected floating panel.
+
+            Era 1 backdrop stays eager (LCP candidate on mobile).
+            Other eras defer through vanilla-lazyload. The card
+            itself is in natural document flow (not absolute),
+            so the user just scrolls past 5 self-contained era
+            blocks. Hidden on desktop where the GSAP pinned-stage
+            crossfade runs. */}
         <div className="md:hidden">
           {ERAS.map((era, i) => (
             <div
               key={`mobile-era-${era.id}`}
-              className="relative w-full"
+              className="relative w-full overflow-hidden"
             >
-              {/* Mobile backdrop banner — short and tall enough to
-                  set the era's mood without dominating the viewport
-                  on a phone. 16:9 keeps the image recognizable. */}
-              <div className="relative w-full aspect-[16/10] overflow-hidden bg-brand-midnight">
+              {/* Full-bleed backdrop layer — covers the entire
+                  era block including the card area behind it.
+                  This is what the card's backdrop-blur refracts
+                  for the frosted-glass effect. */}
+              <div
+                className="absolute inset-0 pointer-events-none will-change-transform"
+                aria-hidden="true"
+              >
                 {era.backdrop ? (
                   <img
-                    src={era.backdrop}
-                    alt=""
-                    // Era 1 stays eager (LCP candidate on mobile
-                    // timeline landing). Other eras defer through
-                    // vanilla-lazyload — see useLazyBackdrop().
+                    src={i === 0 ? era.backdrop : undefined}
                     {...(i !== 0 ? { 'data-src': era.backdrop } : {})}
+                    alt=""
                     className="absolute inset-0 size-full object-cover lazy-bg"
                     loading={i === 0 ? 'eager' : 'lazy'}
                     decoding="async"
@@ -557,23 +566,30 @@ export default function TimelineSection() {
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
                 )}
-                {/* Veil for text legibility against the photo. */}
-                <div className="absolute inset-0 bg-gradient-to-t from-brand-midnight/85 via-brand-midnight/40 to-brand-midnight/30" />
-                {/* Era number pinned bottom-left of the banner so the
-                    user knows where they are in the arc. */}
-                <div className="absolute bottom-3 left-4 right-4 pointer-events-none">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
-                    Era {era.id} of {ERAS.length}
-                  </p>
-                </div>
+                {/* Veil — darker than desktop's because the card
+                    sits over the same image. Without this the
+                    backdrop is too bright behind the glass. */}
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-midnight/85 via-brand-midnight/75 to-brand-midnight/85" />
+              </div>
+
+              {/* Top label band — gives the era its visible identity
+                  at the top of the block before the card. */}
+              <div className="relative z-10 pt-10 pb-6 px-5 sm:px-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 mb-2">
+                  Era {era.id} of {ERAS.length}
+                </p>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/60">
+                  Our Journey
+                </p>
               </div>
 
               {/* Card — natural document flow, not absolute. Sits
-                  below the banner with mobile padding and a
-                  comfortable gap between eras. The glassmorphic
-                  surface stays consistent with desktop so the user
-                  gets the same visual identity on phones. */}
-              <div className="px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-16">
+                  directly on top of the full-bleed backdrop so
+                  the glassmorphic surface has the era photo
+                  to refract through. Mobile-tuned padding (smaller
+                  than desktop's lg:p-[40px]) since the card width
+                  is constrained by the phone viewport. */}
+              <div className="relative z-10 px-4 pb-12 sm:px-6 sm:pb-16">
                 <article
                   className="timeline-card relative w-full max-w-xl mx-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-6 pt-7 pb-8 sm:px-7 sm:pt-8 sm:pb-9 pointer-events-auto select-text text-left"
                   style={{
