@@ -477,7 +477,11 @@ export default function ContactSection() {
 // The error state shifts the ring color and adds a red border.
 function inputClass(hasError) {
   const base =
-    'w-full rounded-lg border bg-white text-sm sm:text-base text-[#0A1E5C] placeholder:text-[#8A95AD] pl-10 pr-3 py-2.5 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0'
+    // Always `text-base` (16px) — never smaller. iOS Safari zooms
+    // any input whose computed font-size is below 16px on focus,
+    // which is jarring on mobile. `sm:text-base` would drop to
+    // text-sm (14px) below the sm breakpoint.
+    'w-full rounded-lg border bg-white text-base text-[#0A1E5C] placeholder:text-[#8A95AD] pl-10 pr-3 py-3 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[48px]'
   const ring = hasError
     ? 'border-[#C41230] focus:border-[#C41230] focus:ring-[#C41230]/30'
     : 'border-[#E3E7F0] focus:border-[#0A1E5C]/40 focus:ring-[#0A1E5C]/20'

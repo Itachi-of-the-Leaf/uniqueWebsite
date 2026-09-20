@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Menu, X, ChevronRight, PhoneCall, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 
@@ -6,10 +6,31 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { language, setLanguage, t } = useLanguage()
 
+  // ─── Hide-on-pinned-section listener ──────────────────────────────────
+  // While the user is inside a scroll-driven story section
+  // (#journey or #testimonials), ScrollTrigger fires a
+  // `pinned-section` CustomEvent with detail.pinned = true.
+  // We use a counter so multiple pinned sections can stack cleanly
+  // and the nav only reappears once every pinned section releases.
+  // The header slides up via the .nav-shell[data-hidden="true"]
+  // CSS rule in index.css.
+  useEffect(() => {
+    let pinnedCount = 0
+    const onPinned = (e) => {
+      const shell = document.querySelector('.nav-shell')
+      if (!shell) return
+      if (e.detail?.pinned) pinnedCount++
+      else pinnedCount = Math.max(0, pinnedCount - 1)
+      shell.dataset.hidden = pinnedCount > 0 ? 'true' : 'false'
+    }
+    window.addEventListener('pinned-section', onPinned)
+    return () => window.removeEventListener('pinned-section', onPinned)
+  }, [])
+
   const navLinks = [
     { label: t('nav.journey'), href: '#journey' },
     { label: t('nav.solutions'), href: '#gallery' },
-    { label: t('nav.donors'), href: '#donors' },
+    { label: t('nav.testimonials'), href: '#testimonials' },
     { label: t('nav.contact'), href: '#contact' },
   ]
 
@@ -23,7 +44,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-[#0B1B4F]/92 border-b border-[#FFD200]/25 shadow-lg shadow-[#061033]/30 transition-all duration-300">
+    <header className="nav-shell sticky top-0 z-50 w-full backdrop-blur-md bg-[#0B1B4F]/92 border-b border-[#FFD200]/25 shadow-lg shadow-[#061033]/30 transition-transform duration-300 ease-out" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -44,30 +65,28 @@ export default function Navbar() {
                 className="h-10 w-10 rounded-lg object-contain border border-white/20 shadow-md flex-shrink-0"
               />
               <div className="leading-tight">
-                <div className="flex items-center gap-2">
-                  <span className="font-heading font-extrabold text-xl tracking-tight text-[#FFFFFF]">
-                    {language === 'mr' ? 'युनिक सिस्टीम्स' : 'Unique Systems'}
-                  </span>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFD200] text-[#081438] shadow-xs">
-                    {t('nav.established')}
-                  </span>
-                </div>
-                <p className="text-xs font-semibold tracking-wide text-[#FFD200]">
-                  {language === 'mr' ? 'Unique Systems' : 'युनिक सिस्टीम्स'}{' '}
-                  <span className="text-white/60">| {t('nav.tagline')}</span>
+                <span className="font-heading font-extrabold text-xl tracking-tight text-[#FFFFFF] block">
+                  {t('nav.brandName')}
+                </span>
+                <p className="text-[0.7rem] sm:text-xs font-semibold tracking-wide text-[#FFD200] mt-0.5">
+                  {t('nav.gst')}
                 </p>
               </div>
             </div>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-6">
+          {/* Desktop Navigation Links — evenly distributed across
+              the available horizontal space between the brand logo
+              (left) and the right-side controls. `flex-1` plus
+              `justify-evenly` gives each link equal breathing room
+              regardless of how many items exist. */}
+          <nav className="hidden lg:flex flex-1 items-center justify-evenly px-6">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleSmoothScroll(e, link.href)}
-                className="text-sm font-semibold text-white/90 hover:text-[#FFD200] transition-colors duration-200 relative py-1 hover:-translate-y-0.5"
+                className="relative text-sm font-semibold text-white/90 hover:text-[#FFD200] transition-colors duration-200 py-1 hover:-translate-y-0.5 after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:w-0 after:-translate-x-1/2 after:bg-[#FFD200] after:transition-all after:duration-200 hover:after:w-3/4"
               >
                 {link.label}
               </a>
@@ -127,7 +146,7 @@ export default function Navbar() {
               onClick={(e) => handleSmoothScroll(e, '#contact')}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#C41230]/40 border border-[#FFD200]/70 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
-              <span>{t('nav.getQuote')}</span>
+              <span>{t('nav.contactUs')}</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />
             </a>
           </div>
@@ -143,7 +162,8 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setLanguage('mr')}
-                className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all ${
+                aria-label="मराठी"
+                className={`min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-full text-xs font-black transition-all flex items-center justify-center ${
                   language === 'mr'
                     ? 'bg-[#FFD200] text-[#081438]'
                     : 'text-white/80'
@@ -154,7 +174,8 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setLanguage('en')}
-                className={`px-2 py-0.5 rounded-full text-[11px] font-black transition-all ${
+                aria-label="English"
+                className={`min-h-[44px] min-w-[44px] px-2.5 py-1.5 rounded-full text-xs font-black transition-all flex items-center justify-center ${
                   language === 'en'
                     ? 'bg-[#FFD200] text-[#081438]'
                     : 'text-white/80'
@@ -164,12 +185,15 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Mobile Menu Toggle Button */}
+            {/* Mobile Menu Toggle Button — bumped p-2 → p-3 (40px
+                → 48px) so the tap target meets Apple/Material 48dp
+                guidelines without changing the icon size. */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-white hover:bg-white/10 focus:outline-none"
+              className="min-h-[44px] min-w-[44px] p-3 rounded-lg text-white hover:bg-white/10 focus:outline-none flex items-center justify-center"
               aria-label="Toggle Navigation Menu"
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="w-6 h-6 text-[#FFD200]" /> : <Menu className="w-6 h-6 text-white" />}
             </button>
@@ -184,13 +208,13 @@ export default function Navbar() {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-[#FFD200]/30 bg-[#0B1B4F] px-4 pt-3 pb-6 space-y-3 shadow-2xl">
-          <nav className="flex flex-col space-y-2">
+          <nav className="flex flex-col space-y-1.5">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(e) => handleSmoothScroll(e, link.href)}
-                className="px-3 py-2.5 rounded-lg text-base font-bold text-white hover:bg-white/10 hover:text-[#FFD200] transition-colors"
+                className="min-h-[48px] flex items-center px-4 py-3 rounded-lg text-base font-bold text-white hover:bg-white/10 hover:text-[#FFD200] transition-colors"
               >
                 {link.label}
               </a>
@@ -200,7 +224,7 @@ export default function Navbar() {
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[#FFD200]"
+              className="min-h-[48px] flex items-center gap-2 px-4 py-3 text-sm font-bold text-[#FFD200] rounded-lg hover:bg-white/5"
             >
               <PhoneCall className="w-4 h-4" />
               <span>{t('nav.khedHub')} (+91 94224 33394)</span>
@@ -208,9 +232,9 @@ export default function Navbar() {
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#C41230] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
+              className="w-full min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#C41230] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
             >
-              <span>{t('nav.getQuote')}</span>
+              <span>{t('nav.contactUs')}</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />
             </a>
           </div>
