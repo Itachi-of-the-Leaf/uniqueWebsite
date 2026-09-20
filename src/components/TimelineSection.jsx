@@ -12,7 +12,7 @@ const ERAS = [
     yearEnd: 2013,
     eraLabel: 'Phase 01',
     title: 'Ground Zero in Khed',
-    backdrop: '/ShopFront.jpeg', // Era 01: Khed shop origin / institutional tech storefront.
+    backdrop: '/InsideShop.png', // Era 01: Khed shop interior / institutional tech storefront.
     summary:
       "Founded Khed's first dedicated computer assembly and service center — eliminating the 150 km repair corridor to Mumbai and Pune for rural institutions.",
     phases: [
@@ -353,7 +353,7 @@ export default function TimelineSection() {
                   src={era.backdrop}
                   alt=""
                   className="absolute inset-0 size-full object-cover"
-                  loading="lazy"
+                  loading={i === 0 ? 'eager' : 'lazy'}
                   decoding="async"
                 />
               ) : (
