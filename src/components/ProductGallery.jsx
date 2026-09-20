@@ -18,95 +18,11 @@ import {
   Cable,
   Usb,
   CheckCircle2,
+  ArrowUpRight,
 } from 'lucide-react'
-import SpotlightCard from './SpotlightCard'
 
-// Category color tokens — soft tinted backgrounds for easy visual
-// scanning without being loud. Each tint is a translucent brand
-// color paired with a stronger icon stroke.
-const CATEGORY_TINTS = {
-  computing: { icon: '#103B9B', soft: 'rgba(16,59,155,0.10)' },
-  printPower: { icon: '#C41230', soft: 'rgba(196,18,48,0.10)' },
-  displaySound: { icon: '#0A1E5C', soft: 'rgba(255,210,0,0.18)' },
-  inputStorage: { icon: '#0A1E5C', soft: 'rgba(10,30,92,0.08)' },
-}
-
-// Fallback English copy. The translation file overrides these at
-// render time; values here exist so the section degrades gracefully
-// if a translation key is missing.
-const FALLBACK = {
-  badge: 'Hardware & Solutions Matrix',
-  heading: 'Institutional IT Equipment Portfolio',
-  subheading:
-    'A single-source catalog for classrooms, offices, and zila parishad schools — every item is or can be included in stock, configured and made ready to deploy.',
-  footnote: {
-    eyebrow: 'No subscriptions. No vendor lock-in.',
-    line1:
-      'Every device is pre-flashed with our tamper-proof firmware — boot screens display your institution’s crest, statutory grant compliance is signed at the hardware level, and the asset survives any drive wipe or OS re-installation.',
-  },
-}
-
-// Static product catalog. Lives at module scope (not inside the
-// component) so React doesn't re-create the array on each render.
-// The translation file overrides this when the active locale
-// provides products[].
-const FALLBACK_PRODUCTS = [
-  // COMPUTING (3)
-  { iconKey: 'monitor', tintKey: 'computing', title: 'Desktop Computer',
-    subtitle: 'Tower PC for offices, libraries, and computer labs.',
-    tags: ['Tower', 'Office'] },
-  { iconKey: 'tv', tintKey: 'computing', title: 'All-in-one PC',
-    subtitle: 'Built-in display, fewer cables on the desk.',
-    tags: ['Compact', 'All-in-one'] },
-  { iconKey: 'laptop', tintKey: 'computing', title: 'Laptops',
-    subtitle: 'Portable machines for staff and field visits.',
-    tags: ['Portable', 'Staff'] },
-
-  // PRINT & POWER (3)
-  { iconKey: 'printer', tintKey: 'printPower', title: 'Printers',
-    subtitle: 'Single-function black-and-white document printers.',
-    tags: ['B/W', 'A4'] },
-  { iconKey: 'printer', tintKey: 'printPower', title: 'Multi-function Printers',
-    subtitle: 'Print, scan, and copy from one shared machine.',
-    tags: ['Scan', 'Copy'] },
-  { iconKey: 'battery', tintKey: 'printPower', title: 'UPS Systems',
-    subtitle: 'Backup power that keeps the class running through cuts.',
-    tags: ['Backup', 'Surge-safe'] },
-
-  // DISPLAY & SOUND (5)
-  { iconKey: 'projector', tintKey: 'displaySound', title: 'LED Projectors',
-    subtitle: 'Bright classroom projection visible in lit rooms.',
-    tags: ['LED', 'Long-throw'] },
-  { iconKey: 'hand', tintKey: 'displaySound', title: 'Interactive Panels',
-    subtitle: 'Google-certified 4K touch displays for smart classrooms.',
-    tags: ['4K', 'Touch', 'EDLA'] },
-  { iconKey: 'speaker', tintKey: 'displaySound', title: 'Sound Systems',
-    subtitle: '2.1 home-theatre audio — two speakers plus a woofer.',
-    tags: ['2.1', 'Woofer'] },
-  { iconKey: 'tvMinimal', tintKey: 'displaySound', title: 'Projector Screens',
-    subtitle: 'Pull-down or fixed-frame projection surfaces.',
-    tags: ['Matte White'] },
-  { iconKey: 'anchor', tintKey: 'displaySound', title: 'Ceiling-mounting Kits',
-    subtitle: 'Heavy-duty brackets for safely hanging projectors.',
-    tags: ['Steel', 'Universal'] },
-
-  // INPUT & STORAGE (4)
-  { iconKey: 'keyboard', tintKey: 'inputStorage', title: 'Keyboards',
-    subtitle: 'Wired spill-resistant keyboards for daily use.',
-    tags: ['Spill-safe'] },
-  { iconKey: 'mouse', tintKey: 'inputStorage', title: 'Mice',
-    subtitle: 'Optical mice and pointing devices.',
-    tags: ['Optical'] },
-  { iconKey: 'cable', tintKey: 'inputStorage', title: 'Computer Accessories',
-    subtitle: 'Cables, hubs, adapters, and small add-ons.',
-    tags: ['Cables', 'Adapters'] },
-  { iconKey: 'usb', tintKey: 'inputStorage', title: 'Pen-drives (Digital Syllabus)',
-    subtitle: 'Pre-loaded syllabus drives for offline classrooms.',
-    tags: ['Offline-ready'] },
-]
-
-// Icon registry — keeps the product entries decoupled from the
-// import block above. Add a key here to support a new product icon.
+// Icon registry — kept at module scope so React doesn't re-create
+// the map each render. Add a key here to support a new category.
 const ICON_MAP = {
   monitor: Monitor,
   tv: Tv,
@@ -124,6 +40,97 @@ const ICON_MAP = {
   usb: Usb,
 }
 
+// Fallback English copy. The translation file overrides these at
+// render time; values here exist so the section degrades gracefully
+// if a translation key is missing.
+const FALLBACK = {
+  badge: 'Hardware & Solutions Matrix',
+  heading: 'Institutional IT Equipment Portfolio',
+  subheading:
+    'A single-source catalog for classrooms, offices, and zila parishad schools — every item is or can be included in stock, configured and made ready to deploy.',
+  // 7 categories, split into 2 visual tiers. Tier 1 = featured
+  // (2 cards, wider layout), Tier 2 = standard (5 cards, 3-col
+  // grid). Each navigates to its href on click.
+  categories: [
+    // ─── Tier 1 — Featured classroom display ─────────────────
+    {
+      tier: 1,
+      href: '/catalog/interactive-panels',
+      iconKey: 'hand',
+      title: 'Interactive Flat Panels',
+      description:
+        'Google-certified 4K anti-glare touch displays with integrated digital chalkboard software. Built for full-day smart-classroom sessions in lit rooms.',
+      badges: ['4K Anti-Glare', 'EDLA Certified', 'Zero-Bandwidth'],
+      cta: 'Explore Models & Bundles',
+    },
+    {
+      tier: 1,
+      href: '/catalog/projectors',
+      iconKey: 'projector',
+      title: 'Projectors & Rigging',
+      description:
+        'Ceiling-mounted LED projection bundles with screens, audio, and USB pen-drive playback. Sized to fit standard ZP grant caps.',
+      badges: [
+        'Ceiling Rigging Included',
+        'Screens & Audio',
+        'USB Pen-Drive Playback',
+      ],
+      cta: 'Explore Models & Rigging Kits',
+    },
+    // ─── Tier 2 — Institutional infrastructure ──────────────
+    {
+      tier: 2,
+      href: '/catalog/desktops',
+      iconKey: 'tv',
+      title: 'Desktop Computers & All-in-Ones',
+      description:
+        'Tower desktops for offices and computer labs, plus space-saving all-in-ones for admin desks and reception counters.',
+      tags: ['Tower', 'All-in-one', 'Office'],
+    },
+    {
+      tier: 2,
+      href: '/catalog/laptops',
+      iconKey: 'laptop',
+      title: 'Laptops & Mobile Workstations',
+      description:
+        'Portable machines for staff, field visits, and admin mobility. Pre-imaged with the institutional firmware stack.',
+      tags: ['Portable', 'Staff', 'Field'],
+    },
+    {
+      tier: 2,
+      href: '/catalog/printers',
+      iconKey: 'printer',
+      title: 'Printers & MFD Units',
+      description:
+        'Single-function B/W document printers and multi-function print-scan-copy units for shared office pools.',
+      tags: ['B/W', 'A4', 'Scan & Copy'],
+    },
+    {
+      tier: 2,
+      href: '/catalog/ups-systems',
+      iconKey: 'battery',
+      title: 'UPS & Power Backup Systems',
+      description:
+        'Backup power that keeps the class running through cuts. Sized for classroom loads, computer labs, and admin networks.',
+      tags: ['Backup', 'Surge-safe'],
+    },
+    {
+      tier: 2,
+      href: '/catalog/accessories',
+      iconKey: 'usb',
+      title: 'Computer Accessories & Syllabus Media',
+      description:
+        'Bundled mice, keyboards, cables, hubs, and pre-loaded syllabus pen-drives for offline-first classroom delivery.',
+      tags: ['Mice', 'Keyboards', 'Pen-drives'],
+    },
+  ],
+  footnote: {
+    eyebrow: 'No subscriptions. No vendor lock-in.',
+    line1:
+      'Every device is pre-flashed with our tamper-proof firmware — boot screens display your institution\u2019s crest, statutory grant compliance is signed at the hardware level, and the asset survives any drive wipe or OS re-installation.',
+  },
+}
+
 export default function ProductGallery() {
   const { t } = useLanguage()
   const sectionRef = useRef(null)
@@ -139,15 +146,33 @@ export default function ProductGallery() {
   const footnoteEyebrow = lang.footnote?.eyebrow ?? FALLBACK.footnote.eyebrow
   const footnoteLine1 = lang.footnote?.line1 ?? FALLBACK.footnote.line1
 
-  // 15 products. Each card has: an Icon component (Lucide), a tint
-  // key, a title, a 1-line subtitle in plain language, and short tag
-  // chips. The shape mirrors gallery.products[] in the translation
-  // file.
-  const products = (lang.products ?? FALLBACK_PRODUCTS).map((p) => ({
-    ...p,
-    Icon: ICON_MAP[p.iconKey] ?? Monitor,
-    tint: CATEGORY_TINTS[p.tintKey] ?? CATEGORY_TINTS.computing,
+  // 7 categories resolved with their Icon components. tier 1 splits
+  // off the first 2 (featured); tier 2 holds the remaining 5.
+  const categories = (lang.categories ?? FALLBACK.categories).map((c) => ({
+    ...c,
+    Icon: ICON_MAP[c.iconKey] ?? Monitor,
   }))
+  const tier1 = categories.filter((c) => c.tier === 1)
+  const tier2 = categories.filter((c) => c.tier === 2)
+
+  // Click handler — until catalog routes are scaffolded, prevent
+  // broken-link jumps by suppressing the default anchor navigation
+  // for the placeholder /catalog/* paths. When real routes exist,
+  // remove this handler (or replace with React Router's <Link>)
+  // and the cards will navigate normally.
+  const handleNav = (e, href) => {
+    // Placeholder routes that don't yet exist as pages. We log a
+    // console hint so the dev knows the click was received, but
+    // we don't throw a runtime error or a 404 navigation.
+    if (href.startsWith('/catalog/')) {
+      e.preventDefault()
+      // eslint-disable-next-line no-console
+      console.info(
+        `[ProductGallery] Catalog route "${href}" is not yet scaffolded. ` +
+          'Add a route + page in App.jsx to enable navigation.',
+      )
+    }
+  }
 
   // Scroll reveal — subtle, respecting prefers-reduced-motion.
   // Header stagger, card stagger, footnote fade. All animations are
@@ -243,58 +268,113 @@ export default function ProductGallery() {
           </p>
         </div>
 
-        {/* PRODUCT GRID */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5"
-        >
-          {products.map((p) => {
-            const Icon = p.Icon
-            const tint = p.tint
-            return (
-              <SpotlightCard
-                key={p.title}
-                spotlightColor={`${tint.icon}33`}
-                className="group flex flex-col gap-3 p-4 sm:p-5 bg-white border border-[#E3E7F0] hover:border-[#0A1E5C]/40 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#0A1E5C]/10 rounded-2xl h-full"
-              >
-                <div data-card className="flex flex-col gap-3 h-full">
-                  {/* Icon block — soft tinted square with the lucide icon */}
-                  <div
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
-                    style={{ backgroundColor: tint.soft }}
-                    aria-hidden="true"
-                  >
-                    <Icon
-                      className="w-5 h-5 sm:w-6 sm:h-6"
-                      style={{ color: tint.icon, strokeWidth: 1.8 }}
+        {/* CATEGORY GRID */}
+        <div ref={gridRef} className="flex flex-col gap-6">
+          {/* ─── TIER 1 — Featured classroom display (2-col) ─── */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {tier1.map((c) => {
+              const Icon = c.Icon
+              return (
+                <a
+                  key={c.href}
+                  href={c.href}
+                  onClick={(e) => handleNav(e, c.href)}
+                  data-card
+                  className="group relative rounded-2xl bg-white p-6 sm:p-7 lg:p-8 border border-slate-200 hover:border-brand-navy/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col gap-5 cursor-pointer"
+                >
+                  {/* Top bar: icon on the left, ArrowUpRight on the right */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 text-brand-navy flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                      <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                    </div>
+                    <ArrowUpRight
+                      className="w-5 h-5 text-brand-navy/60 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      strokeWidth={2}
+                      aria-hidden="true"
                     />
                   </div>
 
-                  {/* Title */}
-                  <h3 className="text-sm sm:text-base font-extrabold text-[#0A1E5C] leading-tight">
-                    {p.title}
-                  </h3>
+                  {/* Title + description */}
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-[#0A1E5C] leading-tight">
+                      {c.title}
+                    </h3>
+                    <p className="text-sm sm:text-[0.95rem] text-[#3A4565] leading-relaxed">
+                      {c.description}
+                    </p>
+                  </div>
 
-                  {/* Plain-language subtitle */}
-                  <p className="text-[0.7rem] sm:text-xs text-[#5A6781] leading-snug">
-                    {p.subtitle}
-                  </p>
-
-                  {/* Spec chips — small grey tags */}
-                  <div className="mt-auto flex flex-wrap gap-1 pt-2">
-                    {p.tags.map((tag) => (
+                  {/* Pill badges highlighting bundled equipment */}
+                  <div className="flex flex-wrap gap-2">
+                    {c.badges.map((b) => (
                       <span
-                        key={tag}
-                        className="text-[0.625rem] font-semibold tracking-wide uppercase px-1.5 py-0.5 rounded bg-[#F1F4FA] text-[#5A6781]"
+                        key={b}
+                        className="text-xs font-semibold bg-brand-navy/5 text-[#0A1E5C] px-2.5 py-1 rounded-md"
                       >
-                        {tag}
+                        {b}
                       </span>
                     ))}
                   </div>
-                </div>
-              </SpotlightCard>
-            )
-          })}
+
+                  {/* CTA link */}
+                  <div className="mt-auto pt-2 text-sm font-bold text-brand-navy inline-flex items-center gap-1">
+                    {c.cta}
+                    <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+
+          {/* ─── TIER 2 — Institutional infrastructure (3-col) ─── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tier2.map((c) => {
+              const Icon = c.Icon
+              return (
+                <a
+                  key={c.href}
+                  href={c.href}
+                  onClick={(e) => handleNav(e, c.href)}
+                  data-card
+                  className="group relative rounded-2xl bg-white p-6 border border-slate-200 hover:border-brand-navy/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
+                >
+                  {/* Top bar: icon + ArrowUpRight */}
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 text-brand-navy flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                      <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                    </div>
+                    <ArrowUpRight
+                      className="w-5 h-5 text-brand-navy/60 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      strokeWidth={2}
+                      aria-hidden="true"
+                    />
+                  </div>
+
+                  {/* Body */}
+                  <div className="flex flex-col gap-2 flex-1">
+                    <h3 className="text-base sm:text-lg font-extrabold text-[#0A1E5C] leading-tight">
+                      {c.title}
+                    </h3>
+                    <p className="text-sm text-[#3A4565] leading-snug">
+                      {c.description}
+                    </p>
+                  </div>
+
+                  {/* Bottom-aligned spec chips */}
+                  <div className="mt-auto pt-3 flex flex-wrap gap-1.5">
+                    {c.tags.map((t) => (
+                      <span
+                        key={t}
+                        className="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </a>
+              )
+            })}
+          </div>
         </div>
 
         {/* FOOTNOTE BAND — single quiet callout about firmware */}
