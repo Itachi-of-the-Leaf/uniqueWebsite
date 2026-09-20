@@ -47,11 +47,11 @@ const ERAS = [
       },
       {
         label: 'The Hardware Innovation',
-        body: 'Designed a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineering high-speed USB pen-drive decoding directly into the display to bypass expensive onboard storage.',
+        body: 'Built a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineered high-speed USB pen-drive decoding into the display to skip expensive onboard storage.',
       },
       {
         label: 'Institutional Grant Fit',
-        body: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization did not need expensive corporate vendor contracts.",
+        body: "Fit the total cost within ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
       },
     ],
   },
@@ -75,7 +75,7 @@ const ERAS = [
       },
       {
         label: '100+ School Milestone',
-        body: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proving reliability in coastal, high-humidity areas with erratic power.',
+        body: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proven in high-humidity coastal areas.',
       },
     ],
   },
