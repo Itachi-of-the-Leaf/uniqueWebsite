@@ -8,7 +8,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: t('nav.journey'), href: '#journey' },
-    { label: t('nav.solutions'), href: '#solutions' },
+    { label: t('nav.solutions'), href: '#gallery' },
     { label: t('nav.donors'), href: '#donors' },
     { label: t('nav.contact'), href: '#contact' },
   ]
@@ -123,8 +123,8 @@ export default function Navbar() {
 
             {/* Primary Action Button */}
             <a
-              href="#solutions"
-              onClick={(e) => handleSmoothScroll(e, '#solutions')}
+              href="#contact"
+              onClick={(e) => handleSmoothScroll(e, '#contact')}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#C41230]/40 border border-[#FFD200]/70 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
             >
               <span>{t('nav.getQuote')}</span>
@@ -206,8 +206,8 @@ export default function Navbar() {
               <span>{t('nav.khedHub')} (+91 94224 33394)</span>
             </a>
             <a
-              href="#solutions"
-              onClick={(e) => handleSmoothScroll(e, '#solutions')}
+              href="#contact"
+              onClick={(e) => handleSmoothScroll(e, '#contact')}
               className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#C41230] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
             >
               <span>{t('nav.getQuote')}</span>

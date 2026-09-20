@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TimelineSection from './components/TimelineSection'
 import MLADonorShowcase from './components/MLADonorShowcase'
+import ProductGallery from './components/ProductGallery'
 import SpotlightCard from './components/SpotlightCard'
 import DecryptedText from './components/DecryptedText'
 import BrandSwoosh from './components/BrandSwoosh'
@@ -12,7 +13,6 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext'
 import {
   PhoneCall,
   MapPin,
-  CheckCircle2,
   Sparkles,
   ExternalLink,
   ShieldCheck,
@@ -47,116 +47,8 @@ function AppContent() {
         {/* Bespoke MLA & CSR Donor Showcase Section with Live Firmware Boot Simulator */}
         <MLADonorShowcase />
 
-        {/* Turnkey Solutions & Quote Callout with Spotlight Cards */}
-        <section id="solutions" className="py-20 lg:py-28 bg-[#FFFFFF] border-t border-slate-200 relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto text-center mb-16">
-              <span className="text-xs font-black uppercase tracking-widest text-[#103B9B] bg-[#103B9B]/10 px-4 py-1.5 rounded-full border border-[#103B9B]/25 shadow-xs">
-                {t('solutions.badge')}
-              </span>
-              <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-[#081438] tracking-tight">
-                {t('solutions.heading')}
-              </h2>
-              <p className="mt-3 text-base sm:text-lg text-slate-700">
-                {t('solutions.subheading')}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
-              
-              {/* Plan 1: ₹25K ZP Rig */}
-              <SpotlightCard
-                spotlightColor="rgba(255, 210, 0, 0.2)"
-                borderColor="rgba(16, 59, 155, 0.45)"
-                className="p-8 sm:p-10 shadow-xl border-2 border-slate-200 hover:border-[#103B9B] flex flex-col justify-between bg-white"
-              >
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#103B9B]/10 text-[#103B9B] text-xs font-black mb-4 border border-[#103B9B]/20">
-                    {t('solutions.plan1.badge')}
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-[#081438]">
-                    {t('solutions.plan1.title')}
-                  </h3>
-                  <div className="mt-2 text-3xl font-black text-[#C41230] font-mono">
-                    <DecryptedText text={t('solutions.plan1.price')} animateOn="hover" />
-                    <span className="text-sm font-semibold text-slate-500 font-sans">{t('solutions.plan1.unit')}</span>
-                  </div>
-                  <p className="mt-4 text-sm text-slate-700 leading-relaxed">
-                    {t('solutions.plan1.desc')}
-                  </p>
-                  <ul className="mt-6 space-y-3 text-sm text-slate-800">
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#103B9B] shrink-0" /> {t('solutions.plan1.f1')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#103B9B] shrink-0" /> {t('solutions.plan1.f2')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#103B9B] shrink-0" /> {t('solutions.plan1.f3')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#103B9B] shrink-0" /> {t('solutions.plan1.f4')}
-                    </li>
-                  </ul>
-                </div>
-                <div className="pt-8">
-                  <a
-                    href="#contact"
-                    onClick={(e) => handleSmoothScroll(e, '#contact')}
-                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-sm transition-all shadow-md shadow-[#C41230]/30 border border-[#FFD200]/70"
-                  >
-                    {t('solutions.plan1.cta')}
-                  </a>
-                </div>
-              </SpotlightCard>
-
-              {/* Plan 2: Google EDLA Interactive Panel */}
-              <div className="p-8 sm:p-10 rounded-3xl bg-[#0A1E5C] text-white border-2 border-[#103B9B] shadow-2xl relative overflow-hidden flex flex-col justify-between">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#103B9B]/30 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="relative z-10">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-[#103B9B] to-[#C41230] text-white text-xs font-black mb-4 shadow-xs border border-[#FFD200]/30">
-                    <Sparkles className="w-3.5 h-3.5 text-[#FFD200]" /> {t('solutions.plan2.badge')}
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-heading font-extrabold text-white">
-                    {t('solutions.plan2.title')}
-                  </h3>
-                  <div className="mt-2 text-3xl font-black text-[#FFD200] font-mono">
-                    <DecryptedText text={t('solutions.plan2.price')} animateOn="mount" />
-                    <span className="text-sm font-semibold text-slate-300 font-sans">{t('solutions.plan2.unit')}</span>
-                  </div>
-                  <p className="mt-4 text-sm text-slate-200 leading-relaxed">
-                    {t('solutions.plan2.desc')}
-                  </p>
-                  <ul className="mt-6 space-y-3 text-sm text-slate-100">
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#FFD200] shrink-0" /> {t('solutions.plan2.f1')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#FFD200] shrink-0" /> {t('solutions.plan2.f2')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#FFD200] shrink-0" /> {t('solutions.plan2.f3')}
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#FFD200] shrink-0" /> {t('solutions.plan2.f4')}
-                    </li>
-                  </ul>
-                </div>
-                <div className="pt-8 relative z-10">
-                  <a
-                    href="#contact"
-                    onClick={(e) => handleSmoothScroll(e, '#contact')}
-                    className="block text-center w-full py-3.5 px-4 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white font-extrabold text-sm transition-all shadow-md shadow-[#C41230]/40 border border-[#FFD200]/80"
-                  >
-                    {t('solutions.plan2.cta')}
-                  </a>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
+        {/* Phase 2: Hardware & Solutions Matrix (Product Gallery + Exploded View + Firmware Callout) */}
+        <ProductGallery />
 
         {/* Dynamic Curved Swoosh Divider into Footer */}
         <div className="bg-[#FFFFFF]">
@@ -244,8 +136,8 @@ function AppContent() {
                   </li>
                   <li>
                     <a
-                      href="#solutions"
-                      onClick={(e) => handleSmoothScroll(e, '#solutions')}
+                      href="#gallery"
+                      onClick={(e) => handleSmoothScroll(e, '#gallery')}
                       className="hover:text-[#FFD200] transition-colors"
                     >
                       {t('footer.linkRig')}
@@ -253,8 +145,8 @@ function AppContent() {
                   </li>
                   <li>
                     <a
-                      href="#solutions"
-                      onClick={(e) => handleSmoothScroll(e, '#solutions')}
+                      href="#gallery"
+                      onClick={(e) => handleSmoothScroll(e, '#gallery')}
                       className="hover:text-[#FFD200] transition-colors"
                     >
                       {t('footer.linkEdla')}
