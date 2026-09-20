@@ -427,43 +427,51 @@ export default function TimelineSection() {
                     }}
                     aria-hidden={i !== 0}
                   >
-                    {/* Phase eyebrow — bumped to 12/13px (was 11px)
-                        for better scan-ability. mb-3 (12px) gap. */}
-                    <div className="text-[12px] lg:text-[13px] font-bold tracking-widest text-brand-gold uppercase mb-3">
+                    {/* Phase eyebrow — bumped to 13/14px (was 12/13)
+                        for better scan-ability. Wider tracking
+                        tracking-[0.18em] (was tracking-widest = 0.1em)
+                        gives a futuristic-tech look with more
+                        breathing room between glyphs. mb-3 (12px)
+                        gap to the title. */}
+                    <div className="text-[13px] lg:text-[14px] font-bold tracking-[0.18em] text-brand-gold uppercase mb-3">
                       {era.phase}
                     </div>
 
-                    {/* Era title — bumped to 28/34px (was 24/28px)
-                        for stronger hierarchy. leading-[1.1] keeps
-                        the title compact while mb-4 (16px) gives
-                        the lead paragraph clear separation. */}
-                    <h3 className="text-[28px] lg:text-[34px] font-bold text-white tracking-tight leading-[1.1] mb-4">
+                    {/* Era title — bumped to 30/36px (was 28/34px)
+                        for stronger hierarchy. Tighter tracking
+                        tracking-[-0.02em] + a subtle drop-shadow
+                        glow gives a modern futuristic-tech look
+                        (white text with a barely-there luminance
+                        bloom). leading-[1.08] keeps the title
+                        compact while mb-4 (16px) gives the lead
+                        paragraph clear separation. */}
+                    <h3 className="text-[30px] lg:text-[36px] font-bold text-white tracking-[-0.02em] leading-[1.08] mb-4 drop-shadow-[0_0_8px_rgba(255,255,255,0.06)]">
                       {era.title}
                     </h3>
 
-                    {/* Lead paragraph — bumped to 15/16px (was 14px)
-                        in slate-100 (was slate-200) for higher
-                        contrast. leading-[1.7] (was 1.6) gives
-                        comfortable line spacing. mb-6 (24px) gives
-                        the spec section generous separation. */}
-                    <p className="text-[15px] lg:text-[16px] text-slate-100 leading-[1.7] mb-6">
+                    {/* Lead paragraph — bumped to 16/17px (was 15/16px)
+                        for better readability with the bumped card
+                        sizes. slate-100 (high contrast) + leading-[1.7]
+                        gives comfortable line spacing. mb-6 (24px)
+                        gives the spec section generous separation. */}
+                    <p className="text-[16px] lg:text-[17px] text-slate-100 leading-[1.7] mb-6">
                       {era.lead}
                     </p>
 
                     {/*
-                      Specs list — switched from space-y-3 to flex
-                      flex-col gap-4 (16px gap) for explicit, larger
-                      gaps between specs. Each spec text bumped from
-                      13/14px to 14/15px, label mr-2 (was mr-1.5) for
-                      slightly more space after the colon. Border-t
-                      opacity bumped from /10 to /15 so the divider
-                      is clearly visible.
+                      Specs list — bumped from 14/15px to 15/16px for
+                      better readability with the bumped card sizes.
+                      label mr-2 (was mr-1.5) gives more space after
+                      the colon. gap-4 (16px) between specs, pt-5 +
+                      border-white/15 for clear visual separation.
+                      leading-[1.65] (was 1.6) keeps the rhythm
+                      consistent with the slightly larger type.
                     */}
                     <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
                       {era.specs.map((spec, j) => (
                         <p
                           key={j}
-                          className="text-[14px] lg:text-[15px] text-slate-200 leading-[1.6] m-0"
+                          className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.65] m-0"
                         >
                           <strong className="text-brand-gold font-semibold mr-2">
                             {spec.label}:
