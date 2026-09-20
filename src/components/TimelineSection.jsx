@@ -39,7 +39,7 @@ const ERAS = [
     title: 'The ₹25,000 Breakthrough',
     backdrop: '/Projector_in_action.jpeg',
     summary:
-      'Challenged ₹1 Lakh+ smart-classroom vendor quotes by engineering an offline, ruggedized LED ceiling-projection rig built within ZP grant caps.',
+      'Challenged ₹1 Lakh+ smart-classroom vendor quotes by engineering an offline, ruggedized LED ceiling-projection rig, built to fit standard ZP grant caps.',
     phases: [
       {
         label: 'The Rural Catalyst',
@@ -47,11 +47,11 @@ const ERAS = [
       },
       {
         label: 'The Hardware Innovation',
-        body: 'Built a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineered high-speed USB pen-drive decoding into the display to skip expensive onboard storage.',
+        body: 'Designed and built a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineered high-speed USB pen-drive decoding directly into the display, skipping expensive onboard storage.',
       },
       {
         label: 'Institutional Grant Fit',
-        body: "Fit the total cost within ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
+        body: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
       },
     ],
   },
@@ -63,7 +63,7 @@ const ERAS = [
     title: 'Institutional Deployments & Regional Scale',
     backdrop: '/HappyKids1.jpeg',
     summary:
-      'Scaled deployments across 100+ schools in partnership with regional CSR foundations, institutional training under Mahad MMACETP (Mahad MIDC), and State-Board-aligned educational curriculum curators.',
+      'Scaled deployments across 100+ schools in partnership with regional CSR foundations, Mahad MMACETP (Mahad MIDC) institutional training, and State-Board-aligned curriculum curators.',
     phases: [
       {
         label: 'Strategic Curriculum Alignment',
