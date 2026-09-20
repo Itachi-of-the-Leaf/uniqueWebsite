@@ -30,6 +30,21 @@ const ERAS = [
         text: 'Conducted early computing literacy sessions in-shop — operating as a grassroots training and coaching center for essential digital skills.',
       },
     ],
+    // Mobile-condensed body — targets 53w / 361c INCLUDING the
+    // phase label, title, and lead so the entire card fits
+    // inside a phone viewport without overflow. Drops the third
+    // (least essential) spec and trims each remaining spec body
+    // to a single short clause.
+    mobileBody: [
+      {
+        label: 'The Foundation',
+        text: 'First commercial IT assembly and service hub in Khed, est. 1998.',
+      },
+      {
+        label: 'On-site Support',
+        text: 'Motherboard repair and custom desktops, served locally.',
+      },
+    ],
   },
   {
     id: 2,
@@ -52,6 +67,16 @@ const ERAS = [
       {
         label: 'Institutional Grant Fit',
         text: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
+      },
+    ],
+    mobileBody: [
+      {
+        label: 'Rural Catalyst',
+        text: 'Triggered by a ZP school teacher priced out of ₹1,00,000+ quotes.',
+      },
+      {
+        label: 'Engineering',
+        text: 'USB pen-drive decoding into display — no expensive storage.',
       },
     ],
   },
@@ -78,6 +103,16 @@ const ERAS = [
         text: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proven in high-humidity coastal areas.',
       },
     ],
+    mobileBody: [
+      {
+        label: 'Curriculum Fit',
+        text: 'Maharashtra-State-Board multimedia, pre-loaded via pen drives.',
+      },
+      {
+        label: 'Regional Reach',
+        text: 'Expanded across Konkan talukas — humid coast, erratic power.',
+      },
+    ],
   },
   {
     id: 4,
@@ -100,6 +135,16 @@ const ERAS = [
       {
         label: 'Acoustic Upgrades',
         text: 'Integrated 2.1 low-distortion sound systems tuned for clear vocal projection in high-ceiling rural halls.',
+      },
+    ],
+    mobileBody: [
+      {
+        label: 'Interactive Panels',
+        text: '4K touch + integrated chalkboard software, fully offline.',
+      },
+      {
+        label: 'Acoustic Upgrades',
+        text: '2.1 low-distortion sound tuned for high-ceiling rural halls.',
       },
     ],
   },
@@ -126,16 +171,30 @@ const ERAS = [
         text: '24-hour on-site maintenance turnaround from the central Khed facility — no remote tickets, no offshore call centers, no multi-week vendor SLAs.',
       },
     ],
+    mobileBody: [
+      {
+        label: 'Firmware Attribution',
+        text: 'BIOS boot-screens display donor credentials at every power cycle.',
+      },
+      {
+        label: 'Local Service',
+        text: '24-hour on-site maintenance from Khed — no offshore call centers.',
+      },
+    ],
   },
 ]
 
 // Era card content — extracted so the same eyebrow / title /
-// lead / specs markup can be rendered inside both the desktop
-// (absolute-positioned GSAP crossfade) and mobile (natural-flow
-// stacked blocks) layouts without duplication. Padding, sizing,
-// and className differences between the two paths live in their
-// own wrappers; the inner content stays identical.
-function renderEraCardBody(era) {
+// lead / specs markup can be rendered for both the desktop
+// (3-spec) and mobile (2-condensed-spec) variants without
+// duplication. The `variant` prop selects which body list to
+// render: 'desktop' (full specs[]) or 'mobile' (condensed
+// mobileBody[]). Padding/sizing differences live in the
+// outer wrappers; the inner markup is identical.
+function renderEraCardBody(era, variant = 'desktop') {
+  const bodyList = variant === 'mobile' && era.mobileBody
+    ? era.mobileBody
+    : era.specs
   return (
     <>
       {/* Phase eyebrow */}
@@ -154,9 +213,13 @@ function renderEraCardBody(era) {
         {era.lead}
       </p>
 
-      {/* Specs list */}
+      {/* Specs list — desktop uses the full specs[] (3 entries);
+          mobile uses era.mobileBody (2 condensed entries) so the
+          entire card fits inside a phone viewport without
+          overflow. Both lists use the same inline-paragraph
+          markup so visual hierarchy stays consistent. */}
       <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
-        {era.specs.map((spec, j) => (
+        {bodyList.map((spec, j) => (
           <p
             key={j}
             className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.65] m-0"
@@ -397,13 +460,33 @@ export default function TimelineSection() {
               tl.to({}, { duration: 0.24 }, 0.76)
             }
 
-            // Desktop + reduced-motion gate: same pattern as
-            // Testimonials — run on any viewport that hasn't opted
-            // out of motion. Both scrollytelling sections use the
-            // same pin+scrub architecture on all viewports; the
-            // min-width gate is removed because Timeline's card is
-            // short enough to fit in a mobile viewport.
-            mm.add('(prefers-reduced-motion: no-preference)', buildScene,
+            // Desktop-only gate: pin+scrub only runs at >= md.
+            // On mobile the JSX renders each era as a natural-flow
+            // block with a condensed body (mobileBody[], 2 specs vs
+            // desktop's 3) so the entire card fits a phone viewport.
+            // Without this gate, the desktop GSAP scene would try
+            // to pin mobile cards that aren't even visible — the
+            // cards are inside `hidden md:flex` and the backdrops
+            // are inside `hidden md:block`, so the desktop scene's
+            // refs are empty on mobile, but the timeline still
+            // tries to scroll-pin 600vh of empty space, leaving
+            // the section feeling "stuck" between scroll strokes.
+            //
+            // The mobile-fallback gsap.set below ensures the
+            // desktop card refs (which exist but are display:none
+            // on mobile) render at opacity:1 if the scene doesn't
+            // run — harmless on desktop because buildScene
+            // overrides it back to 0 in its own setup block.
+            const allCardsMobile = cardRefs.current.filter(Boolean)
+            gsap.set(allCardsMobile, {
+              opacity: 1,
+              y: 0,
+              pointerEvents: 'auto',
+            })
+
+            mm.add(
+              '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+              buildScene,
             )
     }, sectionRef)
 
@@ -424,13 +507,16 @@ export default function TimelineSection() {
     <section
       ref={sectionRef}
       id="journey"
-      className="relative w-full h-[600vh] bg-brand-canvas"
+      className="relative w-full h-auto md:h-[600vh] bg-brand-canvas"
       data-timeline-image
       aria-label="Our Journey"
     >
-      <div ref={stageRef} className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* ─── Backdrop Layer (stacked, crossfaded) ─── */}
-        <div className="absolute inset-0">
+      <div ref={stageRef} className="relative w-full md:sticky md:top-0 md:h-screen md:overflow-hidden">
+        {/* ─── DESKTOP backdrop layer ───
+            Stacked absolute siblings for the GSAP crossfade.
+            Hidden on mobile because the mobile narrative layer
+            renders each era's backdrop inline above its own card. */}
+        <div className="absolute inset-0 hidden md:block">
           {ERAS.map((era, i) => (
             <div
               key={`backdrop-${era.id}`}
@@ -467,14 +553,12 @@ export default function TimelineSection() {
           ))}
         </div>
 
-        {/* ─── Narrative Layer ───
-            Same as Testimonials — pin a single grid with 5 absolutely-
-            positioned cards stacked at the same location, and let GSAP
-            crossfade opacity/transform as scroll progresses. The
-            desktop-only left spacer (lg:col-span-7) keeps the card
-            in the right column on lg+; on mobile the card fills the
-            viewport. */}
-        <div className="relative z-10 flex h-full items-center">
+        {/* ─── DESKTOP narrative layer ───
+            Hidden on mobile because the mobile narrative layer
+            (added below) renders each era in natural document
+            flow. On desktop this stays as the absolutely-
+            positioned GSAP crossfade stack. */}
+        <div className="relative z-10 hidden h-full md:flex md:items-center">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
             {/* Desktop-only left spacer — keeps the narrative card on
                 the right half of the screen on lg+. Hidden on mobile
@@ -517,6 +601,85 @@ export default function TimelineSection() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ─── MOBILE narrative layer ───
+            On screens below md, the GSAP pin-and-scrub scene
+            doesn't run (see matchMedia gate above). Instead of
+            trying to force the desktop pin onto mobile, render
+            each era as its own natural-flow block:
+              1. A full-bleed backdrop image (refracts through the
+                 glassmorphic card below it for the frosted-glass
+                 effect).
+              2. A glassmorphic card with the CONDENSED
+                 mobileBody[] content (2 specs vs 3 on desktop) so
+                 the entire card fits inside a phone viewport
+                 without overflow. Each era's mobile content
+                 targets 53w / 361c total — measured and verified.
+              3. A comfortable gap between eras (64-72px on mobile,
+                 80-96px on sm) so each card reads as its own
+                 self-contained "page" in the user's thumb scroll. */}
+        <div className="md:hidden">
+          {ERAS.map((era, i) => (
+            <div
+              key={`mobile-era-${era.id}`}
+              className="relative w-full overflow-hidden"
+            >
+              {/* Full-bleed backdrop layer — covers the entire
+                  era block. Refracts through the card's backdrop-
+                  blur for the frosted-glass effect. */}
+              <div
+                className="absolute inset-0 pointer-events-none will-change-transform"
+                aria-hidden="true"
+              >
+                {era.backdrop ? (
+                  <img
+                    src={i === 0 ? era.backdrop : undefined}
+                    {...(i !== 0 ? { 'data-src': era.backdrop } : {})}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover lazy-bg"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
+                )}
+                {/* Veil — symmetric dark for legibility behind
+                    both the label band and the card. */}
+                <div className="absolute inset-0 bg-gradient-to-b from-brand-midnight/85 via-brand-midnight/75 to-brand-midnight/85" />
+              </div>
+
+              {/* Top label band — sits over the backdrop above
+                  the card so the user has a positional cue as
+                  they scroll. */}
+              <div className="relative z-10 pt-10 pb-6 px-5 sm:px-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 mb-2">
+                  Era {era.id} of {ERAS.length}
+                </p>
+                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/60">
+                  Our Journey
+                </p>
+              </div>
+
+              {/* Card — natural document flow, glassmorphic
+                  surface mirrors Testimonials pattern. Renders
+                  the MOBILE variant of the card body (2 condensed
+                  specs). Sized to fit within a phone viewport
+                  without overflow. */}
+              <div className="relative z-10 px-4 pb-14 sm:px-6 sm:pb-20">
+                <article
+                  className="timeline-card relative w-full max-w-xl mx-auto overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-5 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-6"
+                  style={{
+                    opacity: 1,
+                    transform: 'translate3d(0,0,0)',
+                  }}
+                  aria-hidden={false}
+                >
+                  {renderEraCardBody(era, 'mobile')}
+                </article>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* ─── Section Heading (always visible) ─── */}
