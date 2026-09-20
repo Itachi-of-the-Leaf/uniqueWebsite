@@ -11,23 +11,23 @@ const ERAS = [
     id: 1,
     yearStart: 1998,
     yearEnd: 2013,
-    eraLabel: 'Phase 01',
+    phase: 'Phase 01 · 1998 – 2013',
     title: 'Ground Zero in Khed',
     backdrop: '/InsideShop.png', // Era 01: Khed shop interior / institutional tech storefront.
-    summary:
+    lead:
       "Founded Khed's first dedicated computer assembly and service center — eliminating the 150 km repair corridor to Mumbai and Pune for rural institutions.",
-    specifications: [
+    specs: [
       {
         label: 'The Foundation',
-        value: "Established Unique Systems in 1998 — Khed's first dedicated commercial IT assembly, peripheral sales, and hardware servicing hub.",
+        text: "Established Unique Systems in 1998 — Khed's first dedicated commercial IT assembly, peripheral sales, and hardware servicing hub.",
       },
       {
         label: 'Infrastructure Independence',
-        value: 'Eliminated the 150 km repair corridor to Mumbai and Pune — providing on-site motherboard servicing, custom desktop assemblies, and local technical support to public schools, village offices, and small enterprises.',
+        text: 'Eliminated the 150 km repair corridor to Mumbai and Pune — providing on-site motherboard servicing, custom desktop assemblies, and local technical support to public schools, village offices, and small enterprises.',
       },
       {
         label: 'Digital Literacy Footprint',
-        value: 'Conducted early computing literacy sessions in-shop — operating as a grassroots training and coaching center for essential digital skills.',
+        text: 'Conducted early computing literacy sessions in-shop — operating as a grassroots training and coaching center for essential digital skills.',
       },
     ],
   },
@@ -35,23 +35,23 @@ const ERAS = [
     id: 2,
     yearStart: 2014,
     yearEnd: 2016,
-    eraLabel: 'Phase 02',
+    phase: 'Phase 02 · 2014 – 2016',
     title: 'The ₹25,000 Breakthrough',
     backdrop: '/Projector_in_action.jpeg',
-    summary:
+    lead:
       'Challenged ₹1 Lakh+ smart-classroom vendor quotes by engineering an offline, ruggedized LED ceiling-projection rig, built to fit standard ZP grant caps.',
-    specifications: [
+    specs: [
       {
         label: 'The Rural Catalyst',
-        value: 'A Zilla Parishad school teacher requested an affordable digital classroom setup after being quoted ₹1,00,000+ by major smart-board vendors — far exceeding rural school budgets.',
+        text: 'A Zilla Parishad school teacher requested an affordable digital classroom setup after being quoted ₹1,00,000+ by major smart-board vendors — far exceeding rural school budgets.',
       },
       {
         label: 'The Hardware Innovation',
-        value: 'Designed and built a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineered high-speed USB pen-drive decoding directly into the display, skipping expensive onboard storage.',
+        text: 'Designed and built a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineered high-speed USB pen-drive decoding directly into the display, skipping expensive onboard storage.',
       },
       {
         label: 'Institutional Grant Fit',
-        value: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
+        text: "Fitted the rig's total cost within standard ZP annual discretionary funding caps — proving rural digitization does not need expensive corporate vendor contracts.",
       },
     ],
   },
@@ -59,23 +59,23 @@ const ERAS = [
     id: 3,
     yearStart: 2017,
     yearEnd: 2024,
-    eraLabel: 'Phase 03',
+    phase: 'Phase 03 · 2017 – 2024',
     title: 'Institutional Deployments & Regional Scale',
     backdrop: '/HappyKids1.jpeg',
-    summary:
+    lead:
       'Scaled deployments across 100+ schools in partnership with regional CSR foundations, Mahad MMACETP (Mahad MIDC) institutional training, and State-Board-aligned curriculum curators.',
-    specifications: [
+    specs: [
       {
         label: 'Strategic Curriculum Alignment',
-        value: 'Partnered with Maharashtra-State-Board-aligned curators to deliver pre-loaded, syllabus-mapped multimedia via high-speed pen drives — zero-latency playback on diskless projectors.',
+        text: 'Partnered with Maharashtra-State-Board-aligned curators to deliver pre-loaded, syllabus-mapped multimedia via high-speed pen drives — zero-latency playback on diskless projectors.',
       },
       {
         label: 'Civic & CSR Coalitions',
-        value: 'Partnered with NGO Pride India and Mahad MMACETP (Mahad MIDC) initiatives to equip entire clusters of rural taluka schools.',
+        text: 'Partnered with NGO Pride India and Mahad MMACETP (Mahad MIDC) initiatives to equip entire clusters of rural taluka schools.',
       },
       {
         label: '100+ School Milestone',
-        value: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proven in high-humidity coastal areas.',
+        text: 'Expanded from Khed to Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proven in high-humidity coastal areas.',
       },
     ],
   },
@@ -83,23 +83,23 @@ const ERAS = [
     id: 4,
     yearStart: 2025,
     yearEnd: 2026,
-    eraLabel: 'Phase 04',
+    phase: 'Phase 04 · 2025 – 2026',
     title: 'Zero-Bandwidth 4K Ecosystems',
     backdrop: '/HappyFaculty3.jpeg',
-    summary:
+    lead:
       'Deployed 4K interactive anti-glare touch panels with zero-latency digital blackboard software and high-lumen FHD projection designed for zero-connectivity classrooms.',
-    specifications: [
+    specs: [
       {
         label: 'Interactive Panel Adoption',
-        value: 'Transitioned classrooms from white-wall projection to 65" and 75" 4K anti-glare interactive touch panels with integrated digital chalkboard software.',
+        text: 'Transitioned classrooms from white-wall projection to 65" and 75" 4K anti-glare interactive touch panels with integrated digital chalkboard software.',
       },
       {
         label: 'Zero-Bandwidth Architecture',
-        value: 'Maintained offline-ready operation — full interactivity, USB ingestion, and local multimedia playback without internet or recurring cloud subscriptions.',
+        text: 'Maintained offline-ready operation — full interactivity, USB ingestion, and local multimedia playback without internet or recurring cloud subscriptions.',
       },
       {
         label: 'Acoustic Upgrades',
-        value: 'Integrated 2.1 low-distortion sound systems for clear vocal audibility in large, high-ceiling village school halls.',
+        text: 'Integrated 2.1 low-distortion sound systems for clear vocal audibility in large, high-ceiling village school halls.',
       },
     ],
   },
@@ -107,23 +107,23 @@ const ERAS = [
     id: 5,
     yearStart: null,
     yearEnd: null,
-    eraLabel: 'Phase 05',
+    phase: 'Phase 05 · Present',
     title: 'The Konkan Benchmark & Hardware Attribution',
     backdrop: '/KidsCelebrating.jpeg',
-    summary:
+    lead:
       'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional benchmark for institutional technology.',
-    specifications: [
+    specs: [
       {
         label: '150+ Rural Institutions',
-        value: 'Reached 150+ verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional institutional technology benchmark.',
+        text: 'Reached 150+ verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional institutional technology benchmark.',
       },
       {
         label: 'Firmware-Level Asset Attribution',
-        value: 'Engineered custom BIOS boot-screen flashing into firmware — permanently displaying donor and institutional patron credentials on every power cycle.',
+        text: 'Engineered custom BIOS boot-screen flashing into firmware — permanently displaying donor and institutional patron credentials on every power cycle.',
       },
       {
         label: 'Local Service Guarantee',
-        value: 'Sustained a 24-hour on-site maintenance guarantee from the central Khed facility — outperforming multinational brands that lack rural service infrastructure.',
+        text: 'Sustained a 24-hour on-site maintenance guarantee from the central Khed facility — outperforming multinational brands that lack rural service infrastructure.',
       },
     ],
   },
@@ -394,76 +394,72 @@ export default function TimelineSection() {
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
-                    // Pixel-locked card structure. The site's global
-                    // 125% desktop font scaling (`html { font-size:
-                    // 20px }` on lg+) makes every rem-based Tailwind
-                    // class balloon by 25%, which previously pushed
-                    // the third spec off the bottom of the screen.
-                    // Replacing rem-based classes with explicit pixel
-                    // values (text-[14px], p-[24px]) inoculates this
-                    // card against root scaling.
-                    //
-                    // Container also uses w-full max-w-xl to fix a
-                    // reasonable max width independent of the
-                    // 12-column grid, and justify-center keeps
-                    // content vertically centered when it doesn't
-                    // fully fill the card.
-                    className="timeline-card w-full max-w-xl rounded-3xl bg-brand-navy/85 backdrop-blur-2xl border border-white/15 p-[20px] sm:p-[24px] lg:p-[32px] shadow-2xl flex flex-col justify-center overflow-hidden pointer-events-auto will-change-transform"
+                    // Glassmorphic card surface. The previous
+                    // `bg-brand-navy/85` was failing to parse the
+                    // opacity modifier on the custom theme color in
+                    // Tailwind 4, rendering as solid fill. We tried
+                    // `bg-[#0B1B4F]/65` and `bg-[#0B1B4F]/[65%]`
+                    // but Tailwind 4's minifier collapsed both to
+                    // solid `#0b1b4f` without the alpha channel.
+                    // As a fallback, we apply the translucent color
+                    // directly via the style prop using rgba() —
+                    // guaranteed to apply the 65% alpha. The
+                    // backdrop-blur-2xl + border-white/20 layers
+                    // remain Tailwind utilities since they don't
+                    // hit the opacity-modifier quirk.
+                    className="timeline-card w-full max-w-xl rounded-3xl backdrop-blur-2xl border border-white/20 p-[24px] lg:p-[32px] shadow-2xl flex flex-col justify-center overflow-hidden pointer-events-auto select-text text-left will-change-transform"
                     style={{
                       position: 'absolute',
                       inset: 0,
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',
+                      backgroundColor: 'rgba(11, 27, 79, 0.65)',
                     }}
                     aria-hidden={i !== 0}
                   >
-                    {/* Eyebrow / phase label — pixel-locked. mb-1.5
-                        is the only rem-based spacing kept because
-                        it's 6px regardless of root scaling (Tailwind
-                        rounds it). The phase name + year range
-                        renders here. */}
-                    <p className="text-[10px] lg:text-[11px] font-bold tracking-widest text-brand-gold uppercase mb-1.5">
-                      {era.eraLabel} ·{' '}
-                      {era.yearStart === null
-                        ? 'Present'
-                        : `${era.yearStart} – ${era.yearEnd}`}
-                    </p>
-                    {/* Title — pixel-locked, bold, tight tracking. */}
-                    <h2 className="text-[22px] lg:text-[28px] font-bold text-white tracking-tight leading-tight mb-2.5">
+                    {/* Phase eyebrow — pixel-locked. mb-2 (8px)
+                        gap to the title. */}
+                    <div className="text-[11px] font-bold tracking-widest text-brand-gold uppercase mb-2">
+                      {era.phase}
+                    </div>
+
+                    {/* Era title — pixel-locked, bold, tight
+                        tracking. h3 (not h2) matches the directive's
+                        semantic level for this card subsection. */}
+                    <h3 className="text-[24px] lg:text-[28px] font-bold text-white tracking-tight leading-tight mb-3">
                       {era.title}
-                    </h2>
-                    {/* Lead paragraph — pixel-locked slate-200 body
-                        text. No clamp — content density budget
-                        calculated so all 3 spec rows fit inside the
-                        card. mb-3.5 (14px) gives the spec section
-                        clear breathing room. */}
-                    <p className="text-[13px] lg:text-[14px] text-slate-200 leading-snug mb-3.5">
-                      {era.summary}
+                    </h3>
+
+                    {/* Lead paragraph — single sentence of context
+                        in slate-200 at 14px with 1.6 line-height.
+                        mb-4 (16px) gives the spec section clear
+                        separation. */}
+                    <p className="text-[14px] text-slate-200 leading-[1.6] mb-4">
+                      {era.lead}
                     </p>
 
                     {/*
-                      Spec list — pixel-locked label/value rows.
-                      Each row uses flex items-start gap-2 with the
-                      label shrink-0 so it never wraps. Body text
-                      flows beside the label in the same row.
-
-                      Spec values use the full verbose text from the
-                      ERAS data — they were compressed in previous
-                      iterations but the rolled-back state at
-                      c550b7d restored the original sentence-long
-                      values, which the pixel-locked typography now
-                      accommodates thanks to its explicit widths.
+                      Specs list — natural inline paragraphs (not
+                      flex containers). The previous flex items-start
+                      layout created an unnatural column boundary
+                      between label and body. By using inline
+                      <strong>label:</strong> + body text inside a
+                      <p>, the text flows like a book — the label
+                      and value wrap naturally as one continuous
+                      paragraph. space-y-3 (12px) keeps the three
+                      specs visually separated.
                     */}
-                    <div className="pt-3 border-t border-white/10 space-y-2">
-                      {era.specifications.map((spec, j) => (
-                        <div key={j} className="flex items-start gap-2">
-                          <span className="text-[12px] lg:text-[13px] font-semibold text-brand-gold shrink-0 leading-snug">
+                    <div className="pt-4 border-t border-white/10 space-y-3">
+                      {era.specs.map((spec, j) => (
+                        <p
+                          key={j}
+                          className="text-[13px] lg:text-[14px] text-slate-200 leading-[1.6] m-0"
+                        >
+                          <strong className="text-brand-gold font-semibold mr-1.5">
                             {spec.label}:
-                          </span>
-                          <span className="text-[12px] lg:text-[13px] text-slate-200 leading-snug">
-                            {spec.value}
-                          </span>
-                        </div>
+                          </strong>
+                          {spec.text}
+                        </p>
                       ))}
                     </div>
                   </article>
