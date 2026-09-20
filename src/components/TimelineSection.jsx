@@ -91,15 +91,15 @@ const ERAS = [
     specs: [
       {
         label: 'Interactive Panel Adoption',
-        text: 'Transitioned classrooms from white-wall projection to 65" and 75" 4K anti-glare interactive touch panels with integrated digital chalkboard software.',
+        text: 'Migrated classrooms from wall projection to 65"–75" 4K anti-glare interactive touch panels with integrated digital chalkboard software.',
       },
       {
         label: 'Zero-Bandwidth Architecture',
-        text: 'Maintained offline-ready operation — full interactivity, USB ingestion, and local multimedia playback without internet or recurring cloud subscriptions.',
+        text: 'Full interactivity, USB ingestion, and local multimedia playback — no internet, no cloud subscriptions, no recurring fees.',
       },
       {
         label: 'Acoustic Upgrades',
-        text: 'Integrated 2.1 low-distortion sound systems for clear vocal audibility in large, high-ceiling village school halls.',
+        text: 'Integrated 2.1 low-distortion sound systems tuned for clear vocal projection in high-ceiling rural halls.',
       },
     ],
   },
@@ -111,19 +111,19 @@ const ERAS = [
     title: 'The Konkan Benchmark & Hardware Attribution',
     backdrop: '/KidsCelebrating.jpeg',
     lead:
-      'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional benchmark for institutional technology.',
+      'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional benchmark for institutional technology and donor-acknowledged hardware.',
     specs: [
       {
         label: '150+ Rural Institutions',
-        text: 'Reached 150+ verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional institutional technology benchmark.',
+        text: 'Verified school and college deployments across both districts — the regional reference point for institutional technology sourcing.',
       },
       {
         label: 'Firmware-Level Asset Attribution',
-        text: 'Engineered custom BIOS boot-screen flashing into firmware — permanently displaying donor and institutional patron credentials on every power cycle.',
+        text: 'Custom BIOS boot-screens display donor credentials and institutional patron credits at the firmware layer — visible on every power cycle, surviving OS reinstalls and format.',
       },
       {
         label: 'Local Service Guarantee',
-        text: 'Sustained a 24-hour on-site maintenance guarantee from the central Khed facility — outperforming multinational brands that lack rural service infrastructure.',
+        text: '24-hour on-site maintenance turnaround from the central Khed facility — no remote tickets, no offshore call centers, no multi-week vendor SLAs.',
       },
     ],
   },
@@ -417,7 +417,7 @@ export default function TimelineSection() {
                     // Padding bumped to p-[32px] lg:p-[40px] for a
                     // premium feel — gives the content significant
                     // breathing room inside the card.
-                    className="timeline-card w-full max-w-xl h-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[32px] lg:p-[40px] pointer-events-auto select-text text-left will-change-transform"
+                    className="timeline-card w-full max-w-xl h-auto rounded-3xl backdrop-blur-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-[32px] lg:px-[40px] pt-[32px] lg:pt-[40px] pb-[36px] lg:pb-[44px] pointer-events-auto select-text text-left will-change-transform"
                     style={{
                       position: 'absolute',
                       inset: 0,
