@@ -18,15 +18,15 @@ const ERAS = [
     phases: [
       {
         label: 'The Foundation',
-        body: 'Established Unique Systems in 1998 as the first dedicated commercial IT assembly, peripheral sales, and hardware servicing hub in Khed taluka.',
+        body: "Established Unique Systems in 1998 — Khed's first dedicated commercial IT assembly, peripheral sales, and hardware servicing hub.",
       },
       {
         label: 'Infrastructure Independence',
-        body: 'Eliminated the 150 km repair corridor to Mumbai and Pune, providing local public schools, village offices, and small enterprises with on-site motherboard servicing, custom desktop assemblies, and localized technical support.',
+        body: 'Eliminated the 150 km repair corridor to Mumbai and Pune — providing on-site motherboard servicing, custom desktop assemblies, and local technical support to public schools, village offices, and small enterprises.',
       },
       {
         label: 'Digital Literacy Footprint',
-        body: 'Conducted early computing literacy sessions directly inside the shop, operating as an accessible grassroots training and coaching center for essential digital skills.',
+        body: 'Conducted early computing literacy sessions in-shop — operating as a grassroots training and coaching center for essential digital skills.',
       },
     ],
   },
@@ -42,15 +42,15 @@ const ERAS = [
     phases: [
       {
         label: 'The Rural Catalyst',
-        body: 'A rural Zilla Parishad school teacher requested an affordable digital classroom setup after being quoted ₹1,00,000+ by major commercial smart-board vendors — a cost far exceeding rural school budgets.',
+        body: 'A Zilla Parishad school teacher requested an affordable digital classroom setup after being quoted ₹1,00,000+ by major smart-board vendors — far exceeding rural school budgets.',
       },
       {
         label: 'The Hardware Innovation',
-        body: 'Designed and fabricated a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000, circumventing expensive onboard storage costs by engineering high-speed plug-and-play USB pen-drive decoding directly into the display hardware.',
+        body: 'Designed a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000 — engineering high-speed USB pen-drive decoding directly into the display to bypass expensive onboard storage.',
       },
       {
         label: 'Institutional Grant Fit',
-        body: "Successfully aligned the rig's total deployment cost with standard Zilla Parishad annual discretionary funding caps, demonstrating that rural digitization did not require expensive corporate vendor contracts.",
+        body: "Aligned the rig's total cost with standard ZP annual discretionary funding caps — proving rural digitization didn't require expensive corporate vendor contracts.",
       },
     ],
   },
@@ -66,15 +66,15 @@ const ERAS = [
     phases: [
       {
         label: 'Strategic Curriculum Alignment',
-        body: 'Partnered with Maharashtra-State-Board-aligned educational content curators to distribute pre-loaded, syllabus-mapped multimedia lessons via formatted solid-state media and high-speed pen drives, enabling zero-latency playback on diskless classroom projectors.',
+        body: 'Partnered with Maharashtra-State-Board-aligned content curators to distribute pre-loaded, syllabus-mapped multimedia via solid-state media and high-speed pen drives — enabling zero-latency playback on diskless projectors.',
       },
       {
         label: 'Civic & CSR Coalitions',
-        body: 'Partnered with the NGO Pride India and regional initiatives under Mahad MMACETP (Mahad MIDC) to equip entire clusters of rural taluka schools.',
+        body: 'Partnered with NGO Pride India and Mahad MMACETP (Mahad MIDC) initiatives to equip entire clusters of rural taluka schools.',
       },
       {
         label: '100+ School Milestone',
-        body: 'Scaled deployments beyond Khed into Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan, proving high reliability in coastal high-humidity environments with erratic grid electricity.',
+        body: 'Scaled beyond Khed into Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan — proving reliability in coastal high-humidity environments with erratic grid power.',
       },
     ],
   },
@@ -90,15 +90,15 @@ const ERAS = [
     phases: [
       {
         label: 'Interactive Panel Adoption',
-        body: 'Transitioned classrooms from standard white-wall projection to 65-inch and 75-inch 4K anti-glare interactive touch flat panels featuring integrated digital chalkboard software.',
+        body: 'Transitioned classrooms from white-wall projection to 65" and 75" 4K anti-glare interactive touch panels with integrated digital chalkboard software.',
       },
       {
         label: 'Zero-Bandwidth Architecture',
-        body: 'Maintained an offline-ready operational model, ensuring full interactive functionality, external USB drive ingestion, and local multimedia playback without requiring active internet connectivity or recurring cloud subscriptions.',
+        body: 'Maintained offline-ready operation — full interactivity, USB ingestion, and local multimedia playback without internet or recurring cloud subscriptions.',
       },
       {
         label: 'Acoustic Upgrades',
-        body: 'Integrated dedicated classroom audio amplification setups (2.1 low-distortion sound systems) to ensure clear vocal audibility in large, high-ceiling village school halls.',
+        body: 'Integrated 2.1 low-distortion sound systems for clear vocal audibility in large, high-ceiling village school halls.',
       },
     ],
   },
@@ -114,15 +114,15 @@ const ERAS = [
     phases: [
       {
         label: '150+ Rural Institutions',
-        body: 'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts, establishing Unique Systems as a regional benchmark for institutional technology.',
+        body: 'Reached 150+ verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional institutional technology benchmark.',
       },
       {
         label: 'Firmware-Level Asset Attribution',
-        body: 'Engineered custom BIOS boot-screen flashing directly into system firmware, permanently displaying donor and institutional patron credentials on every power cycle.',
+        body: 'Engineered custom BIOS boot-screen flashing into firmware — permanently displaying donor and institutional patron credentials on every power cycle.',
       },
       {
         label: 'Local Service Guarantee',
-        body: 'Sustained a guaranteed 24-hour on-site maintenance turnaround from the central Khed facility, providing an operational advantage over multinational hardware brands lacking rural service infrastructure.',
+        body: 'Sustained a 24-hour on-site maintenance guarantee from the central Khed facility — outperforming multinational brands that lack rural service infrastructure.',
       },
     ],
   },

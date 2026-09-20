@@ -2,13 +2,15 @@ import ScrollyTellingWrapper from './components/ScrollyTellingWrapper'
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import TimelineSection from './components/TimelineSection'
-import MLADonorShowcase from './components/MLADonorShowcase'
 import ProductGallery from './components/ProductGallery'
+import TestimonialsSection from './components/TestimonialsSection'
+import ContactSection from './components/ContactSection'
 import SpotlightCard from './components/SpotlightCard'
 import DecryptedText from './components/DecryptedText'
 import BrandSwoosh from './components/BrandSwoosh'
 import BrandLogo from './components/BrandLogo'
 import CustomCursor from './components/CustomCursor'
+import { openWhatsappBlankChat, WHATSAPP_PHONE } from './utils/whatsapp'
 import { LanguageProvider, useLanguage } from './context/LanguageContext'
 import {
   PhoneCall,
@@ -44,11 +46,14 @@ function AppContent() {
         {/* Interactive Scrollytelling Timeline (5 Eras with Sticky Pinned Media & Videos) */}
         <TimelineSection />
 
-        {/* Bespoke MLA & CSR Donor Showcase Section with Live Firmware Boot Simulator */}
-        <MLADonorShowcase />
-
-        {/* Phase 2: Hardware & Solutions Matrix (Product Gallery + Exploded View + Firmware Callout) */}
+        {/* Phase 2: Hardware & Solutions Matrix (Product Gallery + Footnote) */}
         <ProductGallery />
+
+        {/* Testimonials — verified Google Reviews carousel */}
+        <TestimonialsSection />
+
+        {/* Contact Us — form opens web.whatsapp.com prefilled with the message */}
+        <ContactSection />
 
         {/* Dynamic Curved Swoosh Divider into Footer */}
         <div className="bg-[#FFFFFF]">
@@ -62,7 +67,7 @@ function AppContent() {
         </div>
 
         {/* Footer & Contact */}
-        <footer id="contact" className="bg-[#0A1E5C] text-white pt-14 pb-16 border-t border-[#103B9B] relative">
+        <footer data-dark-bg className="bg-[#0A1E5C] text-white pt-14 pb-16 border-t border-[#103B9B] relative">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
               
@@ -100,7 +105,8 @@ function AppContent() {
                     <span>
                       {t('footer.directPhone')}{' '}
                       <a
-                        href="tel:+919422433394"
+                        href={`https://wa.me/${WHATSAPP_PHONE}`}
+                        onClick={openWhatsappBlankChat}
                         className="hover:text-yellow-400 transition-colors"
                       >
                         +91 94224 33394
@@ -154,8 +160,8 @@ function AppContent() {
                   </li>
                   <li>
                     <a
-                      href="#donors"
-                      onClick={(e) => handleSmoothScroll(e, '#donors')}
+                      href="#contact"
+                      onClick={(e) => handleSmoothScroll(e, '#contact')}
                       className="hover:text-[#FFD200] transition-colors"
                     >
                       {t('footer.linkDonors')}

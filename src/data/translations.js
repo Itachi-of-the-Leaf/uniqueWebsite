@@ -2,16 +2,14 @@ const translations = {
   en: {
     nav: {
       brandName: 'Unique Systems',
-      established: 'EST. 1998',
-      marathiName: 'युनिक सिस्टीम्स',
-      tagline: 'Rural eLearning Pioneers',
+      gst: 'GST No. 27ACCPC9552B1ZY',
       journey: 'Our Journey',
       testimonials: 'Teacher Voices',
       solutions: 'Gallery',
       donors: 'MLA & CSR Donors',
       contact: 'Contact',
       khedHub: 'Khed Hub',
-      getQuote: 'Get a Quote',
+      contactUs: 'Contact Us',
       langMarathi: 'मराठी',
       langEnglish: 'EN',
       switchAria: 'Switch to Marathi or English',
@@ -276,119 +274,137 @@ const translations = {
       badge: 'Hardware & Solutions Matrix',
       heading: 'Institutional IT Equipment Portfolio',
       subheading:
-        'A complete institutional deployment stack — projectors, panels, towers, acoustics, and peripherals — built around in-house firmware, offline-first curriculum, and 25 years of rural-rugged engineering.',
+        'A single-source catalog for classrooms, offices, and zila parishad schools — every item is or can be included in stock, configured and made ready to deploy.',
       products: [
-        {
-          cat: 'Classroom Projection Rigs',
-          title: 'Ultra-Short-Throw LED Projectors',
-          desc: 'High-lumen LED engines engineered for whitewashed walls, online-free operation, and continuous-duty rural power.',
-          specs: [
-            'Ultra-short-throw optics',
-            'Off-line content kernel',
-            'Ruggedized ABS housing',
-          ],
-        },
-        {
-          cat: 'Interactive Flat Panels',
-          title: '65" / 75" 4K Multi-Touch IFPD',
-          desc: 'Anti-glare tempered glass with certified onboard classroom software, multi-touch digitizer, and tamper-proof firmware splash.',
-          specs: [
-            'Tempered anti-glare glass',
-            '40-point capacitive touch',
-            'Native classroom suite',
-          ],
-        },
-        {
-          cat: 'Modular Desktop Towers',
-          title: 'Ruggedized SSD Towers',
-          desc: 'Solid-state modular desktops engineered for surge-prone rural power, dust, and 24x7 institutional duty cycles.',
-          specs: [
-            'Solid-state storage',
-            'EMI-shielded PSU',
-            'Surge-protected I/O',
-          ],
-        },
-        {
-          cat: 'Classroom Acoustics',
-          title: 'Wall-Mounted Speech Systems',
-          desc: 'Low-distortion wall-mounted soundbars and multi-speaker speech amplification for full-room intelligibility.',
-          specs: [
-            'Wide-dispersion drivers',
-            'Speech-optimized DSP',
-            'Anti-feedback mic chain',
-          ],
-        },
-        {
-          cat: 'Input & Peripherals',
-          title: 'Anti-Spill Input Ecosystem',
-          desc: 'Spill-resistant mechanical/membrane keyboards, optical tracking mice, and full-HD classroom monitors.',
-          specs: [
-            'IP54 spill resistance',
-            'Optical tracking mice',
-            'FHD IPS monitors',
-          ],
-        },
+        { iconKey: 'monitor', tintKey: 'computing', title: 'Desktop Computer',
+          subtitle: 'Tower PC for offices, libraries, and computer labs.',
+          tags: ['Tower', 'Office'] },
+        { iconKey: 'tv', tintKey: 'computing', title: 'All-in-one PC',
+          subtitle: 'Built-in display, fewer cables on the desk.',
+          tags: ['Compact', 'All-in-one'] },
+        { iconKey: 'laptop', tintKey: 'computing', title: 'Laptops',
+          subtitle: 'Portable machines for staff and field visits.',
+          tags: ['Portable', 'Staff'] },
+        { iconKey: 'printer', tintKey: 'printPower', title: 'Printers',
+          subtitle: 'Single-function black-and-white document printers.',
+          tags: ['B/W', 'A4'] },
+        { iconKey: 'printer', tintKey: 'printPower', title: 'Multi-function Printers',
+          subtitle: 'Print, scan, and copy from one shared machine.',
+          tags: ['Scan', 'Copy'] },
+        { iconKey: 'battery', tintKey: 'printPower', title: 'UPS Systems',
+          subtitle: 'Backup power that keeps the class running through cuts.',
+          tags: ['Backup', 'Surge-safe'] },
+        { iconKey: 'projector', tintKey: 'displaySound', title: 'LED Projectors',
+          subtitle: 'Bright classroom projection visible in lit rooms.',
+          tags: ['LED', 'Long-throw'] },
+        { iconKey: 'hand', tintKey: 'displaySound', title: 'Interactive Panels',
+          subtitle: 'Google-certified 4K touch displays for smart classrooms.',
+          tags: ['4K', 'Touch', 'EDLA'] },
+        { iconKey: 'speaker', tintKey: 'displaySound', title: 'Sound Systems',
+          subtitle: '2.1 home-theatre audio — two speakers plus a woofer.',
+          tags: ['2.1', 'Woofer'] },
+        { iconKey: 'tvMinimal', tintKey: 'displaySound', title: 'Projector Screens',
+          subtitle: 'Pull-down or fixed-frame projection surfaces.',
+          tags: ['Matte White'] },
+        { iconKey: 'anchor', tintKey: 'displaySound', title: 'Ceiling-mounting Kits',
+          subtitle: 'Heavy-duty brackets for safely hanging projectors.',
+          tags: ['Steel', 'Universal'] },
+        { iconKey: 'keyboard', tintKey: 'inputStorage', title: 'Keyboards',
+          subtitle: 'Wired spill-resistant keyboards for daily use.',
+          tags: ['Spill-safe'] },
+        { iconKey: 'mouse', tintKey: 'inputStorage', title: 'Mice',
+          subtitle: 'Optical mice and pointing devices.',
+          tags: ['Optical'] },
+        { iconKey: 'cable', tintKey: 'inputStorage', title: 'Computer Accessories',
+          subtitle: 'Cables, hubs, adapters, and small add-ons.',
+          tags: ['Cables', 'Adapters'] },
+        { iconKey: 'usb', tintKey: 'inputStorage', title: 'Pen-drives (Digital Syllabus)',
+          subtitle: 'Pre-loaded syllabus drives for offline classrooms.',
+          tags: ['Offline-ready'] },
       ],
-      exploded: {
-        eyebrow: 'Layered Exploded Architecture',
-        heading: 'Cross-Section of an Interactive Panel',
-        subheading:
-          'Five layers separated along the Z-axis and Y-axis via scroll — every component is engineered, sealed, and testable in isolation.',
-        caption:
-          'Each layer is independently serviceable and replaceable; the firmware boot ROM is welded to the motherboard layer so attribution survives every swap.',
-        layers: [
-          {
-            label: 'Outer Bezel',
-            sublabel: 'Ruggedized ABS housing',
-          },
-          {
-            label: 'Protective Glass',
-            sublabel: 'Anti-glare tempered layer',
-          },
-          {
-            label: 'Display Matrix',
-            sublabel: '4K multi-touch LCD panel',
-          },
-          {
-            label: 'Motherboard & Shielding',
-            sublabel: 'EMI-shielded SoC board',
-          },
-          {
-            label: 'Mount Bracket',
-            sublabel: 'VESA-conformant steel mount',
-          },
-        ],
+      footnote: {
+        eyebrow: 'No subscriptions. No vendor lock-in.',
+        line1:
+          'Every device is pre-flashed with our tamper-proof firmware — boot screens display your institution\u2019s crest, statutory grant compliance is signed at the hardware level, and the asset survives any drive wipe or OS re-installation.',
       },
-      firmwareCallout: {
-        eyebrow: 'Firmware Customization',
-        title: 'Native Boot-Splash Patron Attribution',
-        desc:
-          'Hardware firmware is pre-flashed at the assembly line to display institutional patron, government body, or CSR foundation crests at every power cycle — surviving OS re-installs and drive wipes.',
-        feature1Bold: 'Patron Crest Rendering:',
-        feature1Text:
-          'Custom BIOS splash displays foundation, government, or CSR emblems on startup — sized for projector screens and panels alike.',
-        feature2Bold: 'Multi-Stakeholder Tiers:',
-        feature2Text:
-          'Independent asset-tag slots for MLA Nidhi, MP Nidhi, CSR foundation, and village alumni trust on the same device.',
-        feature3Bold: 'Tamper-Proof Persistence:',
-        feature3Text:
-          'Write-protected flash partition cannot be erased by user actions — verified during every quarterly audit visit.',
-        ctaPrimary: 'See Firmware Spec Details',
-        ctaSecondary: 'Request Asset-Attribution Dossier',
-        bootKernel: 'Firmware Boot Kernel v4.2 • Hardware Asset ID',
-        bootBadge: 'Custom Attribution',
-        bootStatus: 'Firmware Verified',
-        bootLine1: 'Patron Emblem',
-        bootLine2: 'Digitally Equipped Under Patronage',
-        bootLine3: 'Permanent Classroom Asset • Deployment Division',
-        bootDiagnostic:
-          'SECURE BOOT: ACTIVE | WRITE-PROTECT: LOCKED',
-        statA: 'Persistence',
-        statAVal: 'Every Boot',
-        statB: 'Storage',
-        statBVal: 'Write-Protected ROM',
-        statC: 'Reset Survival',
-        statCVal: 'Yes',
+    },
+    testimonials: {
+      badge: 'Field-Tested Across Konkan',
+      heading: 'What Educators & Partners Say',
+      subheading:
+        'Real deployments across Zilla Parishad schools, CSR foundations, and institutional IT programmes. Every review links back to a verified Google Maps entry.',
+      cta: 'Read all reviews on Google Maps',
+      cardLabel: 'Posted on Google',
+      scrollHint: 'Swipe or use the arrows',
+      footerNote:
+        'Aggregated from the verified Google Maps listing for the Konkan Regional Hub.',
+      reviewer: {
+        zpHeadmaster: 'ZP School Headmaster',
+        csrManager: 'CSR Programme Manager',
+        itCoordinator: 'School IT Coordinator',
+        zpOfficer: 'Zilha Parishad Education Officer',
+        parent: 'Parent of Class 7 Student',
+      },
+      region: {
+        konkan: 'Konkan Region',
+        khed: 'Khed Cluster',
+        chiplun: 'Chiplun Taluka',
+        mahad: 'Mahad Taluka',
+        dapoli: 'Dapoli Taluka',
+      },
+      quote: {
+        zpHeadmaster:
+          'The ₹25,000 offline classroom rig was deployed in our school under the ZP grant cap. Two monsoon seasons later, zero downtime. The boot-screen attribution showing our school name on every projector startup is something parents actually noticed during the annual day.',
+        csrManager:
+          'We needed asset verification that survived drive wipes and OS re-installations — the firmware-level boot splash solved it. Our grant compliance auditors were satisfied, and the on-site support across Konkan has been prompt.',
+        itCoordinator:
+          'Switching between Marathi and English content on the touch panels is one tap. The 4K display is readable from the back row even with the afternoon sun on the windows. Students who had never touched a computer are now writing their own presentations.',
+        zpOfficer:
+          'Across our block, the ruggedised UPS bundles and offline-first projectors have cut our repeat procurement requests to nearly zero. The standardized configuration across schools simplifies our asset register considerably.',
+        parent:
+          'My daughter tells me about the new digital board in her class every day. She is more attentive during lessons and excited to show me what she learned. The school never had anything like this when I was a student.',
+      },
+    },
+    contactSection: {
+      badge: 'Get In Touch',
+      heading: 'Contact Us',
+      subheading:
+        'Reach out for classroom deployments, hardware specifications, firmware customisation, or partnership enquiries. We respond within one working day.',
+      fields: {
+        firstName: 'First Name',
+        lastName: 'Last Name',
+        subject: 'Contact Regarding',
+        message: 'Your Message',
+        subjectPlaceholder: 'Choose a topic…',
+        firstNamePh: 'e.g. Ramesh',
+        lastNamePh: 'e.g. Patil',
+        messagePh:
+          'Tell us about your institution, class size, or the hardware you have in mind…',
+      },
+      subjects: {
+        enquiry: {
+          general: 'General Enquiry',
+          deployment: 'Classroom Deployment',
+          hardware: 'Hardware Specification',
+          firmware: 'Firmware / Asset Attribution',
+          partner: 'Partnership / CSR',
+        },
+      },
+      submit: 'Send via WhatsApp',
+      helperText:
+        'Submitting opens WhatsApp with your message pre-filled — just hit Send.',
+      successHint:
+        'You will see your message in the WhatsApp composer. Press Enter or click Send.',
+      directCard: {
+        eyebrow: 'Reach Us Directly',
+        heading: 'Konkan Regional Deployment Hub',
+        phoneLabel: 'Direct Phone',
+        addressLabel: 'Hub Address',
+        hoursLabel: 'Response Window',
+        address: 'Bilvadal-1, Samartha Nagar, near MSEB Office, next to Govt. Godowns, Khed, Maharashtra 415709',
+        hours: 'Mon–Sat · 09:00–18:00 IST',
+        note:
+          'All enquiries are routed to the Konkan regional team. Standard response time: one working day.',
       },
     },
     footer: {
@@ -396,14 +412,14 @@ const translations = {
         'Serving Zilla Parishad schools, rural ashram shalas, and educational institutions across Khed, Chiplun, Mahad, Dapoli, and the entire Konkan belt since 1998.',
       approval: 'Maharashtra State Board Approved eLearning Hardware Partner',
       hubTitle: 'Konkan Regional Hub',
-      address: 'Main Road, Khed, Dist. Ratnagiri - 415709, Maharashtra',
+      address: 'Bilvadal-1, Samartha Nagar, near MSEB Office, next to Govt. Godowns, Khed, Maharashtra 415709',
       directPhone: 'Direct:',
       mapsLink: 'View Location on Google Maps',
       quickLinks: 'Quick Links',
       linkTimeline: '25-Year Innovation Timeline',
       linkRig: '₹25K ZP Rig Specifications',
       linkEdla: 'Google EDLA 4K AI Panels',
-      linkDonors: 'MLA & CSR Donor Visibility',
+      linkDonors: 'Reach Out to Our Team',
       copyright:
         '© 1998 - 2026 Unique Systems (युनिक सिस्टीम्स). All rights reserved.',
       tagline: 'Pioneering Accessible Classroom Tech Across Rural Maharashtra.',
@@ -412,16 +428,14 @@ const translations = {
   mr: {
     nav: {
       brandName: 'युनिक सिस्टीम्स',
-      established: 'स्थापना १९९८',
-      marathiName: 'Unique Systems',
-      tagline: 'ग्रामीण ई-लर्निंगचे प्रणेते',
+      gst: 'GST क्र. 27ACCPC9552B1ZY',
       journey: 'आमचा प्रवास',
       testimonials: 'शिक्षकांचे अनुभव',
       solutions: 'गॅलरी',
       donors: 'आमदार व CSR देणगीदार',
       contact: 'संपर्क',
       khedHub: 'खेड केंद्र',
-      getQuote: 'कोटेशन मिळवा',
+      contactUs: 'संपर्क करा',
       langMarathi: 'मराठी',
       langEnglish: 'EN',
       switchAria: 'मराठी किंवा इंग्रजी भाषा निवडा',
@@ -686,119 +700,137 @@ const translations = {
       badge: 'हार्डवेअर व सोल्यूशन्स मॅट्रिक्स',
       heading: 'संस्थात्मक IT उपकरण श्रेणी',
       subheading:
-        'एक संपूर्ण संस्थात्मक तैनाती स्टॅक — प्रोजेक्टर, पॅनेल्स, डेस्कटॉप, ध्वनिकी व परिधीय उपकरणे — स्वतःच्या फर्मवेअर, ऑफलाइन-फर्स्ट अभ्यासक्रम आणि २५ वर्षांच्या ग्रामीण-मजबूत अभियांत्रिकीवर आधारित.',
+        'वर्ग, कार्यालये आणि जिल्हा परिषद शाळांसाठी एकाच ठिकाणाहून उपलब्ध माहिती — प्रत्येक वस्तू स्टॉकमध्ये आहे किंवा सामील करता येईल, कॉन्फिगर केलेली आणि तैनातीसाठी सज्ज.',
       products: [
-        {
-          cat: 'वर्ग प्रोजेक्शन संच',
-          title: 'अल्ट्रा-शॉर्ट-थ्रो LED प्रोजेक्टर',
-          desc: 'पांढऱ्या भिंतींवर, ऑनलाइन-मुक्त वातावरणात आणि सततच्या ग्रामीण वीजपुरवठ्यासाठी अभियांत्रिकी केलेले हाय-ल्युमेन LED इंजिन्स.',
-          specs: [
-            'अल्ट्रा-शॉर्ट-थ्रो ऑप्टिक्स',
-            'ऑफलाइन अभ्यासक्रम कर्नल',
-            'रग्ड ABS बॉडी',
-          ],
-        },
-        {
-          cat: 'इंटरॅक्टिव्ह फ्लॅट पॅनेल',
-          title: '६५" / ७५" ४K मल्टी-टच IFPD',
-          desc: 'अँटी-ग्लेअर टेम्पर्ड ग्लाससह प्रमाणित ऑनबोर्ड क्लासरूम सॉफ्टवेअर, मल्टी-टच डिजिटायझर आणि टॅम्पर-प्रूफ फर्मवेअर स्प्लॅश.',
-          specs: [
-            'टेम्पर्ड अँटी-ग्लेअर ग्लास',
-            '४०-पॉइंट कॅपेसिटिव्ह टच',
-            'निवडक क्लासरूम सूट',
-          ],
-        },
-        {
-          cat: 'मॉड्युलर डेस्कटॉप',
-          title: 'रग्ड SSD टॉवर',
-          desc: 'सर्ज-प्रोन ग्रामीण वीज, धूळ आणि २४×७ संस्थात्मक ड्युटीसाठी अभियांत्रिकी केलेले सॉलिड-स्टेट मॉड्युलर डेस्कटॉप्स.',
-          specs: [
-            'सॉलिड-स्टेट स्टोरेज',
-            'EMI-शिल्डेड PSU',
-            'सर्ज-प्रोटेक्टेड I/O',
-          ],
-        },
-        {
-          cat: 'वर्ग ध्वनिकी',
-          title: 'भिंत-आधारित स्पीच सिस्टम',
-          desc: 'पूर्ण खोलीच्या स्पष्टतेसाठी कमी-विकृती असलेले भिंत-आधारित साउंडबार आणि मल्टी-स्पीकर स्पीच अॅम्प्लिफिकेशन.',
-          specs: [
-            'वाइड-डिस्पर्शन ड्रायव्हर्स',
-            'स्पीच-ऑप्टिमाइझ्ड DSP',
-            'अँटी-फीडबॅक मायक चेन',
-          ],
-        },
-        {
-          cat: 'इनपुट व परिधीय',
-          title: 'अँटी-स्पिल इनपुट इकोसिस्टम',
-          desc: 'स्पिल-रेझिस्टंट मेकॅनिकल/मेम्ब्रेन कळफलक, ऑप्टिकल ट्रॅकिंग उंदरे आणि फुल-HD क्लासरूम मॉनिटर्स.',
-          specs: [
-            'IP54 स्पिल प्रतिकार',
-            'ऑप्टिकल ट्रॅकिंग माउस',
-            'FHD IPS मॉनिटर्स',
-          ],
-        },
+        { iconKey: 'monitor', tintKey: 'computing', title: 'डेस्कटॉप संगणक',
+          subtitle: 'कार्यालये, ग्रंथालये आणि संगणक प्रयोगशाळांसाठी टॉवर PC.',
+          tags: ['टॉवर', 'कार्यालय'] },
+        { iconKey: 'tv', tintKey: 'computing', title: 'ऑल-इन-वन PC',
+          subtitle: 'अंगभूत डिस्प्ले, टेबलावर कमी केबल्स.',
+          tags: ['कॉम्पॅक्ट', 'ऑल-इन-वन'] },
+        { iconKey: 'laptop', tintKey: 'computing', title: 'लॅपटॉप',
+          subtitle: 'कर्मचारी आणि क्षेत्र भेटींसाठी पोर्टेबल यंत्रे.',
+          tags: ['पोर्टेबल', 'कर्मचारी'] },
+        { iconKey: 'printer', tintKey: 'printPower', title: 'प्रिंटर्स',
+          subtitle: 'एकल-कार्य असलेले काळा-आणि-पांढरा दस्तऐवज प्रिंटर.',
+          tags: ['B/W', 'A4'] },
+        { iconKey: 'printer', tintKey: 'printPower', title: 'मल्टी-फंक्शन प्रिंटर्स',
+          subtitle: 'एकाच सामायिक यंत्रावरून प्रिंट, स्कॅन आणि कॉपी.',
+          tags: ['स्कॅन', 'कॉपी'] },
+        { iconKey: 'battery', tintKey: 'printPower', title: 'UPS सिस्टम',
+          subtitle: 'वीज खंडित झाली तरी वर्ग सुरू ठेवणारा बॅकअप पॉवर.',
+          tags: ['बॅकअप', 'सर्ज-सेफ'] },
+        { iconKey: 'projector', tintKey: 'displaySound', title: 'LED प्रोजेक्टर्स',
+          subtitle: 'प्रकाशमान खोलीतही दिसणारे उज्ज्वल वर्ग प्रोजेक्शन.',
+          tags: ['LED', 'लॉन्ग-थ्रो'] },
+        { iconKey: 'hand', tintKey: 'displaySound', title: 'इंटरॅक्टिव्ह पॅनेल्स',
+          subtitle: 'Google-प्रमाणित 4K टच डिस्प्ले — स्मार्ट वर्गासाठी.',
+          tags: ['4K', 'टच', 'EDLA'] },
+        { iconKey: 'speaker', tintKey: 'displaySound', title: 'साउंड सिस्टम्स',
+          subtitle: '2.1 होम-थिएटर ऑडिओ — दोन स्पीकर आणि एक वूफर.',
+          tags: ['2.1', 'वूफर'] },
+        { iconKey: 'tvMinimal', tintKey: 'displaySound', title: 'प्रोजेक्टर स्क्रीन्स',
+          subtitle: 'खाली ओढता येणारे किंवा निश्चित फ्रेम प्रोजेक्शन पृष्ठभाग.',
+          tags: ['मॅट व्हाइट'] },
+        { iconKey: 'anchor', tintKey: 'displaySound', title: 'छत-माउंटिंग किट्स',
+          subtitle: 'प्रोजेक्टर्स सुरक्षितपणे लटकवण्यासाठी भारी-ड्युटी ब्रॅकेट्स.',
+          tags: ['स्टील', 'युनिव्हर्सल'] },
+        { iconKey: 'keyboard', tintKey: 'inputStorage', title: 'कळफलक',
+          subtitle: 'दैनंदिन वापरासाठी वायर्ड स्पिल-रेझिस्टंट कीबोर्ड्स.',
+          tags: ['स्पिल-सेफ'] },
+        { iconKey: 'mouse', tintKey: 'inputStorage', title: 'उंदरे',
+          subtitle: 'ऑप्टिकल माउस आणि पॉइंटिंग उपकरणे.',
+          tags: ['ऑप्टिकल'] },
+        { iconKey: 'cable', tintKey: 'inputStorage', title: 'संगणक सहाय्यक उपकरणे',
+          subtitle: 'केबल्स, हब्स, अडॅप्टर्स आणि लहान जोडण्या.',
+          tags: ['केबल्स', 'अडॅप्टर्स'] },
+        { iconKey: 'usb', tintKey: 'inputStorage', title: 'पेन-ड्राइव्ह्स (डिजिटल अभ्यासक्रम)',
+          subtitle: 'ऑफलाइन वर्गांसाठी पूर्व-लोड केलेले अभ्यासक्रम ड्राइव्ह्स.',
+          tags: ['ऑफलाइन-रेडी'] },
       ],
-      exploded: {
-        eyebrow: 'स्तरीय एक्सप्लोडेड आर्किटेक्चर',
-        heading: 'इंटरॅक्टिव्ह पॅनेलचे क्रॉस-सेक्शन',
-        subheading:
-          'पाच स्तर Z-अक्ष व Y-अक्षावर स्क्रोलद्वारे विभागलेले — प्रत्येक घटक स्वतंत्रपणे अभियांत्रिकी, सीलबंद आणि चाचणीयोग्य.',
-        caption:
-          'प्रत्येक स्तर स्वतंत्रपणे सर्व्हिसेबल आणि बदलण्यायोग्य आहे; फर्मवेअर बूट ROM मदरबोर्ड स्तरावर वेल्ड केलेला असतो, त्यामुळे एट्रिब्यूशन प्रत्येक स्वॅपमध्ये टिकते.',
-        layers: [
-          {
-            label: 'बाह्य बेझेल',
-            sublabel: 'रग्ड ABS बॉडी',
-          },
-          {
-            label: 'संरक्षक काच',
-            sublabel: 'अँटी-ग्लेअर टेम्पर्ड स्तर',
-          },
-          {
-            label: 'डिस्प्ले मॅट्रिक्स',
-            sublabel: '४K मल्टी-टच LCD पॅनेल',
-          },
-          {
-            label: 'मदरबोर्ड व शिल्डिंग',
-            sublabel: 'EMI-शिल्डेड SoC बोर्ड',
-          },
-          {
-            label: 'माउंट ब्रॅकेट',
-            sublabel: 'VESA-सुसंगत स्टील माउंट',
-          },
-        ],
+      footnote: {
+        eyebrow: 'सबस्क्रिप्शन नाही. व्हेंडर लॉक-इन नाही.',
+        line1:
+          'प्रत्येक डिव्हाइस आमच्या टॅम्पर-प्रूफ फर्मवेअरसह प्री-फ्लॅश केलेले असते — बूट स्क्रीनवर तुमच्या संस्थेचे चिन्ह दिसते, वैधानिक निधीचे पालन हार्डवेअर स्तरावर स्वाक्षरीत केलेले असते, आणि कोणत्याही ड्राइव्ह वाइप किंवा OS पुनःस्थापनेनंतरही अॅसेट टिकतो.',
       },
-      firmwareCallout: {
-        eyebrow: 'फर्मवेअर सानुकूलन',
-        title: 'निवडक बूट-स्प्लॅश पॅट्रॉन एट्रिब्यूशन',
-        desc:
-          'हार्डवेअर फर्मवेअर असेंबली लाइनवरच प्री-फ्लॅश केलेले असते, जेणेकरून प्रत्येक पॉवर सायकलवर संस्थात्मक पॅट्रॉन, सरकारी संस्था किंवा CSR फाउंडेशनचे एम्ब्लेम दिसतील — OS री-इन्स्टॉल किंवा ड्राइव्ह वाइपनंतरही.',
-        feature1Bold: 'पॅट्रॉन एम्ब्लेम रेंडरिंग:',
-        feature1Text:
-          'कस्टम BIOS स्प्लॅश सुरूवातीला फाउंडेशन, सरकारी किंवा CSR एम्ब्लेम दाखवतो — प्रोजेक्टर स्क्रीन आणि पॅनेल दोन्हीसाठी योग्य आकारात.',
-        feature2Bold: 'बहु-भागधारक स्तर:',
-        feature2Text:
-          'त्याच डिव्हाइसवर MLA निधी, MP निधी, CSR फाउंडेशन आणि ग्राम माजी विद्यार्थी ट्रस्टसाठी स्वतंत्र अॅसेट-टॅग स्लॉट्स.',
-        feature3Bold: 'टॅम्पर-प्रूफ सातत्य:',
-        feature3Text:
-          'राइट-प्रोटेक्टेड फ्लॅश विभागणी वापरकर्त्याच्या कृतींनी पुसता येत नाही — प्रत्येक त्रैमासिक ऑडिटला सत्यापित.',
-        ctaPrimary: 'फर्मवेअर तपशील पहा',
-        ctaSecondary: 'अॅसेट-एट्रिब्यूशन डोझिअर मागवा',
-        bootKernel: 'फर्मवेअर बूट कर्नल v४.२ • हार्डवेअर अॅसेट ID',
-        bootBadge: 'सानुकूल एट्रिब्यूशन',
-        bootStatus: 'फर्मवेअर प्रमाणित',
-        bootLine1: 'पॅट्रॉन एम्ब्लेम',
-        bootLine2: 'पॅट्रोनेज अंतर्गत डिजिटल सज्ज',
-        bootLine3: 'कायमस्वरूपी वर्ग अॅसेट • तैनाती विभाग',
-        bootDiagnostic:
-          'सुरक्षित बूट: सक्रिय | राइट-प्रोटेक्ट: लॉक केलेले',
-        statA: 'सातत्य',
-        statAVal: 'प्रत्येक बूट',
-        statB: 'स्टोरेज',
-        statBVal: 'राइट-प्रोटेक्टेड ROM',
-        statC: 'रीसेट सर्व्हायव्हल',
-        statCVal: 'हो',
+    },
+    testimonials: {
+      badge: 'कोंकणात प्रत्यक्ष तैनाती',
+      heading: 'शिक्षक आणि भागीदार काय म्हणतात',
+      subheading:
+        'जिल्हा परिषद शाळा, CSR फाउंडेशन आणि संस्थात्मक IT कार्यक्रमांमधील प्रत्यक्ष तैनाती. प्रत्येक पुनरावलोकन Google Maps वरील सत्यापित नोंदीशी जोडलेले आहे.',
+      cta: 'Google Maps वर सर्व पुनरावलोकने वाचा',
+      cardLabel: 'Google वर पोस्ट केले',
+      scrollHint: 'स्वाइप करा किंवा बाण वापरा',
+      footerNote:
+        'कोंकण प्रादेशिक केंद्रासाठी सत्यापित Google Maps नोंदीमधून एकत्रित केलेले.',
+      reviewer: {
+        zpHeadmaster: 'जि.प. शाळा मुख्याध्यापक',
+        csrManager: 'CSR कार्यक्रम व्यवस्थापक',
+        itCoordinator: 'शाळा IT समन्वयक',
+        zpOfficer: 'जिल्हा परिषद शिक्षण अधिकारी',
+        parent: 'इयत्ता ७ च्या विद्यार्थ्याचे पालक',
+      },
+      region: {
+        konkan: 'कोंकण विभाग',
+        khed: 'खेड गट',
+        chiplun: 'चिपळूण तालुका',
+        mahad: 'महाड तालुका',
+        dapoli: 'दापोली तालुका',
+      },
+      quote: {
+        zpHeadmaster:
+          '₹२५,००० चा ऑफलाइन वर्ग संच आमच्या शाळेत जि.प. अनुदान मर्यादेत तैनात करण्यात आला. दोन पावसाळी हंगामानंतरही शून्य डाउनटाइम. प्रत्येक प्रोजेक्टर सुरू होताना आमच्या शाळेचे नाव दाखवणारे बूट-स्क्रीन एट्रिब्यूशन वार्षिक सोहळ्यात पालकांच्या नक्कीच लक्षात आले.',
+        csrManager:
+          'ड्राइव्ह वाइप आणि OS पुनःस्थापना सहन करेल अशी अॅसेट पडताळणी हवी होती — फर्मवेअर-स्तरीय बूट स्प्लॅशने ते सोडवले. आमच्या अनुदान अनुपालन ऑडिटर समाधानी झाले, आणि कोंकणातील ऑन-साइट सहाय्य तत्पर आहे.',
+        itCoordinator:
+          'टच पॅनेलवर मराठी आणि इंग्रजी सामग्री दरम्यान स्विच करणे एका टॅपवर होते. दुपारच्या उन्हातही मागच्या रांगेतून 4K डिस्प्ले स्पष्ट दिसतो. ज्या विद्यार्थ्यांनी कधी संगणक हाताळला नाही ते आता स्वतःचे सादरीकरण तयार करतात.',
+        zpOfficer:
+          'आमच्या पंचक्रोशीत, रग्ड यूपीएस बंडल्स आणि ऑफलाइन-फर्स्ट प्रोजेक्टरमुळे पुनरावृत्ती खरेदी विनंत्या जवळजवळ शून्य झाल्या आहेत. शाळांमध्ये एकसमान कॉन्फिगरेशनमुळे आमची अॅसेट नोंदणी लक्षणीयरीत्या सुलभ झाली आहे.',
+        parent:
+          'माझी मुलगी तिच्या वर्गातील नवीन डिजिटल बोर्डबद्दल रोज सांगते. ती धड्यांमध्ये अधिक लक्ष देते आणि काय शिकली ते मला दाखवण्यास उत्सुक असते. मी विद्यार्थी असताना आमच्या शाळेत असे काहीच नव्हते.',
+      },
+    },
+    contactSection: {
+      badge: 'संपर्क साधा',
+      heading: 'आमच्याशी संपर्क साधा',
+      subheading:
+        'वर्ग तैनाती, हार्डवेअर तपशील, फर्मवेअर सानुकूलन किंवा भागीदारी चौकशीसाठी संपर्क करा. आम्ही एका कार्यदिवसात प्रतिसाद देतो.',
+      fields: {
+        firstName: 'पहिले नाव',
+        lastName: 'आडनाव',
+        subject: 'विषय',
+        message: 'आपला संदेश',
+        subjectPlaceholder: 'विषय निवडा…',
+        firstNamePh: 'उदा. रमेश',
+        lastNamePh: 'उदा. पाटील',
+        messagePh:
+          'आपल्या संस्थेबद्दल, वर्गाच्या आकाराबद्दल किंवा डोळ्यांसमोर असलेल्या हार्डवेअरबद्दल सांगा…',
+      },
+      subjects: {
+        enquiry: {
+          general: 'सामान्य चौकशी',
+          deployment: 'वर्ग तैनाती',
+          hardware: 'हार्डवेअर तपशील',
+          firmware: 'फर्मवेअर / अॅसेट एट्रिब्यूशन',
+          partner: 'भागीदारी / CSR',
+        },
+      },
+      submit: 'WhatsApp द्वारे पाठवा',
+      helperText:
+        'सबमिट केल्यावर WhatsApp उघडेल — आपला संदेश पूर्व-भरलेला असेल, फक्त Send दाबा.',
+      successHint:
+        'WhatsApp कंपोझरमध्ये आपला संदेश दिसेल. Enter दाबा किंवा Send वर क्लिक करा.',
+      directCard: {
+        eyebrow: 'थेट संपर्क',
+        heading: 'कोकण प्रादेशिक तैनाती केंद्र',
+        phoneLabel: 'थेट दूरध्वनी',
+        addressLabel: 'केंद्र पत्ता',
+        hoursLabel: 'प्रतिसाद वेळ',
+        address: 'बिल्वदळ-१, समर्थ नगर, MSEB कार्यालयाजवळ, शासकीय गोदामांजवळ, खेड, महाराष्ट्र ४१५७०९',
+        hours: 'सोम–शनि · ०९:००–१८:०० IST',
+        note:
+          'सर्व चौकशी कोकण प्रादेशिक टीमकडे पाठवल्या जातात. प्रमाणित प्रतिसाद वेळ: एक कार्यदिवस.',
       },
     },
     footer: {
@@ -806,14 +838,14 @@ const translations = {
         '१९९८ पासून खेड, चिपळूण, महाड, दापोली आणि संपूर्ण कोकणातील जिल्हा परिषद शाळा, ग्रामीण आश्रमशाळा व शिक्षण संस्थांची अखंड सेवा करत आहोत.',
       approval: 'महाराष्ट्र स्टेट बोर्ड मान्यताप्राप्त ई-लर्निंग हार्डवेअर भागीदार',
       hubTitle: 'कोकण प्रादेशिक केंद्र',
-      address: 'मेन रोड, खेड, जि. रत्नागिरी - ४१५७०९, महाराष्ट्र',
+      address: 'बिल्वदळ-१, समर्थ नगर, MSEB कार्यालयाजवळ, शासकीय गोदामांजवळ, खेड, महाराष्ट्र ४१५७०९',
       directPhone: 'थेट संपर्क:',
       mapsLink: 'गुगल मॅपवर पत्ता पहा',
       quickLinks: 'महत्त्वाच्या लिंक्स',
       linkTimeline: '२५ वर्षांचा नाविन्यपूर्ण प्रवास',
       linkRig: '₹२५ हजार जि.प. संच तपशील',
       linkEdla: 'गुगल EDLA ४K AI पॅनेल्स',
-      linkDonors: 'आमदार व CSR देणगीदार ब्रँडिंग',
+      linkDonors: 'आमच्या टीमशी संपर्क साधा',
       copyright:
         '© १९९८ - २०२६ युनिक सिस्टीम्स (Unique Systems). सर्व हक्क राखीव.',
       tagline: 'ग्रामीण महाराष्ट्रात दर्जेदार आणि परवडणाऱ्या शैक्षणिक तंत्रज्ञानाची क्रांती.',
