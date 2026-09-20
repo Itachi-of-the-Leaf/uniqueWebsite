@@ -363,22 +363,26 @@ export default function ContactSection() {
           </form>
 
           {/* Right column: contact info card */}
-          <aside data-dark-bg className="lg:col-span-5 rounded-2xl border border-[#0A1E5C]/15 bg-gradient-to-br from-[#0A1E5C] to-[#103B9B] p-6 sm:p-8 text-white shadow-md flex flex-col">
+          <aside data-dark-bg className="lg:col-span-5 rounded-2xl border border-[#0A1E5C]/15 bg-gradient-to-br from-[#0A1E5C] to-[#103B9B] p-7 sm:p-9 text-white shadow-md flex flex-col">
             <p className="text-[0.7rem] font-bold tracking-[0.2em] uppercase text-[#FFD200] mb-3">
               {lang.directCard?.eyebrow ?? 'Reach Us Directly'}
             </p>
-            <h3 className="text-xl sm:text-2xl font-extrabold leading-tight mb-5">
+            <h3 className="text-xl sm:text-2xl font-extrabold leading-tight mb-7">
               {lang.directCard?.heading ??
                 'Konkan Regional Deployment Hub'}
             </h3>
 
-            <div className="space-y-4 text-sm">
-              <div className="flex items-start gap-3">
-                <span className="w-8 h-8 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
+            {/* Items stack — increased space-y + gap + icon size
+                so each entry reads with comfortable breathing room
+                against the navy gradient. Icons grow from 8×8 →
+                10×10 to anchor each row visually. */}
+            <div className="space-y-5 text-sm">
+              <div className="flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
-                    className="w-4 h-4 text-[#FFD200]"
+                    className="w-5 h-5 text-[#FFD200]"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -388,8 +392,8 @@ export default function ContactSection() {
                     <path d="M22 16.92V21a1 1 0 0 1-1.09 1A19 19 0 0 1 2 3.09 1 1 0 0 1 3 2h4.09a1 1 0 0 1 1 .75l1 4a1 1 0 0 1-.27 1L7.21 9.21a16 16 0 0 0 7.58 7.58l1.46-1.6a1 1 0 0 1 1-.27l4 1a1 1 0 0 1 .75 1z" />
                   </svg>
                 </span>
-                <div>
-                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-0.5">
+                <div className="pt-1">
+                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-1">
                     {lang.directCard?.phoneLabel ?? 'Direct Phone'}
                   </p>
                   <a
@@ -402,12 +406,12 @@ export default function ContactSection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <span className="w-8 h-8 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
+              <div className="flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
-                    className="w-4 h-4 text-[#FFD200]"
+                    className="w-5 h-5 text-[#FFD200]"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -418,23 +422,23 @@ export default function ContactSection() {
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                 </span>
-                <div>
-                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-0.5">
+                <div className="pt-1">
+                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-1">
                     {lang.directCard?.addressLabel ?? 'Hub Address'}
                   </p>
                   <p className="leading-snug">
                     {lang.directCard?.address ??
-                      'Main Road, Khed, Dist. Ratnagiri - 415709, Maharashtra'}
+                      'Bilvadal-1, Samartha Nagar, near MSEB Office, next to Govt. Godowns, Khed, Maharashtra 415709'}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <span className="w-8 h-8 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
+              <div className="flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-lg bg-white/10 flex items-center justify-center">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
-                    className="w-4 h-4 text-[#FFD200]"
+                    className="w-5 h-5 text-[#FFD200]"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -445,8 +449,8 @@ export default function ContactSection() {
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
                 </span>
-                <div>
-                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-0.5">
+                <div className="pt-1">
+                  <p className="text-[#FFD200] text-[0.7rem] font-bold tracking-widest uppercase mb-1">
                     {lang.directCard?.hoursLabel ?? 'Response Window'}
                   </p>
                   <p className="leading-snug">
@@ -456,9 +460,9 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className="mt-auto pt-6 border-t border-white/10 text-[0.7rem] text-white/60 leading-relaxed">
+            <div className="mt-auto pt-7 border-t border-white/10 text-[0.78rem] text-white/75 leading-relaxed">
               {lang.directCard?.note ??
-                'All enquiries are routed to the Konkan regional team. Standard response time: one working day.'}
+                'Contact us to get your local rural school digitalized — we are here to help bring modern, rugged, offline-ready learning to your students.'}
             </div>
           </aside>
         </div>

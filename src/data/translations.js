@@ -404,7 +404,7 @@ const translations = {
         address: 'Bilvadal-1, Samartha Nagar, near MSEB Office, next to Govt. Godowns, Khed, Maharashtra 415709',
         hours: 'Mon–Sat · 09:00–18:00 IST',
         note:
-          'All enquiries are routed to the Konkan regional team. Standard response time: one working day.',
+          'Contact us to get your local rural school digitalized — we are here to help bring modern, rugged, offline-ready learning to your students.',
       },
     },
     footer: {
@@ -830,7 +830,7 @@ const translations = {
         address: 'बिल्वदळ-१, समर्थ नगर, MSEB कार्यालयाजवळ, शासकीय गोदामांजवळ, खेड, महाराष्ट्र ४१५७०९',
         hours: 'सोम–शनि · ०९:००–१८:०० IST',
         note:
-          'सर्व चौकशी कोकण प्रादेशिक टीमकडे पाठवल्या जातात. प्रमाणित प्रतिसाद वेळ: एक कार्यदिवस.',
+          'तुमच्या स्थानिक ग्रामीण शाळेला डिजिटल करण्यासाठी संपर्क करा — आधुनिक, टिकाऊ, ऑफलाइन-तयार शिक्षण तुमच्या विद्यार्थ्यांपर्यंत पोहोचवण्यासाठी आम्ही येथे आहोत.',
       },
     },
     footer: {
