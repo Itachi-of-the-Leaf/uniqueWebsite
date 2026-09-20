@@ -3,12 +3,19 @@ import { useLanguage } from '../context/LanguageContext'
 /**
  * BrandLogo.jsx - Official "Unique Systems" (युनिक सिस्टीम्स) Brand Identity Emblem
  *
- * Hover effect: a diagonal "glare" sweep travels across the logo JPEG on hover.
- * Pure CSS, compositor-only (transform + opacity on a pseudo-element).
+ * Renders only the brand title (locale-specific) and the GST number
+ * below it. The previous layout also showed an "EST. 1998" pill and
+ * a parallel-script tagline; both were removed per the spec — the
+ * nav should read clean: logo → "Unique Systems" / "युनिक सिस्टीम्स"
+ * → GST number.
+ *
+ * Hover effect: a diagonal "glare" sweep travels across the logo
+ * JPEG on hover. Pure CSS, compositor-only (transform + opacity on
+ * a pseudo-element).
  */
 export default function BrandLogo({ variant = 'light', className = '' }) {
   const isDarkBg = variant === 'dark' // true when placed on Royal Navy or Cobalt background
-  const { language, t } = useLanguage()
+  const { t } = useLanguage()
 
   return (
     <div className={`group flex items-center gap-3 select-none ${className}`}>
@@ -29,29 +36,21 @@ export default function BrandLogo({ variant = 'light', className = '' }) {
         />
       </div>
 
-      {/* Brand Typography & Devanagari Subhead */}
+      {/* Brand Title + GST Number */}
       <div className="leading-tight">
-        <div className="flex items-center gap-2">
-          <span
-            className={`font-heading font-extrabold text-xl tracking-tight ${
-              isDarkBg ? 'text-[#FFFFFF]' : 'text-[#081438]'
-            }`}
-          >
-            {language === 'mr' ? 'युनिक सिस्टीम्स' : 'Unique Systems'}
-          </span>
-          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFD200] text-[#081438] shadow-xs">
-            {t('nav.established')}
-          </span>
+        <div
+          className={`font-heading font-extrabold text-xl tracking-tight ${
+            isDarkBg ? 'text-[#FFFFFF]' : 'text-[#081438]'
+          }`}
+        >
+          {t('nav.brandName')}
         </div>
         <p
-          className={`text-xs font-semibold tracking-wide ${
+          className={`text-[0.7rem] sm:text-xs font-semibold tracking-wide mt-0.5 ${
             isDarkBg ? 'text-[#FFD200]' : 'text-[#103B9B]'
           }`}
         >
-          {language === 'mr' ? 'Unique Systems' : 'युनिक सिस्टीम्स'}{' '}
-          <span className={isDarkBg ? 'text-white/60' : 'text-slate-500'}>
-            | {t('nav.tagline')}
-          </span>
+          {t('nav.gst')}
         </p>
       </div>
     </div>

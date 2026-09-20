@@ -26,7 +26,7 @@ export default function CustomCursor() {
   const chevronGroupRef = useRef(null)
   const chevronUpRef = useRef(null)
   const chevronDownRef = useRef(null)
-  const [cursorMode, setCursorMode] = useState('default') // 'default' | 'timeline-image' | 'chalk' | 'laser'
+  const [cursorMode, setCursorMode] = useState('default') // 'default' | 'dark-bg' | 'timeline-image' | 'chalk' | 'laser'
   const [isInteractive, setIsInteractive] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -77,10 +77,20 @@ export default function CustomCursor() {
       // Context detection via DOM hierarchy
       const target = e.target
       if (target) {
+        // Priority order: timeline-image > dark-bg > chalk > laser > default.
+        // `data-dark-bg` is opt-in markup on elements with a dark navy
+        // background — the cursor switches to white-on-dark for legibility
+        // without forcing every component to know about cursor styling.
         if (target.closest('[data-timeline-image]')) {
           // Timeline section (Era 01..05). White crosshair reads cleanly on
           // the dark classroom photos without competing with the gold accents.
           setCursorMode('timeline-image')
+        } else if (target.closest('[data-dark-bg]')) {
+          // Any element tagged as having a dark-blue background — typically
+          // the footer, the ContactSection info card, or future navy
+          // surfaces. White dot + white-on-white ring with a subtle glow
+          // so it reads cleanly without competing with the gold accents.
+          setCursorMode('dark-bg')
         } else if (target.closest('.blackboard-panel')) {
           setCursorMode('chalk')
         } else if (
@@ -248,6 +258,16 @@ export default function CustomCursor() {
     ringBg = 'rgba(255, 255, 255, 0.08)'
     ringBorder = '1px solid rgba(255, 255, 255, 0.45)'
     ringBoxShadow = '0 0 6px rgba(255, 255, 255, 0.25)'
+  } else if (cursorMode === 'dark-bg') {
+    // White dot for any element tagged `data-dark-bg` — typically the
+    // footer and the ContactSection info card. Reads cleanly against
+    // navy/cobalt panels, slightly softer glow than the timeline mode
+    // so it doesn't feel surgical on solid color surfaces.
+    dotBg = '#FFFFFF'
+    dotBoxShadow = '0 0 5px 1px rgba(255, 255, 255, 0.7)'
+    ringBg = 'rgba(255, 255, 255, 0.06)'
+    ringBorder = '1px solid rgba(255, 255, 255, 0.35)'
+    ringBoxShadow = '0 0 4px rgba(255, 255, 255, 0.2)'
   } else if (cursorMode === 'chalk') {
     dotBg = '#FFFFFF'
     dotBoxShadow = '0 0 6px 1px rgba(255, 255, 255, 0.9), 0 0 12px 3px rgba(254, 240, 138, 0.35)'
