@@ -133,13 +133,33 @@ export default function TimelineSection() {
               const tl = gsap.timeline({
                 scrollTrigger: {
                   trigger: sectionRef.current,
+                  // Start when the section's top edge reaches the
+                  // viewport top. End is decoupled from the section's
+                  // own height — it's a fixed `(ERAS.length + 0.8)`
+                  // viewport-height scroll distance, so the timeline
+                  // has explicit "trailing buffer" room for the final
+                  // era to dwell without starvation. The trailing
+                  // 0.8vh beyond the 5-era scroll mirrors the
+                  // `h-[600vh]` (5 eras + 1 buffer era) wrapper.
                   start: 'top top',
-                  end: 'bottom bottom',
+                  end: () => '+=' + window.innerHeight * (ERAS.length + 0.8),
                   scrub: true,
                   pin: stageRef.current,
                   pinSpacing: true,
                   anticipatePin: 1,
                   invalidateOnRefresh: true,
+                  // Navbar slides up while we're pinned so the story
+                  // takes the full viewport. We dispatch a counter-
+                  // friendly CustomEvent; the listener in Navbar
+                  // increments on enter and decrements on leave so
+                  // multiple pinned sections can stack cleanly.
+                  onToggle: (self) => {
+                    window.dispatchEvent(
+                      new CustomEvent('pinned-section', {
+                        detail: { pinned: self.isActive },
+                      }),
+                    )
+                  },
                   onUpdate: (self) => {
                     // Stream live progress to window.__timelineProgress for ad-hoc
                     // dev inspection. Production cost is negligible (one assignment
@@ -153,21 +173,27 @@ export default function TimelineSection() {
               })
 
               // ─── Explicit phase tweens (backdrops + cards) ────────────────────
-              // Per spec: 5 backdrop fades-in, 4 fades-out (Era 5 has no fade-out).
-              // Each fade is 0.05 wide and starts exactly on a 0.05-grid boundary.
-              // We also drive scale 1.04 -> 1.0 on every backdrop's fade-in for the
-              // subtle drift start, and scale 1.04 -> 1.0 on every fade-out mirror.
-              const FADE = 0.05
+              // Per spec: all active crossfade transitions between
+              // Eras 1→5 conclude by progress ~0.76 so Era 05 has
+              // 24% of the timeline (and roughly 24% of the
+              // scroll-driven distance) to dwell in full view. The
+              // empty hold tween at the end (`tl.to({}, …)`) keeps
+              // the GSAP tween machinery ticking through the final
+              // scroll stroke so the timeline never reports "done"
+              // prematurely.
+              const FADE = 0.04
               const PHASES = [
-                // [fadeInEnd, fadeOutStart, fadeOutEnd, hasFadeOut]
-                // Era 1:    no fade-in (entry), fades out at 0.20..0.25
-                // Eras 2-4: fade in at (prev fadeOutEnd)..(prev fadeOutEnd+0.05), fade out
-                // Era 5:    fades in at 0.80..0.85, no fade-out
-                { fadeInStart: 0.00, fadeInEnd: 0.00, fadeOutStart: 0.20, fadeOutEnd: 0.25 }, // Era 1
-                { fadeInStart: 0.20, fadeInEnd: 0.25, fadeOutStart: 0.40, fadeOutEnd: 0.45 }, // Era 2
-                { fadeInStart: 0.40, fadeInEnd: 0.45, fadeOutStart: 0.60, fadeOutEnd: 0.65 }, // Era 3
-                { fadeInStart: 0.60, fadeInEnd: 0.65, fadeOutStart: 0.80, fadeOutEnd: 0.85 }, // Era 4
-                { fadeInStart: 0.80, fadeInEnd: 0.85, fadeOutStart: null, fadeOutEnd: null }, // Era 5
+                // Era 1: visible at entry, fades out at 0.14..0.18
+                { fadeInStart: 0.00, fadeInEnd: 0.00, fadeOutStart: 0.14, fadeOutEnd: 0.18 },
+                // Era 2: fades in 0.18..0.22, fades out 0.32..0.36
+                { fadeInStart: 0.18, fadeInEnd: 0.22, fadeOutStart: 0.32, fadeOutEnd: 0.36 },
+                // Era 3: fades in 0.36..0.40, fades out 0.50..0.54
+                { fadeInStart: 0.36, fadeInEnd: 0.40, fadeOutStart: 0.50, fadeOutEnd: 0.54 },
+                // Era 4: fades in 0.54..0.58, fades out 0.68..0.72
+                { fadeInStart: 0.54, fadeInEnd: 0.58, fadeOutStart: 0.68, fadeOutEnd: 0.72 },
+                // Era 5: fades in 0.72..0.76, no fade-out — holds to
+                // timeline end (24% of scroll-driven distance).
+                { fadeInStart: 0.72, fadeInEnd: 0.76, fadeOutStart: null, fadeOutEnd: null },
               ]
 
               for (let i = 0; i < ERAS.length; i++) {
@@ -206,9 +232,15 @@ export default function TimelineSection() {
                 }
               }
 
-              // Eras 02..05 are initialized hidden; their first tween above brings
-              // them in. Era 05's tail (0.85..1.00) has no fade-out — it simply
-              // holds the final state until the section releases.
+              // ─── Final hold tween ───────────────────────────────────────
+              // Empty tween that occupies the LAST 0.24 of timeline-
+              // time. Era 5 is already fully opaque from progress 0.76
+              // onward — this tween adds explicit "still ticking"
+              // pressure on the GSAP scrubber so the pin never
+              // releases before the user's final scroll stroke
+              // completes. Result: timeline duration = 1.00, Era 5
+              // dwells cleanly across progress 0.76..1.00.
+              tl.to({}, { duration: 0.24 }, 0.76)
             }
 
       mm.add('(prefers-reduced-motion: no-preference)', buildScene)
@@ -227,7 +259,7 @@ export default function TimelineSection() {
   return (
     <section
       ref={sectionRef}
-      id="our-journey"
+      id="journey"
       className="relative w-full h-[600vh] bg-brand-canvas"
       data-timeline-image
       aria-label="Our Journey"
@@ -266,8 +298,11 @@ export default function TimelineSection() {
 
         {/* ─── Narrative Layer ─── */}
         <div className="relative z-10 flex h-full items-center">
-          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
-            <div className="lg:col-span-7" />
+          <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
+            {/* Desktop-only left spacer — keeps the narrative card on
+                the right half of the screen on lg+. Hidden on mobile
+                so the card fills the viewport. */}
+            <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
             <div className="lg:col-span-5">
               <div className="relative h-auto min-h-[30rem] sm:min-h-[34rem]">
                 {ERAS.map((era, i) => (
