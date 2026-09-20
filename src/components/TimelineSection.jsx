@@ -10,51 +10,121 @@ const ERAS = [
     id: 1,
     yearStart: 1998,
     yearEnd: 2013,
-    eraLabel: 'Era 01',
+    eraLabel: 'Phase 01',
     title: 'Ground Zero in Khed',
     backdrop: '/ShopFront.jpeg', // Era 01: Khed shop origin / institutional tech storefront.
-    narrative:
-      "Founded Khed's first dedicated computer assembly and service center, eliminating the 150 km repair bottleneck to Mumbai and Pune for rural institutions.",
+    summary:
+      "Founded Khed's first dedicated computer assembly and service center — eliminating the 150 km repair corridor to Mumbai and Pune for rural institutions.",
+    phases: [
+      {
+        label: 'The Foundation',
+        body: 'Established Unique Systems in 1998 as the first dedicated commercial IT assembly, peripheral sales, and hardware servicing hub in Khed taluka.',
+      },
+      {
+        label: 'Infrastructure Independence',
+        body: 'Eliminated the 150 km repair corridor to Mumbai and Pune, providing local public schools, village offices, and small enterprises with on-site motherboard servicing, custom desktop assemblies, and localized technical support.',
+      },
+      {
+        label: 'Digital Literacy Footprint',
+        body: 'Conducted early computing literacy sessions directly inside the shop, operating as an accessible grassroots training and coaching center for essential digital skills.',
+      },
+    ],
   },
   {
     id: 2,
     yearStart: 2014,
     yearEnd: 2016,
-    eraLabel: 'Era 02',
+    eraLabel: 'Phase 02',
     title: 'The ₹25,000 Breakthrough',
     backdrop: '/Projector_in_action.jpeg',
-    narrative:
+    summary:
       'Challenged ₹1 Lakh+ smart-classroom vendor quotes by engineering an offline, ruggedized LED ceiling-projection rig built within ZP grant caps.',
+    phases: [
+      {
+        label: 'The Rural Catalyst',
+        body: 'A rural Zilla Parishad school teacher requested an affordable digital classroom setup after being quoted ₹1,00,000+ by major commercial smart-board vendors — a cost far exceeding rural school budgets.',
+      },
+      {
+        label: 'The Hardware Innovation',
+        body: 'Designed and fabricated a ruggedized, ceiling-mounted LED projection rig capped at ₹25,000, circumventing expensive onboard storage costs by engineering high-speed plug-and-play USB pen-drive decoding directly into the display hardware.',
+      },
+      {
+        label: 'Institutional Grant Fit',
+        body: "Successfully aligned the rig's total deployment cost with standard Zilla Parishad annual discretionary funding caps, demonstrating that rural digitization did not require expensive corporate vendor contracts.",
+      },
+    ],
   },
   {
     id: 3,
     yearStart: 2017,
     yearEnd: 2024,
-    eraLabel: 'Era 03',
-    title: 'Institutional Deployments & Reach',
+    eraLabel: 'Phase 03',
+    title: 'Institutional Deployments & Regional Scale',
     backdrop: '/HappyKids1.jpeg',
-    narrative:
+    summary:
       'Scaled deployments across 100+ schools in partnership with regional CSR foundations, institutional training under Mahad MMACETP (Mahad MIDC), and State-Board-aligned educational curriculum curators.',
+    phases: [
+      {
+        label: 'Strategic Curriculum Alignment',
+        body: 'Partnered with Maharashtra-State-Board-aligned educational content curators to distribute pre-loaded, syllabus-mapped multimedia lessons via formatted solid-state media and high-speed pen drives, enabling zero-latency playback on diskless classroom projectors.',
+      },
+      {
+        label: 'Civic & CSR Coalitions',
+        body: 'Partnered with the NGO Pride India and regional initiatives under Mahad MMACETP (Mahad MIDC) to equip entire clusters of rural taluka schools.',
+      },
+      {
+        label: '100+ School Milestone',
+        body: 'Scaled deployments beyond Khed into Mahad, Poladpur, Mangaon, Roha, Tala, and Shrivardhan, proving high reliability in coastal high-humidity environments with erratic grid electricity.',
+      },
+    ],
   },
   {
     id: 4,
     yearStart: 2025,
     yearEnd: 2026,
-    eraLabel: 'Era 04',
-    title: 'Zero-Bandwidth High-Definition Ecosystems',
+    eraLabel: 'Phase 04',
+    title: 'Zero-Bandwidth 4K Ecosystems',
     backdrop: '/HappyFaculty3.jpeg',
-    narrative:
+    summary:
       'Deployed 4K interactive anti-glare touch panels with zero-latency digital blackboard software and high-lumen FHD projection designed for zero-connectivity classrooms.',
+    phases: [
+      {
+        label: 'Interactive Panel Adoption',
+        body: 'Transitioned classrooms from standard white-wall projection to 65-inch and 75-inch 4K anti-glare interactive touch flat panels featuring integrated digital chalkboard software.',
+      },
+      {
+        label: 'Zero-Bandwidth Architecture',
+        body: 'Maintained an offline-ready operational model, ensuring full interactive functionality, external USB drive ingestion, and local multimedia playback without requiring active internet connectivity or recurring cloud subscriptions.',
+      },
+      {
+        label: 'Acoustic Upgrades',
+        body: 'Integrated dedicated classroom audio amplification setups (2.1 low-distortion sound systems) to ensure clear vocal audibility in large, high-ceiling village school halls.',
+      },
+    ],
   },
   {
     id: 5,
     yearStart: null,
     yearEnd: null,
-    eraLabel: 'Era 05',
-    title: 'The Regional Benchmark (150+ Schools)',
+    eraLabel: 'Phase 05',
+    title: 'The Konkan Benchmark & Hardware Attribution',
     backdrop: '/KidsCelebrating.jpeg',
-    narrative:
-      'Outcompeting generic multinational equipment with ruggedized hardware, zero mandatory subscriptions, and guaranteed 24-hour local on-site support across Konkan.',
+    summary:
+      'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts — establishing Unique Systems as the regional benchmark for institutional technology.',
+    phases: [
+      {
+        label: '150+ Rural Institutions',
+        body: 'Reached over 150 verified school and college deployments across Raigad and Ratnagiri districts, establishing Unique Systems as a regional benchmark for institutional technology.',
+      },
+      {
+        label: 'Firmware-Level Asset Attribution',
+        body: 'Engineered custom BIOS boot-screen flashing directly into system firmware, permanently displaying donor and institutional patron credentials on every power cycle.',
+      },
+      {
+        label: 'Local Service Guarantee',
+        body: 'Sustained a guaranteed 24-hour on-site maintenance turnaround from the central Khed facility, providing an operational advantage over multinational hardware brands lacking rural service infrastructure.',
+      },
+    ],
   },
 ]
 
@@ -304,12 +374,12 @@ export default function TimelineSection() {
                 so the card fills the viewport. */}
             <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
             <div className="lg:col-span-5">
-              <div className="relative h-auto min-h-[30rem] sm:min-h-[34rem]">
+              <div className="relative h-auto min-h-[36rem] sm:min-h-[40rem]">
                 {ERAS.map((era, i) => (
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
-                    className="absolute inset-0 will-change-transform rounded-2xl border border-white/15 bg-white/10 p-7 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-md lg:p-8"
+                    className="timeline-card absolute inset-0 will-change-transform overflow-y-auto rounded-2xl border border-white/15 bg-white/10 p-7 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-md lg:p-8"
                     style={{ opacity: 0, transform: 'translate3d(0,24px,0)' }}
                     aria-hidden={i !== 0}
                   >
@@ -322,26 +392,24 @@ export default function TimelineSection() {
                     <h2 className="mt-2 font-heading text-2xl leading-tight sm:text-3xl lg:text-4xl">
                       {era.title}
                     </h2>
-                    <p className="mt-4 text-sm leading-relaxed text-white/85 lg:text-base">
-                      {era.narrative}
+                    <p className="mt-3 text-sm leading-relaxed text-white/85 lg:text-base">
+                      {era.summary}
                     </p>
 
-                    {/* Hardware Attribution Feature Callout — present on every era card.
-                        Rendered inline (no bordered frame) so it reads as a continuation
-                        of the narrative rather than a separate misplaced element. */}
-                    {i === ERAS.length - 1 && (
-                      <div className="mt-5 border-t border-white/15 pt-3">
-                        <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-brand-gold">
-                          Hardware Capability
-                        </p>
-                        <p className="mt-2 text-xs font-medium leading-relaxed text-white/95 lg:text-sm">
-                          <span className="text-white">Custom BIOS &amp; Firmware Attribution</span>
-                          {' — '}
-                          hardware firmware pre-flashed to display institutional patron crests,
-                          CSR foundations, or public donor attribution screens upon startup.
-                        </p>
-                      </div>
-                    )}
+                    {/* Phase detail list — three bullets per era,
+                        rendered as a labeled sub-list with bold phase
+                        name and body copy. Same indentation rhythm as
+                        the rest of the card. */}
+                    <ul className="mt-5 space-y-3 border-t border-white/15 pt-4">
+                      {era.phases.map((phase, j) => (
+                        <li key={j} className="text-sm leading-relaxed text-white/90 lg:text-[0.95rem]">
+                          <span className="font-bold text-white">
+                            {phase.label}:
+                          </span>{' '}
+                          {phase.body}
+                        </li>
+                      ))}
+                    </ul>
                   </article>
                 ))}
               </div>

@@ -16,6 +16,60 @@ html {
 }
 
 /* ═══════════════════════════════════════
+   Sticky Nav Offset
+   ──────────────────────────────────────
+   The header is `position: sticky; top: 0; height: 5rem` (80px
+   Tailwind `h-20`) plus a 2px gold trim line. When the user clicks
+   an in-page anchor link (e.g. #journey) the browser scrolls the
+   target to viewport-top — but the sticky nav sits on top of those
+   top pixels, hiding the section heading.
+
+   `scroll-margin-top` tells the browser to offset the scroll
+   position by the listed amount when scrolling to the anchor,
+   *without* hardcoding offsets into JS or affecting layout. It's
+   the canonical CSS primitive for this exact pattern.
+
+   On Android, `h-20` is sometimes reduced by the OEM launcher
+   gesture bar; we add `env(safe-area-inset-top)` so devices with
+   edge-to-edge displays (e.g. Samsung One UI 5+, Xiaomi MIUI 13+)
+   keep the offset stable across launchers.
+   ═══════════════════════════════════════ */
+
+:root {
+  /* Used by index.html viewport meta + scroll-margin rule. */
+  --nav-height: calc(5rem + 2px + env(safe-area-inset-top, 0px));
+  /* A touch of breathing room below the nav so the section
+     heading isn't visually pinned to the bottom of the bar. */
+  --nav-scroll-offset: calc(var(--nav-height) + 0.5rem);
+}
+
+/* Apply the offset to every element that can be a scroll target.
+   We list the IDs the nav and footer link to — adding more
+   targets in the future means adding one line here, not
+   patching every section. */
+#journey,
+#gallery,
+#testimonials,
+#contact {
+  scroll-margin-top: var(--nav-scroll-offset);
+}
+
+/* ═══════════════════════════════════════
+   Nav Hides Inside Story Sections
+   ──────────────────────────────────────
+   When the user enters a scroll-driven story section (Timeline
+   or Testimonials), ScrollTrigger dispatches a `pinned-section`
+   CustomEvent. Navbar.jsx listens, increments a counter, and
+   sets `data-hidden="true"` on the header shell. We translate
+   the shell up out of view; the `transition-transform` on the
+   shell handles the slide. Compositor-only animation.
+   ═══════════════════════════════════════ */
+
+.nav-shell[data-hidden="true"] {
+  transform: translate3d(0, -110%, 0);
+}
+
+/* ═══════════════════════════════════════
    Theme Tokens
    ═══════════════════════════════════════ */
 
@@ -72,4 +126,48 @@ html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* ═══════════════════════════════════════
+   Testimonials Section
+   ──────────────────────────────────────
+   - .testimonials-card: hide any inner scrollbars that could
+     appear at narrow viewports (defensive — content is sized
+     to fit, but a tiny phone could still overflow).
+   - .yt-facade-play: gentle idle pulse while the YouTube
+     thumbnail is loading in the background. Compositor-only
+     (transform + opacity). 2.4s cycle. Pauses on hover so the
+     user's cursor feels anchored.
+   ═══════════════════════════════════════ */
+
+.testimonials-card {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* legacy Edge / IE */
+}
+.testimonials-card::-webkit-scrollbar,
+.timeline-card::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+.timeline-card {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+@keyframes yt-facade-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 30px rgba(255, 210, 0, 0.45);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 14px 44px rgba(255, 210, 0, 0.65);
+  }
+}
+.yt-facade-play {
+  animation: yt-facade-pulse 2.4s ease-in-out infinite;
+}
+.yt-facade:hover .yt-facade-play {
+  animation-play-state: paused;
 }

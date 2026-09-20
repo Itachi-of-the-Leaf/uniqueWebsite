@@ -418,13 +418,24 @@ export default function TestimonialsSection() {
                 window.__testimonialsProgress = self.progress
               }
               // Drive the progress dots live — they read timeline
-              // progress, not scroll position, so they stay in sync
-              // with the crossfades.
+              // progress with explicit thresholds matching the slide
+              // boundaries (0.20, 0.40, 0.60) so each dot lights up
+              // in lockstep with its corresponding slide.
+              //
+              // Why explicit thresholds (not Math.floor(p * 4)):
+              // Stage 4 occupies 40% of the timeline (0.60..1.00),
+              // while Stages 1-3 each occupy 20%. A naive
+              // `Math.floor(p * 4)` would put dot 4 at progress
+              // 0.75..1.00 — which is 60% of timeline for a slide
+              // that's only 40% wide. Explicit thresholds keep the
+              // dot indicators 1:1 with their slides.
               const p = self.progress
-              const active = Math.min(
-                STAGES.length - 1,
-                Math.floor(p * STAGES.length + 0.0001),
-              )
+              let active
+              if (p < 0.20) active = 0
+              else if (p < 0.40) active = 1
+              else if (p < 0.60) active = 2
+              else active = 3
+              active = Math.min(STAGES.length - 1, active)
               for (let i = 0; i < STAGES.length; i++) {
                 const d = dots[i]
                 if (!d) continue
