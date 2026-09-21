@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useLanguage } from '../context/LanguageContext'
 import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -236,7 +235,6 @@ function renderEraCardBody(era, variant = 'desktop') {
 }
 
 export default function TimelineSection() {
-  const { t } = useLanguage()
   const sectionRef = useRef(null)
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
@@ -716,31 +714,49 @@ export default function TimelineSection() {
             Both elements are pointer-events:none so they
             never block taps/clicks underneath. */}
 
-        {/* Scroll-hint label (fades after first 5% scroll). */}
+        {/* Aesthetic scroll indicator (vertical scroller cue).
+            Replaces the previous chip + chevron + label —
+            those read as instruction labels rather than a
+            directional cue. This is a tall thin vertical line
+            with a gold dot that continuously rides down it,
+            editorial style (awwwards / readout-typography
+            pattern). No text label — the animation IS the
+            indicator. Fades out via GSAP over the first 5% of
+            scroll progress so it's gone once the user has
+            started moving. */}
         <div
           ref={scrollHintRef}
-          className="pointer-events-none absolute inset-x-0 bottom-10 z-30 flex justify-center lg:bottom-14"
+          className="pointer-events-none absolute inset-x-0 bottom-10 z-30 flex justify-center lg:bottom-12"
           aria-hidden="true"
         >
-          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-3.5 py-1.5 backdrop-blur-sm">
-            {/* Down-chevron — CSS animation so it gently bounces
-                up/down on its own. Respects prefers-reduced-motion
-                via the standard `motion-safe:` variant. */}
-            <svg
-              className="h-3 w-3 motion-safe:animate-[rl-chevron-bounce_1.6s_ease-in-out_infinite] text-[#FFD200]"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="relative flex h-[44px] w-[18px] items-start justify-center">
+            {/* Faint top cap — a tiny gold dot that hints at the
+                indicator's start, then loops back. */}
+            <span
               aria-hidden="true"
+              className="absolute left-1/2 top-0 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-[#FFD200]/55"
+            />
+            {/* Vertical track */}
+            <span
+              aria-hidden="true"
+              className="absolute left-1/2 top-[6px] h-[34px] w-px -translate-x-1/2 overflow-hidden bg-white/15"
             >
-              <path d="M3 5l3 3 3-3" />
-            </svg>
-            <p className="text-[0.7rem] font-medium uppercase tracking-[0.18em] text-white/85">
-              {t('journey.journeyHint') || 'Scroll down to explore the journey'}
-            </p>
+              {/* Filled sub-track that pulses subtly to give the
+                  cue a "live" feel even before the dot arrives. */}
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-full origin-top bg-gradient-to-b from-[#FFD200]/45 to-transparent motion-safe:animate-[rl-track-drain_2.4s_ease-in-out_infinite]"
+                style={{ transform: 'scaleY(0.4)' }}
+              />
+            </span>
+            {/* The traveling scroller dot. CSS keyframe drives it
+                from just below the top cap down to the bottom of
+                the track, then loops. opacity fades at the loop
+                endpoints so the "reset" isn't visible. */}
+            <span
+              aria-hidden="true"
+              className="absolute left-1/2 top-[6px] h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-[#FFD200] shadow-[0_0_8px_rgba(255,210,0,0.55)] motion-safe:animate-[rl-scroller-travel_1.8s_ease-in-out_infinite]"
+            />
           </div>
         </div>
 

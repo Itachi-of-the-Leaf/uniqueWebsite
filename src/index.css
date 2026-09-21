@@ -247,20 +247,41 @@ html.lenis body {
   }
 }
 
-/* ─── Scroll-hint chevron bounce ──────────────────────────────
-   Used by the TimelineSection "scroll down to explore"
-   callout. 1.6s ease-in-out infinite. The chevron travels
-   3px down then back up; paired with a subtle opacity
-   fade so it reads as a directional indicator rather than
-   a busy animation. */
-@keyframes rl-chevron-bounce {
+/* ─── Aesthetic scroll indicator (Timeline "scroll down" cue)
+   A vertical line with a gold dot that rides top-to-bottom
+   continuously, paired with a soft sub-track pulse. The cue is
+   a non-text directional affordance — the animation IS the
+   message. Respects `prefers-reduced-motion` automatically via
+   the `motion-safe:` Tailwind variant on the consumer side, so
+   reduced-motion users see only the static track + dot. */
+
+@keyframes rl-scroller-travel {
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    /* 34 px travel (the inner track height) minus the dot's
+       own height, so the dot lands flush at the bottom. */
+    transform: translate(-50%, 28px);
+    opacity: 0;
+  }
+}
+
+@keyframes rl-track-drain {
   0%, 100% {
-    transform: translateY(0);
-    opacity: 0.95;
+    transform: scaleY(0.35);
+    opacity: 0.5;
   }
   50% {
-    transform: translateY(3px);
-    opacity: 0.55;
+    transform: scaleY(1);
+    opacity: 0.85;
   }
 }
 .yt-facade-play {
