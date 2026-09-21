@@ -5,44 +5,83 @@
 // `ProductGallery.jsx`.
 //
 // VISUAL HIERARCHY: these cards are deliberately smaller and
-// quieter than the two featured showcase cards (560-600 px tall,
+// quieter than the two featured showcase cards (560 px tall,
 // full image stage, 5-pill tree). The standard cards live at
-// h-[340px] — well under half the featured cards' height — so
-// the reader's eye lands on the spotlight pair first. They
-// read as supporting evidence, not co-equal entries.
+// h-[360px] — well under the featured cards' height — so the
+// reader's eye lands on the spotlight pair first. They read as
+// supporting evidence, not co-equal entries.
 //
-// Front face layout (compact):
-//   • Top: small tier tag pill (left-aligned, no flip-hint
-//     duplicated here — the divider at the bottom carries it).
-//   • Middle: a smaller image stage (~38% of card height)
-//     with the front image at object-contain so the new
-//     ImageCompute / ImagePrinters / ImageUPS /
-//     ImagePeripherals assets show without cropping.
-//   • Below the stage: compact pill tree of up to 5 badges
-//     (driven by `front.badges` on the catalog entry). Each
-//     pill is small (text-[10px]) so the four pills stack
-//     tightly. Hidden when the entry has no badges.
+// Front face layout:
+//   • Top: tier tag pill.
+//   • Middle: square 1:1 image stage (no letterbox — image
+//     fills the square via object-cover).
+//   • Below the stage: 4 gradient badges rendered as a
+//     symmetrical 2×2 grid (so the four cards are visually
+//     identical regardless of badge-label length).
 //   • Bottom: title + hand-pointer hint inside the divider.
 //
-// Back face layout (unchanged):
-//   • Sky-blue eyebrow + title + 2-col spec grid + crimson CTA.
-//     Every standard card uses the spec grid because none of
-//     them carry `back.videos`.
+// Back face layout:
+//   • Eyebrow chip + title.
+//   • Brands roster (chip row) — fills the vertical gap that
+//     would otherwise sit between title and spec grid.
+//   • 2-col spec grid (4 icons).
+//   • Crimson CTA pinned to the bottom with mt-auto.
 import { useState } from 'react'
 import * as Icons from 'lucide-react'
 
-// Inline Google "G" mark — duplicated locally because
-// StandardFlipCard is a separate module from CatalogFlipCard
-// and we don't want to share component state across cards.
-function GoogleGIcon({ className = '' }) {
-  return (
-    <svg viewBox="0 0 12 12" className={className} aria-hidden="true">
-      <path d="M9.5 6.2c0-.2 0-.4-.1-.6H6v1.2h2c-.1.4-.4.7-.7.9v.7h1.1c.7-.6 1.1-1.5 1.1-2.2z" fill="#4285F4" />
-      <path d="M6 9.5c.9 0 1.7-.3 2.2-.8L7.1 8c-.3.2-.7.3-1.1.3-.8 0-1.5-.5-1.8-1.3H3v.8c.5 1 1.6 1.7 3 1.7z" fill="#34A853" />
-      <path d="M4.2 7c-.1-.2-.1-.5-.1-.7s0-.5.1-.7V4.8H3c-.3.5-.4 1.1-.4 1.7s.2 1.2.4 1.7l1.2-.2z" fill="#FBBC04" />
-      <path d="M6 4.4c.5 0 1 .2 1.3.5l1-1C7.7 3.3 6.9 3 6 3c-1.4 0-2.5.7-3 1.7l1.2.8c.3-.7 1-1.1 1.8-1.1z" fill="#EA4335" />
-    </svg>
-  )
+// Color-token → Tailwind class map. Each entry packs the four
+// properties the pill needs (gradient / border / text / icon) so
+// the catalog data file can stay compact
+//   `badges: [{ label, icon, color }]`
+// and the component does the visual styling here. Keep the
+// brand palette consistent with the featured cards above.
+const BADGE_TOKENS = {
+  sky: {
+    gradient: 'from-sky-950/80 to-blue-900/60',
+    border: 'border-sky-400/50',
+    text: 'text-sky-200',
+    icon: 'text-sky-400',
+  },
+  blue: {
+    gradient: 'from-slate-900/90 to-blue-950/70',
+    border: 'border-blue-400/50',
+    text: 'text-blue-200',
+    icon: 'text-blue-400',
+  },
+  emerald: {
+    gradient: 'from-emerald-950/80 to-teal-900/60',
+    border: 'border-emerald-400/50',
+    text: 'text-emerald-200',
+    icon: 'text-emerald-400',
+  },
+  amber: {
+    gradient: 'from-amber-950/60 to-yellow-900/50',
+    border: 'border-amber-400/60',
+    text: 'text-amber-200',
+    icon: 'text-amber-400',
+  },
+  gold: {
+    gradient: 'from-amber-950/70 to-yellow-900/50',
+    border: 'border-[#FFD200]/50',
+    text: 'text-[#FFD200]',
+    icon: 'text-[#FFD200]',
+  },
+  purple: {
+    gradient: 'from-indigo-950/80 to-purple-900/60',
+    border: 'border-indigo-400/50',
+    text: 'text-indigo-200',
+    icon: 'text-indigo-400',
+  },
+  slate: {
+    gradient: 'from-slate-900/90 to-slate-800/70',
+    border: 'border-slate-400/50',
+    text: 'text-slate-200',
+    icon: 'text-slate-300',
+  },
+}
+
+function resolveBadgeColor(color) {
+  return BADGE_TOKENS[color] || BADGE_TOKENS.sky
 }
 
 export default function StandardFlipCard({ item }) {
@@ -54,6 +93,7 @@ export default function StandardFlipCard({ item }) {
   }
 
   const hasBadges = Array.isArray(item.front.badges) && item.front.badges.length > 0
+  const hasBrands = Array.isArray(item.back.brands) && item.back.brands.length > 0
 
   return (
     <div
@@ -72,7 +112,7 @@ export default function StandardFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className="group relative w-full h-[340px] md:h-[360px] cursor-pointer [perspective:1400px] select-none"
+      className="group relative w-full h-[360px] cursor-pointer [perspective:1400px] select-none"
     >
       <div
         className={`relative h-full w-full rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
@@ -80,7 +120,7 @@ export default function StandardFlipCard({ item }) {
         }`}
       >
         {/* ================= FRONT FACE ================= */}
-        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#0B1B4F] border border-white/15 p-4 md:p-5 flex flex-col overflow-hidden shadow-xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
+        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#0B1B4F] border border-white/15 p-4 flex flex-col overflow-hidden shadow-xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
           {/* Top tier tag */}
           <div className="flex items-center justify-between shrink-0">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-white/[0.06] border border-white/15 text-slate-300">
@@ -89,64 +129,59 @@ export default function StandardFlipCard({ item }) {
             </span>
           </div>
 
-          {/* Image stage — compact, ~36% of card height.
-              Object-contain so the image shows without
-              cropping. Smaller than the featured cards' stage
-              to reinforce visual hierarchy. */}
-          <div className="relative mt-3 h-[36%] w-full rounded-lg bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 overflow-hidden shrink-0">
-            <div className="absolute inset-1.5 rounded-md bg-slate-950 ring-1 ring-white/10 overflow-hidden flex items-center justify-center">
-              <img
-                src={item.front.image}
-                alt={item.front.title}
-                className="max-w-full max-h-full w-auto h-auto object-contain"
-                loading="lazy"
-                decoding="async"
-                onError={(e) => {
-                  e.currentTarget.onerror = null
-                  e.currentTarget.src =
-                    'data:image/svg+xml;utf8,' +
-                    encodeURIComponent(
-                      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" fill="#0A1E5C"/><text x="120" y="86" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
-                    )
-                }}
-              />
-            </div>
+          {/* Image stage — fixed-aspect square (no letterbox).
+              object-cover so the asset fills the square;
+              identical dimensions on every card so the 2×2
+              grid aligns cleanly. */}
+          <div className="relative mt-2.5 w-full aspect-square rounded-lg bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 overflow-hidden shrink-0">
+            <img
+              src={item.front.image}
+              alt={item.front.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.onerror = null
+                e.currentTarget.src =
+                  'data:image/svg+xml;utf8,' +
+                  encodeURIComponent(
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><rect width="240" height="240" fill="#0A1E5C"/><text x="120" y="126" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
+                  )
+              }}
+            />
+            {/* Subtle bottom gradient for visual depth; keeps
+                the image legible without obscuring it. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B1B4F]/40 via-transparent to-transparent"
+            />
           </div>
 
-          {/* Pill tree — compact gradient badges down a
-              vertical trunk. Smaller pills than the featured
-              cards (text-[10px] / px-2.5 py-0.5) so 4 rows
-              fit cleanly in the remaining card height
-              without crowding the title. */}
+          {/* Pill grid — 2×2 symmetrical layout so each card
+              looks identical regardless of badge label
+              length. Replaces the previous vertical 1×4 stack
+              that broke alignment when some labels were
+              longer than others. */}
           {hasBadges && (
             <ul
-              className="mt-3 relative pl-3 border-l-2 border-white/20 space-y-1.5 shrink-0"
+              className="mt-2.5 grid grid-cols-2 gap-1.5 shrink-0"
               role="list"
             >
-              <span
-                aria-hidden="true"
-                className="absolute -left-[5px] top-0 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#FFD200] ring-2 ring-[#0B1B4F]"
-              />
               {item.front.badges.map((badge) => {
                 const Icon = badge.icon ? Icons[badge.icon] : null
+                const tok = resolveBadgeColor(badge.color)
                 return (
                   <li
                     key={badge.label}
-                    className={`relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide border bg-gradient-to-r ${badge.gradient} ${badge.borderColor} ${badge.textColor}`}
+                    className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-semibold tracking-wide border bg-gradient-to-r ${tok.gradient} ${tok.border} ${tok.text} leading-tight min-h-[26px]`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="absolute -left-[15px] top-1/2 -translate-y-1/2 w-[12px] h-px bg-white/20"
-                    />
-                    {badge.customIcon === 'google-g' ? (
-                      <GoogleGIcon className="w-3 h-3 shrink-0" />
-                    ) : Icon ? (
+                    {Icon ? (
                       <Icon
-                        className={`w-3 h-3 shrink-0 ${badge.iconColor}`}
+                        className={`w-3 h-3 shrink-0 ${tok.icon}`}
                         aria-hidden="true"
                       />
                     ) : null}
-                    <span>{badge.label}</span>
+                    <span className="truncate">{badge.label}</span>
                   </li>
                 )
               })}
@@ -155,10 +190,10 @@ export default function StandardFlipCard({ item }) {
 
           {/* Bottom title + hand-pointer hint */}
           <div className="pt-2 mt-auto border-t border-white/10 shrink-0">
-            <h3 className="text-sm font-extrabold text-white tracking-tight leading-tight">
+            <h3 className="text-[13px] font-extrabold text-white tracking-tight leading-tight">
               {item.front.title}
             </h3>
-            <p className="mt-1 text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
+            <p className="mt-0.5 text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
               <Icons.Hand className="h-3 w-3 text-[#FFD200]" aria-hidden="true" />
               <span>{item.front.hint || 'Tap to reveal institutional specifications ↻'}</span>
             </p>
@@ -166,8 +201,8 @@ export default function StandardFlipCard({ item }) {
         </div>
 
         {/* ================= BACK FACE ================= */}
-        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#071233] border border-white/20 p-4 md:p-5 flex flex-col overflow-hidden shadow-xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
-          {/* Top Eyebrow & Dismiss */}
+        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#071233] border border-white/20 p-4 flex flex-col overflow-hidden shadow-xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
+          {/* Top eyebrow + dismiss */}
           <div>
             <div className="flex items-center justify-between gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300">
@@ -178,14 +213,35 @@ export default function StandardFlipCard({ item }) {
                 ✕ Return
               </span>
             </div>
-
-            <h4 className="mt-2 text-sm md:text-base font-bold text-white tracking-tight leading-snug">
+            <h4 className="mt-2 text-[13px] font-bold text-white tracking-tight leading-snug">
               {item.back.title}
             </h4>
           </div>
 
-          {/* Specification Badges Grid — 2 cols */}
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          {/* Brand roster — chip row of OEM / brand names.
+              Fills the vertical gap between the title and the
+              spec grid. flex-wrap so a long roster (e.g. 7
+              names) wraps gracefully onto a second line. */}
+          {hasBrands && (
+            <div className="mt-2">
+              <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-slate-400/80 mb-1.5">
+                {item.back.brandsTitle || 'SUPPORTED BRANDS'}
+              </p>
+              <ul className="flex flex-wrap gap-1" role="list">
+                {item.back.brands.map((brand) => (
+                  <li
+                    key={brand}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-white/[0.06] border border-white/15 text-slate-100"
+                  >
+                    {brand}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Specification grid — 2 cols, 4 rows of specs */}
+          <div className="grid grid-cols-2 gap-1.5 mt-2">
             {item.back.specs.map((spec, idx) => {
               const IconComponent = Icons[spec.icon] || Icons.CheckCircle2
               const accentByIndex = [
@@ -198,16 +254,17 @@ export default function StandardFlipCard({ item }) {
               return (
                 <div
                   key={idx}
-                  className="flex items-center gap-1.5 rounded-md bg-white/[0.04] border border-white/10 p-1.5 text-[10px] text-slate-200"
+                  className="flex items-start gap-1.5 rounded-md bg-white/[0.04] border border-white/10 p-1.5 text-[10px] text-slate-200 leading-snug"
                 >
-                  <IconComponent className={`h-3 w-3 shrink-0 ${accent}`} />
+                  <IconComponent className={`h-3 w-3 shrink-0 mt-0.5 ${accent}`} />
                   <span className="leading-tight">{spec.label}</span>
                 </div>
               )
             })}
           </div>
 
-          {/* Action Destination Link */}
+          {/* Crimson CTA — pinned to bottom with mt-auto so
+              the back face has no dead space below it. */}
           <div className="border-t border-white/10 pt-2 mt-auto">
             <a
               href={item.back.href}
