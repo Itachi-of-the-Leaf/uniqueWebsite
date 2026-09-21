@@ -28,11 +28,16 @@ export default function Navbar() {
     return () => window.removeEventListener('pinned-section', onPinned)
   }, [])
 
+  // Navigation links surfaced in BOTH the desktop nav bar and the
+  // mobile drawer. Each entry maps to a section anchor via
+  // `handleSmoothScroll`, except `portfolio` which is a future PDF
+  // download (TODO: when /assets/Unique-Systems-Portfolio.pdf lands,
+  // swap the href to the real path and add the `download` attribute).
   const navLinks = [
     { label: t('nav.journey'), href: '#journey' },
     { label: t('nav.solutions'), href: '#gallery' },
     { label: t('nav.testimonials'), href: '#testimonials' },
-    { label: t('nav.contact'), href: '#contact' },
+    { label: t('nav.portfolio'), href: '#', kind: 'portfolio' },
   ]
 
   const handleSmoothScroll = (e, href) => {
@@ -42,6 +47,21 @@ export default function Navbar() {
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
+  }
+
+  // Portfolio click handler — placeholder for the institutional
+  // PDF download. Kept as its own function so the future wiring
+  // (real href + `download` attribute + analytics) lands in one
+  // obvious place. The directive is: do NOT cause a `#` URL hash
+  // jump or page scroll. `preventDefault` on the anchor and an
+  // empty handler body both achieve that.
+  const handlePortfolioClick = (e) => {
+    e.preventDefault()
+    // TODO: Replace with real PDF URL when the asset is published.
+    //   1) Set href to '/assets/Unique-Systems-Portfolio.pdf'
+    //   2) Add `download="Unique-Systems-Portfolio.pdf"`
+    //   3) Swap this onClick for window.open(url, '_blank') if the
+    //      preview-in-browser UX is preferred over forced download.
   }
 
   return (
@@ -82,16 +102,34 @@ export default function Navbar() {
               `justify-evenly` gives each link equal breathing room
               regardless of how many items exist. */}
           <nav className="hidden lg:flex flex-1 items-center justify-evenly gap-6 px-6">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleSmoothScroll(e, link.href)}
-                className="relative text-sm font-semibold text-white/90 hover:text-[#FFD200] transition-colors duration-200 py-1 hover:-translate-y-0.5 after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:w-0 after:-translate-x-1/2 after:bg-[#FFD200] after:transition-all after:duration-200 hover:after:w-3/4"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.kind === 'portfolio' ? (
+                // Portfolio PDF Download Link (Placeholder) — same
+                // visual treatment as the surrounding section links
+                // (white/90 → Canary Gold hover + gold underline
+                // wipe) so it doesn't look like a foreign affordance.
+                // TODO: swap `href="#"` for the real PDF asset path
+                // and add the `download` attribute when the PDF lands.
+                <a
+                  key={link.href}
+                  href="#"
+                  onClick={handlePortfolioClick}
+                  title="Download Institutional Portfolio (PDF)"
+                  className="relative text-sm font-semibold text-white/90 hover:text-[#FFD200] transition-colors duration-200 py-1 hover:-translate-y-0.5 cursor-pointer after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:w-0 after:-translate-x-1/2 after:bg-[#FFD200] after:transition-all after:duration-200 hover:after:w-3/4"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  className="relative text-sm font-semibold text-white/90 hover:text-[#FFD200] transition-colors duration-200 py-1 hover:-translate-y-0.5 after:absolute after:left-1/2 after:-bottom-0.5 after:h-[2px] after:w-0 after:-translate-x-1/2 after:bg-[#FFD200] after:transition-all after:duration-200 hover:after:w-3/4"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
           </nav>
 
           {/* Upper Right Corner Controls: Language Switcher, Phone Hub & CTA */}
@@ -232,16 +270,33 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-[#FFD200]/30 bg-[#0B1B4F] px-4 pt-3 pb-6 space-y-3 shadow-2xl">
           <nav className="flex flex-col space-y-1.5">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleSmoothScroll(e, link.href)}
-                className="min-h-[48px] flex items-center px-4 py-3 rounded-lg text-base font-bold text-white hover:bg-white/10 hover:text-[#FFD200] transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) =>
+              link.kind === 'portfolio' ? (
+                // Portfolio PDF Download Link (mobile drawer variant).
+                // Same 48px min-height + flex alignment as the other
+                // mobile menu items so the row heights stay uniform.
+                // TODO: when the real PDF lands, swap the href + add
+                // the `download` attribute.
+                <a
+                  key={link.href}
+                  href="#"
+                  onClick={handlePortfolioClick}
+                  title="Download Institutional Portfolio (PDF)"
+                  className="min-h-[48px] flex items-center px-4 py-3 rounded-lg text-base font-bold text-white hover:bg-white/10 hover:text-[#FFD200] transition-colors cursor-pointer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleSmoothScroll(e, link.href)}
+                  className="min-h-[48px] flex items-center px-4 py-3 rounded-lg text-base font-bold text-white hover:bg-white/10 hover:text-[#FFD200] transition-colors"
+                >
+                  {link.label}
+                </a>
+              )
+            )}
           </nav>
           <div className="pt-2 border-t border-white/10 flex flex-col gap-2.5">
             {/* Mobile menu "Call Us" affordance — tel-link
