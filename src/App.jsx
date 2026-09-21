@@ -14,6 +14,8 @@ import CustomCursor from './components/CustomCursor'
 import { openWhatsappBlankChat, WHATSAPP_PHONE } from './utils/whatsapp'
 import { LanguageProvider, useLanguage } from './context/LanguageContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import CatalogPage from './pages/CatalogPage'
 import {
   PhoneCall,
   MapPin,
@@ -195,7 +197,12 @@ export default function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <AppContent />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/catalog/:categoryId" element={<CatalogPage />} />
+            <Route path="*" element={<AppContent />} />
+          </Routes>
+        </BrowserRouter>
       </LanguageProvider>
     </ThemeProvider>
   )

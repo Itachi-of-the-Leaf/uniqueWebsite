@@ -81,7 +81,7 @@ export default function Navbar() {
               (left) and the right-side controls. `flex-1` plus
               `justify-evenly` gives each link equal breathing room
               regardless of how many items exist. */}
-          <nav className="hidden lg:flex flex-1 items-center justify-evenly px-6">
+          <nav className="hidden lg:flex flex-1 items-center justify-evenly gap-6 px-6">
             {navLinks.map((link) => (
               <a
                 key={link.href}
