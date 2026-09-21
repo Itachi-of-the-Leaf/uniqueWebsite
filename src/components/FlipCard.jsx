@@ -117,32 +117,59 @@ export default function FlipCard({
     }
   )
 
+  // Direction-aware drag: the card rotates WITH the drag motion
+  // (left drag → rotates left, right drag → rotates right),
+  // anchored to the current flip state. Releasing past the
+  // threshold flips; releasing before snaps back.
+  //
+  //   flipped = false  →  base = 0°
+  //     drag right (mx > 0) → opens the back   (rotates 0 → 180)
+  //     drag left  (mx < 0) → would unwind past 0 (rejected, clamped)
+  //   flipped = true   →  base = 180°
+  //     drag left  (mx < 0) → closes to front (rotates 180 → 0)
+  //     drag right (mx > 0) → would over-rotate past 360 (rejected)
+  //
+  // On release, if `|mx|` exceeds `dragDistance` AND the drag
+  // was opening the card, flip state. Otherwise snap back.
   const dragBind = useDrag(
-    ({ down, movement: [mx], direction: [dx] }) => {
+    ({ down, movement: [mx] }) => {
       if (!draggable) return
-      // During drag we apply an in-place rotateY proportional to
-      // movement. On release, if past the threshold we snap to the
-      // opposite side, otherwise snap back to current side.
       const card = cardRef.current
       if (!card) return
-      const limit = dragDistance
+
+      const baseRotation = flipped ? 180 : 0
+      const limit = Math.max(1, dragDistance)
+
       if (down) {
-        const dy = (mx / limit) * 180
-        gsap.set(card, { rotateY: dy, overwrite: 'auto' })
+        // Live: rotate proportionally to drag distance, signed so
+        // the card follows the finger. Clamp to one full turn so
+        // the card never inverts through itself.
+        const raw = baseRotation + (mx / limit) * 180
+        const rotation = Math.max(-180, Math.min(360, raw))
+        gsap.set(card, {
+          rotateY: rotation,
+          overwrite: 'auto',
+        })
       } else {
-        // Past threshold + dragging open direction → flip; past
-        // threshold + opposite direction → unflip; otherwise snap
-        // back to the current flipped state.
-        if (Math.abs(mx) > limit) {
-          const shouldFlip =
-            (mx > 0 && !flipped) || (mx < 0 && flipped)
-          // User dragged away from themselves = open. 1 == open.
-          setFlipped(shouldFlip)
+        // Release: decide whether to flip or snap back.
+        // The card opens when the user drags AWAY from the face
+        // they want to reveal. Front face wants drag-right; back
+        // face wants drag-left.
+        const openingRight = !flipped && mx > 0
+        const openingLeft = flipped && mx < 0
+        const opened = openingRight || openingLeft
+        const past = Math.abs(mx) >= limit
+        const nextFlipped = opened && past ? !flipped : flipped
+        const nextRotation = nextFlipped ? 180 : 0
+
+        if (nextFlipped !== flipped) {
+          setFlipped(nextFlipped)
         }
         gsap.to(card, {
-          rotateY: shouldFlip ? 180 : 0,
-          duration: 0.4,
-          ease: 'power2.out',
+          rotateY: nextRotation,
+          duration: 0.55,
+          ease: 'power3.out',
+          overwrite: 'auto',
         })
       }
     },
