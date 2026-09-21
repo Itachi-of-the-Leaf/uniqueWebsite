@@ -147,7 +147,7 @@ function PlaceholderBack({ title, href, tier, image }) {
   // upload the rest, extend this map and the lookup falls through
   // automatically.
   const imageMap = {
-    '/catalog/interactive-panels': '/SmartPanel1.jpeg',
+    '/catalog/interactive-panels': '/SmartPanel3.jpeg',
     '/catalog/projectors': '/SmartPanel2.jpeg',
   }
   const resolved = image || imageMap[href]
@@ -161,21 +161,36 @@ function PlaceholderBack({ title, href, tier, image }) {
           loading="lazy"
           className="h-full w-full object-cover"
         />
-        {/* Subtle dark vignette so any future overlaid text
-            stays legible over the photo. */}
+        {/* Left-edge dark band so the caption sits on a clean
+            strip regardless of photo composition. Roughly a
+            third of the card width on desktop, full width on
+            narrow cards (tier-2), faded into the photo on the
+            right edge so it doesn't read as a hard panel. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A1E5C]/85 via-[#0A1E5C]/15 to-transparent"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0A1E5C]/90 via-[#0A1E5C]/55 to-transparent"
         />
-        {/* Caption at the bottom-left of the photo so the user
-            has context for what they're looking at on flip. */}
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#FFD200]">
+        {/* Bottom vignette to lift the eyebrow off the photo's
+            lower edge. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#0A1E5C]/70 to-transparent"
+        />
+        {/* Caption — vertically centered in the left band,
+            small max-width so the text doesn't bleed into the
+            photo. The eyebrow + title pair uses flex-col for a
+            clean stacked layout; the sub-line stays muted so
+            the title reads first. */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex w-full items-center px-5 sm:px-7 lg:px-9">
+          <div className="flex max-w-[60%] flex-col gap-1 sm:gap-1.5">
+            <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#FFD200] sm:text-[0.65rem]">
               {tier === 1 ? 'Featured' : 'Catalog'}
             </span>
-            <span className="text-sm font-bold text-white drop-shadow-sm">
+            <span className="text-base font-bold leading-tight text-white drop-shadow-sm sm:text-lg lg:text-xl">
               {title}
+            </span>
+            <span className="text-[0.68rem] font-medium leading-snug text-white/70 sm:text-xs">
+              Tap card to flip back
             </span>
           </div>
         </div>
