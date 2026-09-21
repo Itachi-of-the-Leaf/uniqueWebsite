@@ -122,9 +122,12 @@ export default function ProductGallery() {
 
         {/* CATEGORY GRID — every card uses the two-sided
             CatalogFlipCard pattern (visual-impact front /
-            institutional-authority back). Responsive: 1-col
-            on mobile, 2-col on md, 3-col on lg. */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            institutional-authority back). Refactored from a
+            3-column grid into a full-width single-row
+            showcase stack per the directive: each card
+            spans the container width so both imagery and
+            specifications have room to breathe. */}
+        <div className="max-w-6xl mx-auto flex flex-col gap-10 lg:gap-14 px-4 sm:px-6 lg:px-8">
           {HARDWARE_CATALOG.map((item) => (
             <CatalogFlipCard key={item.id} item={item} />
           ))}
