@@ -127,7 +127,7 @@ export default function ProductGallery() {
             showcase stack per the directive: each card
             spans the container width so both imagery and
             specifications have room to breathe. */}
-        <div className="max-w-6xl mx-auto flex flex-col gap-10 lg:gap-14 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-6xl mx-auto flex flex-col gap-10 lg:gap-12 px-4 sm:px-6 lg:px-8">
           {HARDWARE_CATALOG.map((item) => (
             <CatalogFlipCard key={item.id} item={item} />
           ))}
