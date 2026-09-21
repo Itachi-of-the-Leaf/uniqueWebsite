@@ -35,11 +35,6 @@ import * as Icons from 'lucide-react'
 export default function StandardFlipCard({ item }) {
   const [isFlipped, setIsFlipped] = useState(false)
 
-  // Click on the CTA must NOT toggle the flip — it must navigate.
-  const handleNavigate = (e) => {
-    e.stopPropagation()
-  }
-
   const hasBadges = Array.isArray(item.front.badges) && item.front.badges.length > 0
   const hasBrands = Array.isArray(item.back.brands) && item.back.brands.length > 0
 
@@ -176,7 +171,11 @@ export default function StandardFlipCard({ item }) {
           )}
 
           {/* Compact 1-col spec list — full-width rows so
-              long labels read without truncation. */}
+              long labels read without truncation. my-auto
+              keeps the list vertically centered between
+              the brands panel above and the bottom edge
+              of the card, so the back face stays balanced
+              without a CTA. */}
           <div className="grid grid-cols-1 gap-2 my-auto">
             {item.back.specs.map((spec, sIdx) => {
               const IconComponent = Icons[spec.icon] || Icons.CheckCircle2
@@ -190,20 +189,6 @@ export default function StandardFlipCard({ item }) {
                 </div>
               )
             })}
-          </div>
-
-          {/* Crimson CTA — pinned to the bottom with
-              mt-auto so it sits flush against the lower
-              edge regardless of brands-list length. */}
-          <div className="border-t border-white/10 pt-3 mt-auto shrink-0">
-            <a
-              href={item.back.href}
-              onClick={handleNavigate}
-              className="flex items-center justify-between w-full rounded-xl bg-[#C41230] hover:bg-[#a30f28] text-white px-5 py-3 text-xs font-bold tracking-wider uppercase transition-colors shadow-lg"
-            >
-              <span>{item.back.cta}</span>
-              <Icons.ArrowUpRight className="w-4 h-4" />
-            </a>
           </div>
         </div>
       </div>
