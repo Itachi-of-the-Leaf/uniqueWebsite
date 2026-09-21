@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Menu, X, ChevronRight, Phone, PhoneCall, Globe } from 'lucide-react'
+import { Menu, X, ChevronRight, Phone, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import ThemeToggle from './ThemeToggle'
 
@@ -136,58 +136,39 @@ export default function Navbar() {
                 as a single composed unit. */}
             <ThemeToggle variant="navy" />
 
-            {/* Direct-dial "Call Us" link — replaces the
-                previous "Khed Hub" affordance. On desktop
-                it sits between the theme toggle and the
-                primary Contact CTA so the eye reads the
-                right-side cluster as Language → Theme →
-                Phone → Contact. tapping a real phone on
-                desktop is uncommon but it stays useful
-                for VoIP / softphone clients (Skype,
-                FaceTime, Teams) that respect the tel:
-                scheme. The brighter red pill on mobile
-                is its primary surface, so the desktop
-                link is intentionally a hair quieter
-                (border + text-white, no red bg). */}
-            <a
-              href="tel:+919422433394"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-white/90 hover:text-[#FFD200] transition-colors px-2 py-1"
-              aria-label="Call Unique Systems at +91 94224 33394"
-            >
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>{t('nav.callUs')}</span>
-            </a>
-
             {/* Primary desktop CTA — scrolls smoothly to the
-                #contact section. Kept the existing brand-red
-                palette (`bg-[#C41230]`) but stripped the
-                rounded-xl + heavy gold border + translateY
-                hover so it sits calmly in the right-side
-                cluster instead of shouting. Chevron icon
-                stays gold for accent. */}
+                #contact section. Canary Gold background + Deep
+                Midnight Navy text so it harmonizes with the
+                brand palette instead of competing with the
+                language pill's gold accent. Pill shape with a
+                soft gold-tinted shadow + a beefier chevron
+                stroke for visual weight. */}
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="hidden md:flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#C41230] hover:bg-[#a30f28] text-white font-bold text-sm shadow-md hover:shadow-red-900/30 transition-all"
+              className="hidden md:inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] font-extrabold text-sm tracking-wide shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 transition-all"
+              aria-label={t('nav.contactUsAria')}
             >
               <span>{t('nav.contactUs')}</span>
-              <ChevronRight className="w-4 h-4 text-[#FFD200]" />
+              <ChevronRight className="w-4 h-4 text-[#071330] stroke-[2.5]" />
             </a>
           </div>
 
           {/* Mobile Right Controls: Call Us + Theme + Language + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
-            {/* Mobile "Call Us" pill — primary CTA on mobile,
-                hidden on desktop (where the Contact Us button
-                takes that role). Replaces the previous Khed
-                Hub affordance. Tapping opens the device's
-                native dialer with +919422433394 pre-filled. */}
+            {/* Mobile "Call Us" pill — primary mobile CTA,
+                hidden on desktop (where the gold Contact
+                Us pill takes that role). Tapping opens
+                the device's native dialer with
+                +91 94224 33394 pre-filled. Canary Gold
+                style so it matches the desktop Contact
+                CTA and the language-pill accent. */}
             <a
               href="tel:+919422433394"
-              className="flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#C41230] hover:bg-[#a30f28] active:scale-95 text-white font-bold text-xs shadow-md transition-all"
+              className="flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] font-extrabold text-xs shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 transition-all"
               aria-label="Call Unique Systems at +91 94224 33394"
             >
-              <Phone className="w-3.5 h-3.5 shrink-0" />
+              <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />
               <span>{t('nav.callUs')}</span>
             </a>
 
@@ -277,19 +258,22 @@ export default function Navbar() {
               <span>{t('nav.callUs')} (+91 94224 33394)</span>
             </a>
 
-            {/* Mobile menu Contact CTA — restyled to match
-                the desktop pill (rounded-full instead of
-                rounded-xl, calmer shadow + hover, same
-                gold ChevronRight accent) so the two
-                surfaces read as the same affordance at
-                different sizes. */}
+            {/* Mobile menu Contact CTA — Canary Gold pill
+                to match the desktop CTA exactly so the
+                two surfaces read as the same affordance
+                at different sizes. The mobile-menu
+                "Call Us" tel-link above is still the
+                primary mobile route to a live call, but
+                this CTA is the canonical "go to the
+                contact form" action. */}
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="w-full min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#C41230] hover:bg-[#a30f28] text-white font-extrabold shadow-md hover:shadow-red-900/30 text-sm transition-all"
+              className="w-full min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] font-extrabold shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 text-sm transition-all"
+              aria-label={t('nav.contactUsAria')}
             >
               <span>{t('nav.contactUs')}</span>
-              <ChevronRight className="w-4 h-4 text-[#FFD200]" />
+              <ChevronRight className="w-4 h-4 text-[#071330] stroke-[2.5]" />
             </a>
           </div>
         </div>
