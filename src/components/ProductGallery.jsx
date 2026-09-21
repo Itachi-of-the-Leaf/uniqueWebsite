@@ -136,8 +136,13 @@ export default function ProductGallery() {
             ))}
           </div>
 
-          {/* Standard cards — compact 3-col grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Standard cards — balanced 2x2 grid. With 4
+              cards and a wider canvas, 2-col on tablet+desktop
+              is the natural fit (1-col stacked on mobile).
+              The card height is taller than before because
+              these cards now carry the 4-badge pill tree on
+              the front face. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {HARDWARE_CATALOG.filter((item) => !item.featured).map((item) => (
               <StandardFlipCard key={item.id} item={item} />
             ))}
