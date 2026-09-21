@@ -116,6 +116,13 @@ html {
 :root.dark {
   --color-canvas: #070C24;
   --color-canvas-deep: #0B1336;
+  /* Mirror the dark canvas so bg-brand-canvas (used by the
+     TestimonialsSection scrolly stage) flips to dark too. Without
+     this override, the testimonials panel keeps the light-mode
+     #F8FAFC value even when .dark is active, leaving a wide
+     white band between Teacher Voices and Contact Us in dark
+     mode. */
+  --color-brand-canvas: #070C24;
   --color-surface: #101A3F;
   --color-surface-muted: #0F1635;
   --color-ink: #E8ECFF;

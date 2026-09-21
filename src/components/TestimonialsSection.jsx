@@ -548,7 +548,7 @@ export default function TestimonialsSection() {
     <section
       ref={sectionRef}
       id="testimonials"
-      className="relative w-full h-[600vh] bg-brand-canvas"
+      className="relative w-full h-[600vh] bg-brand-canvas dark:bg-[#070C24]"
       data-timeline-image
       aria-label="Verified Google Reviews & Classroom Testimonials"
     >

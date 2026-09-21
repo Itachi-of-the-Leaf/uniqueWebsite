@@ -211,7 +211,7 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative w-full bg-gradient-to-b from-canvas to-canvas-deep py-20 sm:py-24 lg:py-28 px-5 sm:px-8 transition-colors duration-300"
+      className="relative w-full bg-gradient-to-b from-canvas to-canvas-deep dark:bg-[#070C24] py-20 sm:py-24 lg:py-28 px-5 sm:px-8 transition-colors duration-300"
     >
       <div className="mx-auto max-w-5xl">
         {/* HEADER */}
