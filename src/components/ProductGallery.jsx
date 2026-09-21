@@ -174,9 +174,12 @@ export default function ProductGallery() {
     }
   }
 
-  // Scroll reveal — subtle, respecting prefers-reduced-motion.
-  // Header stagger, card stagger, footnote fade. All animations are
-  // compositor-only: opacity + translate3d.
+  // Scroll reveal — header + footnote only. Grid cards are
+  // intentionally NOT animated: a GSAP `gsap.from(cards, ...)` with
+  // ScrollTrigger leaves them at opacity 0 on hard refresh when the
+  // trigger fails to fire, trapping them invisible in the DOM.
+  // Cards render at full opacity via Tailwind (opacity-100) and
+  // rely on native CSS hover transitions only.
   useEffect(() => {
     if (!sectionRef.current) return
     const ctx = gsap.context(() => {
@@ -201,22 +204,6 @@ export default function ProductGallery() {
               },
             }
           )
-
-          // Grid cards — staggered reveal, 60ms per card so the
-          // left-to-right read feels intentional
-          const cards = gridRef.current?.querySelectorAll('[data-card]') ?? []
-          gsap.from(cards, {
-            opacity: 0,
-            y: 18,
-            duration: 0.4,
-            ease: 'power1.out',
-            stagger: 0.06,
-            scrollTrigger: {
-              trigger: gridRef.current,
-              start: 'top 88%',
-              toggleActions: 'play none none reverse',
-            },
-          })
 
           // Footnote line — single quiet fade
           gsap.from(footnoteRef.current, {
@@ -280,7 +267,7 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-7 lg:p-8 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 flex flex-col gap-5 cursor-pointer"
+                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-7 lg:p-8 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 flex flex-col gap-5 cursor-pointer opacity-100"
                 >
                   {/* Top bar: icon on the left, ArrowUpRight on the right */}
                   <div className="flex items-start justify-between gap-4">
@@ -336,7 +323,7 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
+                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem] opacity-100"
                 >
                   {/* Top bar: icon + ArrowUpRight */}
                   <div className="flex items-start justify-between gap-4 mb-4">
