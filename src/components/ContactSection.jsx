@@ -8,6 +8,7 @@ import {
   CheckCircle2,
 } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import AnimatedSelect from './AnimatedSelect'
 import {
   openWhatsappBlankChat,
   WHATSAPP_PHONE,
@@ -279,43 +280,31 @@ export default function ContactSection() {
               </Field>
             </div>
 
-            {/* Subject */}
+            {/* Subject — custom AnimatedSelect replaces the
+                native <select> so the option list matches
+                the brand palette instead of inheriting the
+                OS's default dropdown chrome. */}
             <div className="mb-4">
               <Field
                 id="subject"
                 label={labels.subject}
                 error={errors.subject}
               >
-                <div className="relative">
-                  <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
-                  <select
-                    id="subject"
-                    name="subject"
-                    value={form.subject}
-                    onChange={update('subject')}
-                    className={`${inputClass(errors.subject)} appearance-none pr-10`}
-                  >
-                    <option value="" disabled>
-                      {labels.subjectPlaceholder}
-                    </option>
-                    {subjectOptions.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {/* chevron */}
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 20 20"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M6 8l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                <AnimatedSelect
+                  id="subject"
+                  name="subject"
+                  value={form.subject}
+                  onChange={(v) =>
+                    setForm((f) => ({ ...f, subject: v }))
+                  }
+                  options={subjectOptions.map((opt) => ({
+                    value: opt.value,
+                    label: opt.label,
+                  }))}
+                  placeholder={labels.subjectPlaceholder}
+                  error={Boolean(errors.subject)}
+                  icon={ListChecks}
+                />
               </Field>
             </div>
 
