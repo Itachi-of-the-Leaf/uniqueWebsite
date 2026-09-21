@@ -162,44 +162,78 @@ function BackFaceVideosPanel({ videos, subtitle }) {
 }
 
 // ─── FeaturedGoldStarBorder ────────────────────────────────────
-// A slow, continuous gold conic-beam rim that orbits the
-// perimeter of a featured card. Mounted INSIDE each face so
-// the 3D rotateY flip never reveals the glow through a
-// backface (no Z-fighting / bleed during the 700ms flip).
+// Razor-thin gold perimeter beam that travels around the
+// border of a featured card. Uses an SVG <rect> with a 1.5px
+// dashed stroke + CSS stroke-dashoffset animation, so the
+// visible glow is strictly confined to the stroke width — no
+// oversized conic gradients, no leaked halos, no blur
+// filters.
 //
-// Two layered elements:
-//   1. The full-bleed rotating conic gradient (-inset-[100%]
-//      so the gradient extends past the rounded mask on every
-//      side and the visible rim is the thin overlap between
-//      the gradient and the masked card shape).
-//   2. An inner mask (`bg-[#071330]`) sized to inset-[1.5px]
-//      so the only part of the gradient that shows through is
-//      the 1.5px ring at the card's edge — i.e. the rim.
+// Why SVG and not a rotating conic-gradient?
+//   The previous conic implementation bled outside the card
+//   bounds. transform-style:preserve-3d (needed for the flip)
+//   overrides overflow:hidden on the parent, so any gradient
+//   larger than the card leaked through the backface during
+//   the 700ms rotateY transition. SVG geometry is not subject
+//   to that override: the stroke draws strictly inside the
+//   rect's geometry, period.
 //
-// The mask sits at `-z-10` (behind the face's own bg) so the
-// card's existing dark fill still wins visually; only the rim
-// glows. All layers carry `pointer-events-none` so the glow
-// never intercepts the flip click.
+// Mounting:
+//   The wrapper sits at z-20 with pointer-events-none so it
+//   draws on top of any z-10 content children but never
+//   intercepts the flip click. The face's own bg shows
+//   through the wrapper (wrapper has no bg fill).
 function FeaturedGoldStarBorder() {
   return (
     <div
       aria-hidden="true"
-      className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-0 [transform:translateZ(0)]"
+      className="absolute inset-0 rounded-3xl pointer-events-none z-20 overflow-hidden"
     >
-      {/* Rotating conic-beam — slow 8s orbit, focused 40deg
-          gold sweep so it reads as a comet, not a full ring. */}
-      <div className="absolute -inset-[100%] star-beam-spin">
-        <div
-          className="w-full h-full star-beam-pulse"
-          style={{
-            background:
-              'conic-gradient(from 0deg, transparent 0deg, transparent 280deg, #FFD200 320deg, #FFE566 345deg, transparent 360deg)',
-          }}
+      {/* Static soft-gold base border — always visible,
+          sits behind the traveling beam. Provides the
+          "institutional gold trim" base layer. */}
+      <div className="absolute inset-0 rounded-3xl border border-[#FFD200]/25" />
+
+      {/* Traveling gold perimeter beam — a stroked SVG
+          rect with a short (140-unit) gold dash and a long
+          (820-unit) gap. Animating stroke-dashoffset from
+          0 → -960 over 9s linear makes the dash appear to
+          walk smoothly around the perimeter. The rect is
+          inset 1px from the wrapper (rx=24 matches the
+          face's rounded-3xl = 24px) so the 1.5px stroke
+          sits exactly at the face's outer edge. */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect
+          x="1"
+          y="1"
+          width="calc(100% - 2px)"
+          height="calc(100% - 2px)"
+          rx="24"
+          ry="24"
+          fill="none"
+          stroke="url(#featured-gold-beam)"
+          strokeWidth="1.5"
+          strokeDasharray="140 820"
+          strokeLinecap="round"
+          className="animate-border-beam"
         />
-      </div>
-      {/* Inner mask — preserves the face's own dark fill and
-          only leaks the gradient through the 1.5px outer rim. */}
-      <div className="absolute inset-[1.5px] rounded-[calc(1.5rem-1.5px)] bg-[#071330] -z-10" />
+        <defs>
+          <linearGradient
+            id="featured-gold-beam"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
+            <stop offset="0%" stopColor="#FFD200" stopOpacity="0" />
+            <stop offset="50%" stopColor="#FFE566" stopOpacity="1" />
+            <stop offset="100%" stopColor="#FFD200" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
     </div>
   )
 }
@@ -224,11 +258,7 @@ export default function CatalogFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className={`group relative w-full h-[520px] md:h-[560px] cursor-pointer [perspective:1400px] select-none ${
-        item.featured
-          ? 'ring-1 ring-[#FFD200]/30 shadow-[0_0_60px_-15px_rgba(255,210,0,0.35)] rounded-3xl'
-          : ''
-      }`}
+      className={`group relative w-full h-[520px] md:h-[560px] cursor-pointer [perspective:1400px] select-none rounded-3xl`}
     >
       <div
         className={`relative w-full h-full rounded-3xl transition-transform duration-700 [transform-style:preserve-3d] ${
