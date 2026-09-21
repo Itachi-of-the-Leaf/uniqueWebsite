@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ═══════════════════════════════════════
    Desktop Scale (125% rem feel)
    Top-level (not @layer base) for Tailwind 4 cascade ordering.

@@ -235,7 +235,7 @@ export default function ContactSection() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="w-full lg:w-[60%] bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10"
+            className="lg:col-span-7 w-full bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10"
           >
             {/* First + Last Name row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
