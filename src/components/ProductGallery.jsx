@@ -154,12 +154,26 @@ function PlaceholderBack({ title, href, tier, image }) {
 
   if (resolved) {
     return (
-      <div className="relative h-full w-full">
+      // Center the image in the available cell so the natural
+      // aspect ratio (6400 × 3892 for SharpenedSmartPanel3)
+      // letterboxes cleanly into the card instead of pinning to
+      // the top edge.
+      <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
         <img
           src={resolved}
           alt={title}
           loading="lazy"
-          className="h-full w-full object-cover"
+          decoding="async"
+          // `object-contain` instead of `object-cover` so the
+          // photo isn't cropped — SharpenedSmartPanel3.png has
+          // whitespace framing baked into the asset that we want
+          // to preserve. `h-auto` keeps the natural aspect
+          // ratio without stretching. The
+          // -webkit-optimize-contrast hint tells Safari/Chrome
+          // to skip its default image-smoothing pass, which is
+          // what causes the visible blur when a card is rotated
+          // through a CSS 3D transform.
+          className="w-full h-auto object-contain [image-rendering:-webkit-optimize-contrast] select-none pointer-events-none"
         />
         {/* Bottom-third vignette only — the photo's feature
             icons stay unobscured. Title sits in this band. */}

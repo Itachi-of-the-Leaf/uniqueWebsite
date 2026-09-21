@@ -314,7 +314,7 @@ export default function FlipCard({
       {/* Front */}
       <div
         ref={frontRef}
-        className="overflow-hidden"
+        className="overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased"
         style={{
           gridArea: '1 / 1',
           borderRadius: `${radius}px`,
@@ -332,7 +332,7 @@ export default function FlipCard({
           correctly when the parent rotates to 180°. */}
       <div
         ref={backRef}
-        className="overflow-hidden"
+        className="overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased"
         style={{
           gridArea: '1 / 1',
           borderRadius: `${radius}px`,
