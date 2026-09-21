@@ -284,6 +284,33 @@ html.lenis body {
     opacity: 0.85;
   }
 }
+
+/* ─── One-time tap-to-flip hint ──────────────────────────────
+   Sits on the FRONT face of every FlipCard. Fades in 1.2s
+   after mount, holds for ~1.3s, fades out over 1s. Total
+   duration 3.5s. The React `hasInteracted` boolean guarantees
+   the hint is removed from the tree on first interaction so
+   this animation only runs once per card. */
+@keyframes rl-tap-hint {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  34% {
+    /* 1.2s of 3.5s — fully visible by here */
+    opacity: 1;
+    transform: translateY(0);
+  }
+  71% {
+    /* 2.5s of 3.5s — still visible */
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
 .yt-facade-play {
   animation: yt-facade-pulse 2.4s ease-in-out infinite;
 }

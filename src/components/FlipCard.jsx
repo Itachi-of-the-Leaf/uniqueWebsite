@@ -68,6 +68,14 @@ export default function FlipCard({
   const backRef = useRef(null)
   const glareRef = useRef(null)
   const [flipped, setFlipped] = useState(false)
+  // One-time interaction tracker for the tap-to-flip hint.
+  // Starts false → hint visible. Flips to true on the first
+  // click/keyboard/drag → hint is permanently hidden for the
+  // lifetime of this card instance.
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const markInteracted = () => {
+    setHasInteracted(true)
+  }
   const hoverBind = useHover(
     ({ active, xy: [x, y], target }) => {
       const el = target
@@ -163,6 +171,7 @@ export default function FlipCard({
         const nextRotation = nextFlipped ? 180 : 0
 
         if (nextFlipped !== flipped) {
+          markInteracted()
           setFlipped(nextFlipped)
         }
         gsap.to(card, {
@@ -227,11 +236,15 @@ export default function FlipCard({
       aria-pressed={flipped}
       aria-label={flipped ? 'Tap to reveal front' : 'Tap to reveal details'}
       onClick={() => {
-        if (flipOnClick) setFlipped((f) => !f)
+        if (flipOnClick) {
+          markInteracted()
+          setFlipped((f) => !f)
+        }
       }}
       onKeyDown={(e) => {
         if (flipOnClick && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault()
+          markInteracted()
           setFlipped((f) => !f)
         }
       }}
@@ -258,6 +271,40 @@ export default function FlipCard({
           : 'none',
       }}
     >
+      {/* One-time tap-to-flip hint. Renders only while
+          `hasInteracted === false`. The CSS animation fades
+          the hint in 1.2s after mount, holds it for ~2.3s,
+          then fades it out — and the React state guarantees
+          it never comes back once the user has tapped,
+          dragged, or pressed Enter/Space. Pure CSS, no GSAP,
+          respects `prefers-reduced-motion` via the
+          `motion-safe:` variant on the consumer side. */}
+      {!hasInteracted && !flipped && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-1.5 rounded-full bg-[#0A1E5C]/80 px-2.5 py-1 backdrop-blur-sm motion-safe:animate-[rl-tap-hint_3.5s_ease-out_forwards]"
+        >
+          {/* Double-arrow chevron pointing both ways — visually
+              says "flip me, I'm interactive" without text being
+              the primary signal. */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-3 w-3 text-[#FFD200]"
+          >
+            <path d="M5 4l-2 4 2 4" />
+            <path d="M11 4l2 4-2 4" />
+          </svg>
+          <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#FFD200]">
+            Tap to flip
+          </span>
+        </div>
+      )}
       {/* Inner grid: front + back stack in the same row/column so
           the cell height is driven by the front face's natural
           content height. This is the critical bit — using
