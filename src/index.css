@@ -333,3 +333,49 @@ html.lenis body {
 .lazy-bg.is-loaded {
   opacity: 1;
 }
+
+/* ─── Featured StarBorder (CatalogFlipCard.jsx) ────────────────
+   Slow, continuous gold conic-beam rim that orbits the
+   perimeter of the two featured showcase cards (Interactive
+   Panels + Projectors). The beam is mounted INSIDE each card
+   face (front + back) so the 3D rotateY flip never reveals
+   the glow through a backface (which would cause Z-fighting /
+     bleed during the 700 ms transition).
+
+   .star-beam-spin — applies the conic-gradient orbit. The
+   gradient uses a long transparent run (0-280deg) followed
+   by a 40deg gold sweep so the visible beam is a focused
+   comet, not a continuous ring. 8s linear infinite gives
+   the slow, elegant cadence the design brief calls for.
+
+   .star-beam-pulse — gentle opacity breathing on top of the
+   rotation so the beam feels alive without being aggressive. */
+@keyframes star-beam-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes star-beam-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.star-beam-spin {
+  animation: star-beam-spin 8s linear infinite;
+  /* Subtle GPU hint so the conic gradient doesn't repaint
+     on every transform tick. */
+  will-change: transform;
+}
+
+.star-beam-pulse {
+  animation: star-beam-pulse 3.5s ease-in-out infinite;
+}

@@ -161,6 +161,49 @@ function BackFaceVideosPanel({ videos, subtitle }) {
   )
 }
 
+// ─── FeaturedGoldStarBorder ────────────────────────────────────
+// A slow, continuous gold conic-beam rim that orbits the
+// perimeter of a featured card. Mounted INSIDE each face so
+// the 3D rotateY flip never reveals the glow through a
+// backface (no Z-fighting / bleed during the 700ms flip).
+//
+// Two layered elements:
+//   1. The full-bleed rotating conic gradient (-inset-[100%]
+//      so the gradient extends past the rounded mask on every
+//      side and the visible rim is the thin overlap between
+//      the gradient and the masked card shape).
+//   2. An inner mask (`bg-[#071330]`) sized to inset-[1.5px]
+//      so the only part of the gradient that shows through is
+//      the 1.5px ring at the card's edge — i.e. the rim.
+//
+// The mask sits at `-z-10` (behind the face's own bg) so the
+// card's existing dark fill still wins visually; only the rim
+// glows. All layers carry `pointer-events-none` so the glow
+// never intercepts the flip click.
+function FeaturedGoldStarBorder() {
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none z-0 [transform:translateZ(0)]"
+    >
+      {/* Rotating conic-beam — slow 8s orbit, focused 40deg
+          gold sweep so it reads as a comet, not a full ring. */}
+      <div className="absolute -inset-[100%] star-beam-spin">
+        <div
+          className="w-full h-full star-beam-pulse"
+          style={{
+            background:
+              'conic-gradient(from 0deg, transparent 0deg, transparent 280deg, #FFD200 320deg, #FFE566 345deg, transparent 360deg)',
+          }}
+        />
+      </div>
+      {/* Inner mask — preserves the face's own dark fill and
+          only leaks the gradient through the 1.5px outer rim. */}
+      <div className="absolute inset-[1.5px] rounded-[calc(1.5rem-1.5px)] bg-[#071330] -z-10" />
+    </div>
+  )
+}
+
 export default function CatalogFlipCard({ item }) {
   const [isFlipped, setIsFlipped] = useState(false)
 
@@ -193,7 +236,16 @@ export default function CatalogFlipCard({ item }) {
         }`}
       >
         {/* ================= FRONT FACE ================= */}
-        <div className="absolute inset-0 w-full h-full rounded-3xl bg-[#0B1B4F] border border-white/15 p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
+        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#0B1B4F] ${item.featured ? 'border-transparent' : 'border border-white/15'} p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased`}>
+
+          {/* Featured-only: rotating gold rim glow. Mounted
+              as the first child so the face's own bg paints
+              over the inner mask; the 1.5px outer ring of
+              the conic gradient is what leaks through the
+              transparent border. pointer-events-none + z-0
+              so it never intercepts the flip click. */}
+          {item.featured && <FeaturedGoldStarBorder />}
+
 
           {/* Left Column: Identity & Typography (~32% width on
               Interactive Panels; ~55% on the rest of the
@@ -398,7 +450,15 @@ export default function CatalogFlipCard({ item }) {
         </div>
 
         {/* ================= BACK FACE ================= */}
-        <div className="absolute inset-0 w-full h-full rounded-3xl bg-[#071233] border border-white/20 p-6 md:p-7 flex flex-col gap-3 md:gap-4 shadow-2xl overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
+        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#071233] ${item.featured ? 'border-transparent' : 'border border-white/20'} p-6 md:p-7 flex flex-col gap-3 md:gap-4 shadow-2xl overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased`}>
+
+          {/* Featured-only: same rotating gold rim on the
+              back face so the card's institutional gold trim
+              is visible on both sides when flipped. Same
+              first-child / pointer-events-none / z-0
+              contract as the front. */}
+          {item.featured && <FeaturedGoldStarBorder />}
+
 
           {/* Top Bar — certification eyebrow + dismiss hint */}
           <div className="flex items-center justify-between shrink-0">
