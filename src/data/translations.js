@@ -366,6 +366,7 @@ const translations = {
       cta: 'Read all reviews on Google Maps',
       cardLabel: 'Posted on Google',
       scrollHint: 'Swipe or use the arrows',
+      journeyHint: 'Scroll down to explore the journey',
       footerNote:
         'Aggregated from the verified Google Maps listing for the Konkan Regional Hub.',
       reviewer: {
@@ -833,6 +834,7 @@ const translations = {
       cta: 'Google Maps वर सर्व पुनरावलोकने वाचा',
       cardLabel: 'Google वर पोस्ट केले',
       scrollHint: 'स्वाइप करा किंवा बाण वापरा',
+      journeyHint: 'प्रवास पाहण्यासाठी खाली स्क्रोल करा',
       footerNote:
         'कोंकण प्रादेशिक केंद्रासाठी सत्यापित Google Maps नोंदीमधून एकत्रित केलेले.',
       reviewer: {

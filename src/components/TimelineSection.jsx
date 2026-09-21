@@ -241,7 +241,12 @@ export default function TimelineSection() {
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
   const cardRefs = useRef([])
-  const dotRefs = useRef([])
+  // Single thin progress bar (no more 5 pagination dashes —
+  // those read as "swipe left/right" controls and were
+  // misleading the user into thinking the journey was a
+  // horizontal carousel). Replaces `dotRefs`.
+  const progressBarRef = useRef(null)
+  const scrollHintRef = useRef(null)
   const progressRef = useRef(0)
 
   // Mount the lazy-load observer for era backdrops 2-5. Era 01 is
@@ -254,7 +259,6 @@ export default function TimelineSection() {
   // Reset ref arrays so StrictMode dev re-runs don't double-bind.
   backdropRefs.current = []
   cardRefs.current = []
-  dotRefs.current = []
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -263,7 +267,8 @@ export default function TimelineSection() {
       const buildScene = () => {
               const backdrops = backdropRefs.current.filter(Boolean)
               const cards = cardRefs.current.filter(Boolean)
-              const dots = dotRefs.current.filter(Boolean)
+              const progressBar = progressBarRef.current
+              const scrollHint = scrollHintRef.current
               if (backdrops.length === 0 || cards.length === 0) return
 
               // ─── Spec-driven lifecycle ────────────────────────────────────────────
@@ -299,12 +304,17 @@ export default function TimelineSection() {
                 gsap.set(cards[i], { opacity: 0, y: 24, pointerEvents: 'none' })
               }
 
-              // Progress dots — same pattern as Testimonials. Dot 1
-              // is bright + scaled up; the rest are dim. Lit-dot logic
-              // happens in onUpdate below.
-              dots.forEach((d, i) => {
-                gsap.set(d, { opacity: i === 0 ? 1 : 0.35, scale: i === 0 ? 1.15 : 1 })
-              })
+              // Initial state for the new "scroll to explore" hint +
+              // thin progress bar. The hint label sits at full
+              // opacity at start of section; the bar is at
+              // scaleX(0). Both are driven by the onUpdate
+              // callback below.
+              if (progressBar) {
+                gsap.set(progressBar, { scaleX: 0, transformOrigin: 'left center' })
+              }
+              if (scrollHint) {
+                gsap.set(scrollHint, { opacity: 1, y: 0 })
+              }
 
               // Single timeline, scrubbed evenly across 5 eras. ScrollTrigger pins
               // the INNER sticky stage with pinSpacing:true so the next section
@@ -362,28 +372,27 @@ export default function TimelineSection() {
                     if (typeof window !== 'undefined') {
                       window.__timelineProgress = self.progress
                     }
-                    // Drive the progress dots live — same pattern as
-                    // Testimonials. Explicit thresholds at 0.20, 0.40,
-                    // 0.60, 0.80 so each dot lights up in lockstep with
-                    // its corresponding era's dwell window.
+                    // Drive the thin progress bar and the "scroll to explore"
+//                    hint label. The bar's scaleX is the
+//                    section's scroll progress (0 → 1 across the
+//                    full vertical scroll distance). The hint
+//                    label fades from full opacity to 0 over the
+//                    first 5% of progress, then stays gone for
+//                    the rest of the section — once the user has
+//                    scrolled at all, they know what to do, and
+//                    a persistent "scroll down" callout would
+//                    be visual noise.
                     const p = self.progress
-                    let active
-                    if (p < 0.20) active = 0
-                    else if (p < 0.40) active = 1
-                    else if (p < 0.60) active = 2
-                    else if (p < 0.80) active = 3
-                    else active = 4
-                    active = Math.min(ERAS.length - 1, active)
-                    for (let i = 0; i < ERAS.length; i++) {
-                      const d = dots[i]
-                      if (!d) continue
-                      if (i === active) {
-                        gsap.set(d, { opacity: 1, scale: 1.25 })
-                      } else if (i < active) {
-                        gsap.set(d, { opacity: 0.45, scale: 1 })
-                      } else {
-                        gsap.set(d, { opacity: 0.25, scale: 1 })
-                      }
+                    if (progressBar) {
+                      gsap.set(progressBar, { scaleX: p })
+                    }
+                    if (scrollHint) {
+                      // 0..0.05 → opacity 1→0. Smoothstep so the
+                      // fade feels intentional rather than
+                      // popping.
+                      const hintOpacity =
+                        p < 0.05 ? 1 - p / 0.05 : 0
+                      gsap.set(scrollHint, { opacity: Math.max(0, hintOpacity) })
                     }
                   },
                 },
@@ -498,9 +507,6 @@ export default function TimelineSection() {
   }
   const setCardRef = (el, index) => {
     cardRefs.current[index] = el
-  }
-  const setDotRef = (el, index) => {
-    dotRefs.current[index] = el
   }
 
   return (
@@ -689,24 +695,71 @@ export default function TimelineSection() {
           </p>
         </div>
 
-        {/* ─── Progress dots (bottom-center) ───
-            Same pattern as TestimonialsSection — five gold dots
-            that light up in lockstep with the active era as the
-            user scrolls. Active dot scales up to 1.25× and reads
-            at full opacity; passed dots dim to 0.45; future dots
-            dim to 0.25. Driven by onUpdate in the GSAP scene. */}
+        {/* ─── Scroll-hint + thin progress bar (bottom-center) ───
+            Replaces the 5 gold pagination dashes that used to
+            live here. The dashes read as horizontal-pagination
+            controls (swipe left/right), which is wrong for this
+            section — the journey is vertical-scroll driven.
+            The new UI:
+              • A small chevron + label "Scroll down to explore
+                the journey" sits at bottom-center on first
+                entry. GSAP fades it from opacity 1 → 0 across
+                the first 5% of scroll progress, after which
+                it's hidden. The label is in the user's locale
+                (English / Marathi) via the translations hook.
+              • A 160 px × 2 px gold progress bar sits just
+                below the label. Its `scaleX` tracks the
+                section's scroll progress (0 → 1 across the
+                full vertical scroll distance). Reads as a
+                "you are here" indicator for the journey, not
+                as a horizontal carousel control.
+            Both elements are pointer-events:none so they
+            never block taps/clicks underneath. */}
+
+        {/* Scroll-hint label (fades after first 5% scroll). */}
         <div
-          className="pointer-events-none absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 lg:bottom-8"
+          ref={scrollHintRef}
+          className="pointer-events-none absolute inset-x-0 bottom-10 z-30 flex justify-center lg:bottom-14"
           aria-hidden="true"
         >
-          {ERAS.map((era, i) => (
-            <span
-              key={`dot-${era.id}`}
-              ref={(el) => setDotRef(el, i)}
-              className="block h-1.5 rounded-full bg-[#FFD200] will-change-transform"
-              style={{ width: '24px' }}
+          <div className="flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-3.5 py-1.5 backdrop-blur-sm">
+            {/* Down-chevron — CSS animation so it gently bounces
+                up/down on its own. Respects prefers-reduced-motion
+                via the standard `motion-safe:` variant. */}
+            <svg
+              className="h-3 w-3 motion-safe:animate-[rl-chevron-bounce_1.6s_ease-in-out_infinite] text-[#FFD200]"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 5l3 3 3-3" />
+            </svg>
+            <p className="text-[0.7rem] font-medium uppercase tracking-[0.18em] text-white/85">
+              {t('journey.journeyHint') || 'Scroll down to explore the journey'}
+            </p>
+          </div>
+        </div>
+
+        {/* Thin gold progress bar — fills left-to-right as the
+            user scrolls the section. transform-origin: left
+            center so scaleX grows from the left edge. */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-6 z-30 flex justify-center lg:bottom-8"
+          aria-hidden="true"
+        >
+          <div
+            className="relative h-[2px] w-[160px] overflow-hidden rounded-full bg-white/15"
+          >
+            <div
+              ref={progressBarRef}
+              className="absolute inset-y-0 left-0 w-full origin-left bg-[#FFD200] will-change-transform"
+              style={{ transform: 'scaleX(0)' }}
             />
-          ))}
+          </div>
         </div>
       </div>
     </section>

@@ -246,6 +246,23 @@ html.lenis body {
     box-shadow: 0 14px 44px rgba(255, 210, 0, 0.65);
   }
 }
+
+/* ─── Scroll-hint chevron bounce ──────────────────────────────
+   Used by the TimelineSection "scroll down to explore"
+   callout. 1.6s ease-in-out infinite. The chevron travels
+   3px down then back up; paired with a subtle opacity
+   fade so it reads as a directional indicator rather than
+   a busy animation. */
+@keyframes rl-chevron-bounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 0.55;
+  }
+}
 .yt-facade-play {
   animation: yt-facade-pulse 2.4s ease-in-out infinite;
 }
