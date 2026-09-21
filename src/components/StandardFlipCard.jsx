@@ -112,7 +112,7 @@ export default function StandardFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className="group relative w-full h-[360px] cursor-pointer [perspective:1400px] select-none"
+      className="group relative w-full h-[380px] cursor-pointer [perspective:1400px] select-none"
     >
       <div
         className={`relative h-full w-full rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
@@ -129,15 +129,22 @@ export default function StandardFlipCard({ item }) {
             </span>
           </div>
 
-          {/* Image stage — fixed-aspect square (no letterbox).
-              object-cover so the asset fills the square;
-              identical dimensions on every card so the 2×2
-              grid aligns cleanly. */}
-          <div className="relative mt-2.5 w-full aspect-square rounded-lg bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 overflow-hidden shrink-0">
+          {/* Image stage — fixed cap of 168px so the image
+              stays a balanced header visual instead of
+              ballooning to fill the card (which is what
+              object-cover + aspect-square did on a wide
+              card, blowing up close-ups and pushing the
+              title/badges/CTA off-screen).
+              object-contain lets the full product lineup
+              fit cleanly without cropping. The stage is
+              width-stretched so each image is centered in
+              the same horizontal track across all 4 cards
+              in the 2×2 grid. */}
+          <div className="relative mt-2.5 h-[168px] w-full rounded-lg bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 overflow-hidden shrink-0 flex items-center justify-center">
             <img
               src={item.front.image}
               alt={item.front.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="max-w-full max-h-full w-auto h-auto object-contain"
               loading="lazy"
               decoding="async"
               onError={(e) => {
@@ -145,15 +152,9 @@ export default function StandardFlipCard({ item }) {
                 e.currentTarget.src =
                   'data:image/svg+xml;utf8,' +
                   encodeURIComponent(
-                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><rect width="240" height="240" fill="#0A1E5C"/><text x="120" y="126" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" fill="#0A1E5C"/><text x="120" y="86" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
                   )
               }}
-            />
-            {/* Subtle bottom gradient for visual depth; keeps
-                the image legible without obscuring it. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0B1B4F]/40 via-transparent to-transparent"
             />
           </div>
 

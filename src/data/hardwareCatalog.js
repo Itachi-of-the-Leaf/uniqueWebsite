@@ -209,7 +209,7 @@ export const HARDWARE_CATALOG = [
         { icon: 'Wrench', label: '24h Local Onsite Support & Servicing' },
       ],
       href: '/catalog/computing',
-      cta: 'Explore Computing Configurations ↗',
+      cta: 'Computing Options ↗',
     },
   },
   {
@@ -238,7 +238,7 @@ export const HARDWARE_CATALOG = [
         { icon: 'ShieldCheck', label: 'Onsite Cartridge, Toner & Tank Servicing' },
       ],
       href: '/catalog/printers',
-      cta: 'Explore Printer Models ↗',
+      cta: 'Printer Models ↗',
     },
   },
   {
@@ -267,7 +267,7 @@ export const HARDWARE_CATALOG = [
         { icon: 'Wrench', label: 'Local Battery Water & Hardware Health Checks' },
       ],
       href: '/catalog/ups-systems',
-      cta: 'Calculate Power Load ↗',
+      cta: 'Power Load Calculator ↗',
     },
   },
   {
@@ -296,7 +296,7 @@ export const HARDWARE_CATALOG = [
         { icon: 'Usb', label: 'High-Speed Class-10 Pre-Flashed Storage' },
       ],
       href: '/catalog/peripherals',
-      cta: 'Explore Peripheral Kits ↗',
+      cta: 'Peripheral Kits ↗',
     },
   },
 ]
