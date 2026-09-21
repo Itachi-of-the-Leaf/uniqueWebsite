@@ -211,7 +211,12 @@ export default function FlipCard({
       className="relative cursor-pointer select-none will-change-transform"
       style={{
         width: typeof width === 'number' ? `${width}px` : width,
-        height: typeof height === 'number' ? `${height}px` : height,
+        // If caller passed a number, use it; otherwise let the
+        // grid cell drive the height. `min-h-0` lets a CSS grid
+        // child actually shrink, otherwise it inflates past its
+        // intended size when the parent has implicit row tracks.
+        height: typeof height === 'number' ? `${height}px` : 'auto',
+        minHeight: typeof height === 'number' ? `${height}px` : 0,
         borderRadius: `${radius}px`,
         transformStyle: 'preserve-3d',
         ...styleVars,
@@ -226,11 +231,18 @@ export default function FlipCard({
           : 'none',
       }}
     >
+      {/* Inner grid: front + back stack in the same row/column so
+          the cell height is driven by the front face's natural
+          content height. This is the critical bit — using
+          `position: absolute; inset: 0` for both faces collapses
+          to 0px when the wrapper has no explicit height. */}
+      <div className="grid h-full w-full" style={{ transformStyle: 'preserve-3d' }}>
       {/* Front */}
       <div
         ref={frontRef}
-        className="absolute inset-0 overflow-hidden"
+        className="overflow-hidden"
         style={{
+          gridArea: '1 / 1',
           borderRadius: `${radius}px`,
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
@@ -246,8 +258,9 @@ export default function FlipCard({
           correctly when the parent rotates to 180°. */}
       <div
         ref={backRef}
-        className="absolute inset-0 overflow-hidden"
+        className="overflow-hidden"
         style={{
+          gridArea: '1 / 1',
           borderRadius: `${radius}px`,
           backfaceVisibility: 'hidden',
           WebkitBackfaceVisibility: 'hidden',
@@ -261,6 +274,7 @@ export default function FlipCard({
         }}
       >
         {back}
+      </div>
       </div>
       {/* Glare overlay — sits above both faces, follows the pointer. */}
       {glare && (
