@@ -147,7 +147,7 @@ function PlaceholderBack({ title, href, tier, image }) {
   // upload the rest, extend this map and the lookup falls through
   // automatically.
   const imageMap = {
-    '/catalog/interactive-panels': '/SmartPanel3.jpeg',
+    '/catalog/interactive-panels': '/SharpenedSmartPanel3.png',
     '/catalog/projectors': '/SmartPanel2.jpeg',
   }
   const resolved = image || imageMap[href]
