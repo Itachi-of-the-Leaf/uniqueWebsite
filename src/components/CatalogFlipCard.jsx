@@ -69,7 +69,7 @@ export default function CatalogFlipCard({ item }) {
           handleFlip()
         }
       }}
-      className="group relative w-full min-h-[420px] md:min-h-[380px] cursor-pointer [perspective:1400px] select-none"
+      className="group relative w-full min-h-[480px] md:min-h-[420px] cursor-pointer [perspective:1400px] select-none"
     >
       <div
         className={`relative h-full w-full rounded-3xl transition-transform duration-700 [transform-style:preserve-3d] ${
@@ -77,9 +77,9 @@ export default function CatalogFlipCard({ item }) {
         }`}
       >
         {/* ================= FRONT FACE ================= */}
-        <div className="absolute inset-0 h-full w-full rounded-3xl bg-[#0B1B4F] border border-white/15 flex flex-col md:flex-row items-center justify-between p-8 md:p-10 gap-8 overflow-hidden shadow-2xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
+        <div className="absolute inset-0 h-full w-full rounded-3xl bg-[#0B1B4F] border border-white/15 flex flex-col md:flex-row md:items-stretch justify-between p-8 md:p-10 gap-8 overflow-hidden shadow-2xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
           {/* Left side — Content & Identity (~55% width) */}
-          <div className="flex-1 min-w-0 flex flex-col justify-center w-full">
+          <div className="flex-1 min-w-0 flex flex-col justify-center w-full md:py-2">
             {/* Top Visual Header — gold eyebrow tag */}
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase bg-[#FFD200]/10 border border-[#FFD200]/30 text-[#FFD200] w-fit">
               {item.front.tag}
@@ -96,9 +96,13 @@ export default function CatalogFlipCard({ item }) {
             </p>
           </div>
 
-          {/* Right side — Product Showcase (~45% width) */}
-          <div className="w-full md:w-[45%] flex-shrink-0">
-            <div className="relative w-full h-[220px] md:h-[260px] flex items-center justify-center rounded-2xl bg-slate-950/40 border border-white/10 p-4 shadow-inner">
+          {/* Right side — Product Showcase (~45% width). With
+              `items-stretch` on the parent flex row, the image
+              frame is allowed to fill the column's full height
+              (up to its max-h constraint) instead of collapsing
+              to its content size. */}
+          <div className="w-full md:w-[45%] flex-shrink-0 flex items-center justify-center">
+            <div className="relative w-full h-full min-h-[220px] md:min-h-[260px] flex items-center justify-center rounded-2xl bg-slate-950/40 border border-white/10 p-4 shadow-inner">
               <img
                 src={item.front.image}
                 alt={item.front.title}
