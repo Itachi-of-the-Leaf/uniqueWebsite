@@ -136,13 +136,16 @@ export default function ProductGallery() {
             ))}
           </div>
 
-          {/* Standard cards — balanced 2x2 grid. With 4
-              cards and a wider canvas, 2-col on tablet+desktop
-              is the natural fit (1-col stacked on mobile).
-              The card height is taller than before because
-              these cards now carry the 4-badge pill tree on
-              the front face. */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {/* Standard cards — symmetrical 2x2 grid of
+              square (md:aspect-square) showcase cards. The
+              grid sits in a max-w-6xl container so on very
+              wide screens it doesn't sprawl, and the
+              generous lg:gap-10 lets the cards breathe.
+              On mobile (<768px) the cards collapse to a
+              single column with a fixed min-height instead
+              of an aspect-square, so portrait screens don't
+              get a thin tall sliver. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mt-10 max-w-6xl mx-auto w-full">
             {HARDWARE_CATALOG.filter((item) => !item.featured).map((item) => (
               <StandardFlipCard key={item.id} item={item} />
             ))}

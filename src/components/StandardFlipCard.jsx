@@ -1,88 +1,47 @@
-// StandardFlipCard — compact 2x2-grid card variant for the 4
-// non-spotlight catalog items (computing, printers, ups-systems,
-// peripherals). Used alongside `CatalogFlipCard` (the full-width
-// spotlight variant for Interactive Panels + Projectors) inside
-// `ProductGallery.jsx`.
+// StandardFlipCard — symmetrical 1:1 square showcase card for
+// the 4 non-spotlight catalog items (computing, printers,
+// ups-systems, peripherals). Used alongside `CatalogFlipCard`
+// (the full-width spotlight variant for Interactive Panels +
+// Projectors) inside `ProductGallery.jsx`.
 //
-// VISUAL HIERARCHY: these cards are deliberately smaller and
-// quieter than the two featured showcase cards (560 px tall,
-// full image stage, 5-pill tree). The standard cards live at
-// h-[360px] — well under the featured cards' height — so the
-// reader's eye lands on the spotlight pair first. They read as
-// supporting evidence, not co-equal entries.
+// Shape:
+//   • Square shell on tablet+desktop via `md:aspect-square`,
+//     so the 2x2 grid is geometrically perfect. Mobile
+//     (<768px) falls back to a `min-h-[540px]` column so
+//     portrait screens don't get a thin sliver.
+//   • `rounded-[2rem]` (32 px) matches the featured cards'
+//     radius and gives the whole gallery one consistent
+//     silhouette.
 //
-// Front face layout:
-//   • Top: tier tag pill.
-//   • Middle: square 1:1 image stage (no letterbox — image
-//     fills the square via object-cover).
-//   • Below the stage: 4 gradient badges rendered as a
-//     symmetrical 2×2 grid (so the four cards are visually
-//     identical regardless of badge-label length).
-//   • Bottom: title + hand-pointer hint inside the divider.
+// Front face (top → bottom):
+//   1. Tag pill on the left + quiet "Tap to Flip" indicator
+//      on the right.
+//   2. Dedicated image showcase — fixed h-[220px], dark
+//      inner frame, `object-contain` + drop-shadow + 5% hover
+//      scale. Full product lineup fits inside without
+//      cropping, no extreme close-ups.
+//   3. Title (single line, ellipsised).
+//   4. 2x2 badge grid — soft white/4 panels with gold icons,
+//      one per data row. Truncate guards long labels.
+//   5. Divider + Pointer-icon hint (rotated 12° to look like
+//      a cursor).
 //
-// Back face layout:
-//   • Eyebrow chip + title.
-//   • Brands roster (chip row) — fills the vertical gap that
-//     would otherwise sit between title and spec grid.
-//   • 2-col spec grid (4 icons).
-//   • Crimson CTA pinned to the bottom with mt-auto.
+// Back face (top → bottom):
+//   1. Eyebrow chip + title.
+//   2. Brands roster — gold uppercase label + wrap-friendly
+//      row of brand chips inside a rounded panel. Long
+//      rosters (e.g. 7 names) wrap to a second line without
+//      breaking the layout.
+//   3. Compact 1-column spec list — full-width rows are
+//      easier to read than a 2x2 grid when labels are long.
+//   4. Crimson CTA pinned to the bottom with mt-auto.
+//
+// The card uses the same flip-on-click accessibility wiring
+// (Enter / Space toggles, aria-pressed, click-guard on the
+// CTA) as CatalogFlipCard so keyboard / screen-reader
+// experience is identical between the two variants.
 import { useState } from 'react'
 import * as Icons from 'lucide-react'
-
-// Color-token → Tailwind class map. Each entry packs the four
-// properties the pill needs (gradient / border / text / icon) so
-// the catalog data file can stay compact
-//   `badges: [{ label, icon, color }]`
-// and the component does the visual styling here. Keep the
-// brand palette consistent with the featured cards above.
-const BADGE_TOKENS = {
-  sky: {
-    gradient: 'from-sky-950/80 to-blue-900/60',
-    border: 'border-sky-400/50',
-    text: 'text-sky-200',
-    icon: 'text-sky-400',
-  },
-  blue: {
-    gradient: 'from-slate-900/90 to-blue-950/70',
-    border: 'border-blue-400/50',
-    text: 'text-blue-200',
-    icon: 'text-blue-400',
-  },
-  emerald: {
-    gradient: 'from-emerald-950/80 to-teal-900/60',
-    border: 'border-emerald-400/50',
-    text: 'text-emerald-200',
-    icon: 'text-emerald-400',
-  },
-  amber: {
-    gradient: 'from-amber-950/60 to-yellow-900/50',
-    border: 'border-amber-400/60',
-    text: 'text-amber-200',
-    icon: 'text-amber-400',
-  },
-  gold: {
-    gradient: 'from-amber-950/70 to-yellow-900/50',
-    border: 'border-[#FFD200]/50',
-    text: 'text-[#FFD200]',
-    icon: 'text-[#FFD200]',
-  },
-  purple: {
-    gradient: 'from-indigo-950/80 to-purple-900/60',
-    border: 'border-indigo-400/50',
-    text: 'text-indigo-200',
-    icon: 'text-indigo-400',
-  },
-  slate: {
-    gradient: 'from-slate-900/90 to-slate-800/70',
-    border: 'border-slate-400/50',
-    text: 'text-slate-200',
-    icon: 'text-slate-300',
-  },
-}
-
-function resolveBadgeColor(color) {
-  return BADGE_TOKENS[color] || BADGE_TOKENS.sky
-}
 
 export default function StandardFlipCard({ item }) {
   const [isFlipped, setIsFlipped] = useState(false)
@@ -112,39 +71,36 @@ export default function StandardFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className="group relative w-full h-[380px] cursor-pointer [perspective:1400px] select-none"
+      className="group relative w-full h-auto min-h-[540px] md:min-h-0 md:aspect-square cursor-pointer [perspective:1400px] select-none rounded-[2rem]"
     >
       <div
-        className={`relative h-full w-full rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
+        className={`relative w-full h-full rounded-[2rem] transition-transform duration-700 [transform-style:preserve-3d] ${
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         }`}
       >
         {/* ================= FRONT FACE ================= */}
-        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#0B1B4F] border border-white/15 p-4 flex flex-col overflow-hidden shadow-xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
-          {/* Top tier tag */}
-          <div className="flex items-center justify-between shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-white/[0.06] border border-white/15 text-slate-300">
+        <div className="absolute inset-0 w-full h-full rounded-[2rem] bg-[#071330] border border-white/15 p-6 lg:p-7 flex flex-col justify-between shadow-2xl overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased">
+          {/* Top bar — tag pill + tap-to-flip indicator. */}
+          <div className="flex items-center justify-between gap-3 shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-[0.14em] uppercase bg-white/5 border border-white/15 text-slate-300">
               <Icons.Tag className="h-3 w-3" aria-hidden="true" />
               <span>{item.front.tag}</span>
             </span>
+            <span className="text-xs font-semibold text-slate-400">
+              Tap to Flip ↻
+            </span>
           </div>
 
-          {/* Image stage — fixed cap of 168px so the image
-              stays a balanced header visual instead of
-              ballooning to fill the card (which is what
-              object-cover + aspect-square did on a wide
-              card, blowing up close-ups and pushing the
-              title/badges/CTA off-screen).
-              object-contain lets the full product lineup
-              fit cleanly without cropping. The stage is
-              width-stretched so each image is centered in
-              the same horizontal track across all 4 cards
-              in the 2×2 grid. */}
-          <div className="relative mt-2.5 h-[168px] w-full rounded-lg bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 overflow-hidden shrink-0 flex items-center justify-center">
+          {/* Square image showcase — capped at h-[220px] with
+              object-contain + drop-shadow so the full product
+              lineup fits inside without cropping. The dark
+              inner frame + shadow-inner reads as a contained
+              showcase window rather than a flush image. */}
+          <div className="relative w-full h-[200px] sm:h-[220px] flex items-center justify-center rounded-2xl bg-slate-950/50 border border-white/10 p-3 my-2 overflow-hidden shadow-inner shrink-0">
             <img
               src={item.front.image}
               alt={item.front.title}
-              className="max-w-full max-h-full w-auto h-auto object-contain"
+              className="w-full h-full object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500 pointer-events-none"
               loading="lazy"
               decoding="async"
               onError={(e) => {
@@ -158,122 +114,113 @@ export default function StandardFlipCard({ item }) {
             />
           </div>
 
-          {/* Pill grid — 2×2 symmetrical layout so each card
-              looks identical regardless of badge label
-              length. Replaces the previous vertical 1×4 stack
-              that broke alignment when some labels were
-              longer than others. */}
+          {/* Title — single line, ellipsised if it overflows. */}
+          <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug line-clamp-1 shrink-0">
+            {item.front.title}
+          </h3>
+
+          {/* Symmetrical 2x2 feature badges. Soft white/4
+              panels with a small gold icon — quiet, no
+              gradient — so the four pills read as a clean
+              grid instead of competing with the title. */}
           {hasBadges && (
-            <ul
-              className="mt-2.5 grid grid-cols-2 gap-1.5 shrink-0"
-              role="list"
-            >
-              {item.front.badges.map((badge) => {
-                const Icon = badge.icon ? Icons[badge.icon] : null
-                const tok = resolveBadgeColor(badge.color)
+            <div className="grid grid-cols-2 gap-2 my-2 shrink-0">
+              {item.front.badges.map((b, idx) => {
+                const IconComponent = Icons[b.icon] || Icons.CheckCircle2
                 return (
-                  <li
-                    key={badge.label}
-                    className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-semibold tracking-wide border bg-gradient-to-r ${tok.gradient} ${tok.border} ${tok.text} leading-tight min-h-[26px]`}
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] font-semibold text-slate-200 shadow-sm"
                   >
-                    {Icon ? (
-                      <Icon
-                        className={`w-3 h-3 shrink-0 ${tok.icon}`}
-                        aria-hidden="true"
-                      />
-                    ) : null}
-                    <span className="truncate">{badge.label}</span>
-                  </li>
+                    <IconComponent className="w-3.5 h-3.5 shrink-0 text-[#FFD200]" />
+                    <span className="truncate">{b.label}</span>
+                  </div>
                 )
               })}
-            </ul>
+            </div>
           )}
 
-          {/* Bottom title + hand-pointer hint */}
-          <div className="pt-2 mt-auto border-t border-white/10 shrink-0">
-            <h3 className="text-[13px] font-extrabold text-white tracking-tight leading-tight">
-              {item.front.title}
-            </h3>
-            <p className="mt-0.5 text-[10px] text-slate-400 font-medium flex items-center gap-1.5">
-              <Icons.Hand className="h-3 w-3 text-[#FFD200]" aria-hidden="true" />
-              <span>{item.front.hint || 'Tap to reveal institutional specifications ↻'}</span>
-            </p>
+          {/* Bottom action hint — divider + Pointer icon
+              (rotated 12° to look like a cursor) + text. */}
+          <div className="border-t border-white/10 pt-2.5 flex items-center gap-2 text-xs font-medium text-slate-400 shrink-0">
+            <Icons.Pointer
+              className="w-3.5 h-3.5 text-[#FFD200] rotate-12"
+              aria-hidden="true"
+            />
+            <span>
+              {item.front.hint || 'Tap to reveal brands & specs ↻'}
+            </span>
           </div>
         </div>
 
         {/* ================= BACK FACE ================= */}
-        <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#071233] border border-white/20 p-4 flex flex-col overflow-hidden shadow-xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
-          {/* Top eyebrow + dismiss */}
+        <div className="absolute inset-0 w-full h-full rounded-[2rem] bg-[#071233] border border-white/20 p-6 lg:p-7 flex flex-col justify-between shadow-2xl overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
+          {/* Top: eyebrow pill + ✕ Return. */}
           <div>
             <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-[0.14em] uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300">
                 <Icons.BadgeCheck className="h-3 w-3" aria-hidden="true" />
                 <span>{item.back.eyebrow}</span>
               </span>
-              <span className="text-[10px] font-semibold text-slate-400">
+              <span className="text-xs font-semibold text-slate-400">
                 ✕ Return
               </span>
             </div>
-            <h4 className="mt-2 text-[13px] font-bold text-white tracking-tight leading-snug">
+            <h4 className="mt-2 text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
               {item.back.title}
             </h4>
           </div>
 
-          {/* Brand roster — chip row of OEM / brand names.
-              Fills the vertical gap between the title and the
-              spec grid. flex-wrap so a long roster (e.g. 7
-              names) wraps gracefully onto a second line. */}
+          {/* Supported brands block — gold uppercase label
+              + wrap-friendly chip row inside a rounded panel.
+              Long rosters (e.g. 7 names) wrap gracefully. */}
           {hasBrands && (
-            <div className="mt-2">
-              <p className="text-[9px] font-bold tracking-[0.18em] uppercase text-slate-400/80 mb-1.5">
-                {item.back.brandsTitle || 'SUPPORTED BRANDS'}
-              </p>
-              <ul className="flex flex-wrap gap-1" role="list">
-                {item.back.brands.map((brand) => (
-                  <li
-                    key={brand}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-white/[0.06] border border-white/15 text-slate-100"
+            <div className="my-1.5 bg-white/[0.03] border border-white/10 rounded-xl p-3 shrink-0">
+              <span className="text-[10px] font-bold tracking-wider uppercase text-[#FFD200] block mb-1.5">
+                {item.back.brandsTitle || 'SUPPORTED BRANDS & PLATFORMS'}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {item.back.brands.map((brand, bIdx) => (
+                  <span
+                    key={bIdx}
+                    className="px-2 py-0.5 rounded-md bg-white/10 border border-white/15 text-[11px] font-bold text-white tracking-wide shadow-sm"
                   >
                     {brand}
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              </div>
             </div>
           )}
 
-          {/* Specification grid — 2 cols, 4 rows of specs */}
-          <div className="grid grid-cols-2 gap-1.5 mt-2">
-            {item.back.specs.map((spec, idx) => {
+          {/* Compact 1-col spec list — full-width rows so
+              long labels stay readable without being
+              truncated by a 2x2 column split. */}
+          <div className="grid grid-cols-1 gap-1.5 my-auto">
+            {item.back.specs.map((spec, sIdx) => {
               const IconComponent = Icons[spec.icon] || Icons.CheckCircle2
-              const accentByIndex = [
-                'text-[#FFD200]',
-                'text-sky-300',
-                'text-emerald-300',
-                'text-amber-300',
-              ]
-              const accent = accentByIndex[idx % accentByIndex.length]
               return (
                 <div
-                  key={idx}
-                  className="flex items-start gap-1.5 rounded-md bg-white/[0.04] border border-white/10 p-1.5 text-[10px] text-slate-200 leading-snug"
+                  key={sIdx}
+                  className="flex items-center gap-2 rounded-lg bg-white/[0.02] border border-white/5 px-2.5 py-1.5 text-[11px] text-slate-200"
                 >
-                  <IconComponent className={`h-3 w-3 shrink-0 mt-0.5 ${accent}`} />
-                  <span className="leading-tight">{spec.label}</span>
+                  <IconComponent className="w-3.5 h-3.5 shrink-0 text-sky-400" />
+                  <span className="leading-tight truncate">{spec.label}</span>
                 </div>
               )
             })}
           </div>
 
-          {/* Crimson CTA — pinned to bottom with mt-auto so
-              the back face has no dead space below it. */}
-          <div className="border-t border-white/10 pt-2 mt-auto">
+          {/* Crimson CTA — pinned to the bottom with
+              mt-auto so it sits flush against the lower
+              edge regardless of brands-list length. */}
+          <div className="border-t border-white/10 pt-2.5 mt-auto shrink-0">
             <a
               href={item.back.href}
               onClick={handleNavigate}
-              className="flex items-center justify-between w-full rounded-md bg-[#C41230] hover:bg-[#a30f28] text-white px-2.5 py-2 text-[10px] font-bold tracking-wide uppercase transition-colors shadow-lg"
+              className="flex items-center justify-between w-full rounded-xl bg-[#C41230] hover:bg-[#a30f28] text-white px-4 py-2.5 text-xs font-bold tracking-wider uppercase transition-colors shadow-lg"
             >
               <span>{item.back.cta}</span>
-              <Icons.ArrowUpRight className="h-3 w-3" />
+              <Icons.ArrowUpRight className="w-4 h-4" />
             </a>
           </div>
         </div>
