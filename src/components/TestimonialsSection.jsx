@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Star, Quote, MapPin, PlayCircle } from 'lucide-react'
+import { Star, Quote, MapPin, PlayCircle, ChevronDown, Mouse } from 'lucide-react'
 import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -348,7 +348,13 @@ export default function TestimonialsSection() {
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
   const cardRefs = useRef([])
-  const dotRefs = useRef([])
+  // Ref to the "Scroll down to explore" cue. GSAP fades this
+  // from opacity 1 → 0 across the first 5% of scroll progress
+  // so it's gone once the user has actually started moving.
+  // Replaces the previous dotRefs + setDotRef system, which
+  // implied a horizontal carousel even though the section is
+  // purely vertical-scroll driven.
+  const scrollCueRef = useRef(null)
   const progressRef = useRef(0)
 
   // Lazy-load observer for stage backdrops 2-4 (stage 1 is eager).
@@ -361,7 +367,6 @@ export default function TestimonialsSection() {
   // Reset refs each render so we don't accumulate stale DOM nodes.
   backdropRefs.current = []
   cardRefs.current = []
-  dotRefs.current = []
 
   useEffect(() => {
     if (!sectionRef.current || !stageRef.current) return
@@ -372,7 +377,6 @@ export default function TestimonialsSection() {
       const buildScene = () => {
         const backdrops = backdropRefs.current.filter(Boolean)
         const cards = cardRefs.current.filter(Boolean)
-        const dots = dotRefs.current.filter(Boolean)
         if (backdrops.length !== STAGES.length) return
 
         // Initial state: stage 1 visible, stages 2-4 hidden.
@@ -388,10 +392,6 @@ export default function TestimonialsSection() {
             pointerEvents: 'none',
           })
         }
-        // All progress dots start dim except stage 1.
-        dots.forEach((d, i) => {
-          gsap.set(d, { opacity: i === 0 ? 1 : 0.35, scale: i === 0 ? 1.15 : 1 })
-        })
 
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -422,42 +422,39 @@ export default function TestimonialsSection() {
             },
             onUpdate: (self) => {
               progressRef.current = self.progress
+              // Expose progress for the dev console / future
+              // debugging. The previous dot-rendering branch
+              // (lines that updated per-stage opacity + scale
+              // based on timeline thresholds) was removed when
+              // the horizontal carousel indicators were retired.
               if (typeof window !== 'undefined') {
                 window.__testimonialsProgress = self.progress
-              }
-              // Drive the progress dots live — they read timeline
-              // progress with explicit thresholds matching the slide
-              // boundaries (0.20, 0.40, 0.60) so each dot lights up
-              // in lockstep with its corresponding slide.
-              //
-              // Why explicit thresholds (not Math.floor(p * 4)):
-              // Stage 4 occupies 40% of the timeline (0.60..1.00),
-              // while Stages 1-3 each occupy 20%. A naive
-              // `Math.floor(p * 4)` would put dot 4 at progress
-              // 0.75..1.00 — which is 60% of timeline for a slide
-              // that's only 40% wide. Explicit thresholds keep the
-              // dot indicators 1:1 with their slides.
-              const p = self.progress
-              let active
-              if (p < 0.20) active = 0
-              else if (p < 0.40) active = 1
-              else if (p < 0.60) active = 2
-              else active = 3
-              active = Math.min(STAGES.length - 1, active)
-              for (let i = 0; i < STAGES.length; i++) {
-                const d = dots[i]
-                if (!d) continue
-                if (i === active) {
-                  gsap.set(d, { opacity: 1, scale: 1.25 })
-                } else if (i < active) {
-                  gsap.set(d, { opacity: 0.45, scale: 1 })
-                } else {
-                  gsap.set(d, { opacity: 0.25, scale: 1 })
-                }
               }
             },
           },
         })
+
+        // ── Scroll-down cue fade ────────────────────────────────
+        // The "Scroll to explore" pill at the bottom-center fades
+        // out smoothly as soon as the user starts scrolling.
+        // Scrub-bound to the first 120px of scroll so the cue is
+        // completely gone by the time the user has moved a
+        // meaningful distance. power2.out gives a quick initial
+        // acceleration that mirrors the way the user's thumb is
+        // already in motion when they start the scroll.
+        if (scrollCueRef.current) {
+          gsap.to(scrollCueRef.current, {
+            opacity: 0,
+            y: 16,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top top',
+              end: '+=120',
+              scrub: true,
+            },
+          })
+        }
 
         // ── Phase definitions ───────────────────────────────────────
         // 4 stages distributed across 0..1 so the final stage gets
@@ -539,9 +536,6 @@ export default function TestimonialsSection() {
   }
   const setCardRef = (el, i) => {
     cardRefs.current[i] = el
-  }
-  const setDotRef = (el, i) => {
-    dotRefs.current[i] = el
   }
 
   return (
@@ -636,19 +630,36 @@ export default function TestimonialsSection() {
           </div>
         </div>
 
-        {/* ── Progress dots (bottom-center, always visible) ── */}
+        {/* ── Scroll-down cue (bottom-center, fades out on scroll) ──
+            Replaces the horizontal carousel dash indicators that
+            used to live here. The dashes implied horizontal swipe/
+            drag interaction, which is wrong — this section is purely
+            vertical-scroll driven.
+
+            The cue is a compact branded pill: Mouse icon + uppercase
+            label + bouncing gold ChevronDown. GSAP fades it from
+            opacity 1 → 0 + y 0 → 16 across the first 120px of
+            scroll (see the gsap.to(scrollCueRef, …) call in
+            buildScene), so it’s gone once the user has actually
+            started moving.
+
+            pointer-events-none keeps it from intercepting clicks on
+            any underlying stage cards or navigation controls. The
+            will-change-transform on the parent group promotes the
+            fade animation onto its own compositor layer so it never
+            stalls during a fast scroll. */}
         <div
-          className="pointer-events-none absolute bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2.5 lg:bottom-8"
+          ref={scrollCueRef}
+          className="pointer-events-none absolute inset-x-0 bottom-8 z-30 flex justify-center lg:bottom-10 will-change-transform"
           aria-hidden="true"
         >
-          {STAGES.map((stage, i) => (
-            <span
-              key={`dot-${stage.id}`}
-              ref={(el) => setDotRef(el, i)}
-              className="block h-1.5 rounded-full bg-[#FFD200] will-change-transform"
-              style={{ width: '24px' }}
-            />
-          ))}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/15 shadow-xl text-slate-200">
+            <Mouse className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
+            <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
+              Scroll to explore
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 text-[#FFD200] animate-bounce shrink-0" />
+          </div>
         </div>
       </div>
     </section>
