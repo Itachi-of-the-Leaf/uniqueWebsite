@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
 import { CheckCircle2 } from 'lucide-react'
 import CatalogFlipCard from './CatalogFlipCard'
+import StandardFlipCard from './StandardFlipCard'
 import { HARDWARE_CATALOG } from '../data/hardwareCatalog'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -120,17 +121,27 @@ export default function ProductGallery() {
           </p>
         </div>
 
-        {/* CATEGORY GRID — every card uses the two-sided
-            CatalogFlipCard pattern (visual-impact front /
-            institutional-authority back). Refactored from a
-            3-column grid into a full-width single-row
-            showcase stack per the directive: each card
-            spans the container width so both imagery and
-            specifications have room to breathe. */}
+        {/* CATEGORY GRID — split layout. Items with
+            `featured: true` (Interactive Flat Panels +
+            Projectors) render as full-width spotlight cards
+            in a vertical stack; the rest render as compact
+            square cards in a 3-column grid below. Both card
+            types share the same flip-on-click behavior and
+            reveal the institutional back face on flip. */}
         <div className="w-full max-w-6xl mx-auto flex flex-col gap-10 lg:gap-12 px-4 sm:px-6 lg:px-8">
-          {HARDWARE_CATALOG.map((item) => (
-            <CatalogFlipCard key={item.id} item={item} />
-          ))}
+          {/* Spotlight cards — full-width single-row showcase */}
+          <div className="flex flex-col gap-10 lg:gap-12">
+            {HARDWARE_CATALOG.filter((item) => item.featured).map((item) => (
+              <CatalogFlipCard key={item.id} item={item} />
+            ))}
+          </div>
+
+          {/* Standard cards — compact 3-col grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {HARDWARE_CATALOG.filter((item) => !item.featured).map((item) => (
+              <StandardFlipCard key={item.id} item={item} />
+            ))}
+          </div>
         </div>
 
         {/* FOOTNOTE BAND — single quiet callout about firmware */}
