@@ -87,6 +87,50 @@ html {
   --color-brand-crimson-hover: #A00E26;
   --color-brand-gold: #FFD200;
   --color-brand-gold-hover: #E6BD00;
+
+  /* Semantic theme tokens — light defaults. .dark (below) overrides
+     them so every Tailwind utility that references them flips in
+     dark mode without per-component hardcoding. */
+  --color-canvas: #F8FAFC;            /* page background */
+  --color-canvas-deep: #EEF2F9;       /* subtle alt-band backgrounds */
+  --color-surface: #FFFFFF;           /* card / panel surface */
+  --color-surface-muted: #F1F5FB;     /* nested surface, hover strips */
+  --color-ink: #081438;               /* primary text */
+  --color-ink-muted: #4A5475;         /* secondary text */
+  --color-ink-subtle: #6B7390;        /* tertiary / captions */
+  --color-border-subtle: rgba(10, 30, 92, 0.10);
+  --color-border-strong: rgba(10, 30, 92, 0.22);
+  --color-ring-glow-gold: rgba(255, 210, 0, 0.00);
+  --color-ring-glow-crimson: rgba(196, 18, 48, 0.00);
+}
+
+/* ─── Dark theme overrides ────────────────────────────────────────
+   Triggered by `.dark` on <html> (set by the inline bootstrap in
+   index.html before React mounts, and re-synced by ThemeContext
+   on every theme change). Keep brand accents (gold/crimson/navy)
+   intact — they ARE the logo palette and they pop on both modes.
+   Background moves into a true "night sky" navy that's deeper than
+   the header (which is a separate, always-dark navy band). */
+:root.dark {
+  --color-canvas: #070C24;
+  --color-canvas-deep: #0B1336;
+  --color-surface: #101A3F;
+  --color-surface-muted: #0F1635;
+  --color-ink: #E8ECFF;
+  --color-ink-muted: #B8C0E2;
+  --color-ink-subtle: #8E97BC;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-ring-glow-gold: rgba(255, 210, 0, 0.32);
+  --color-ring-glow-crimson: rgba(196, 18, 48, 0.36);
+  color-scheme: dark;
+}
+
+/* Light mode tells the browser to render native form/scrollbar
+   controls in their light style — keeps inputs and scrollbars
+   looking native instead of inheriting a dark UA style. */
+:root:not(.dark) {
+  color-scheme: light;
 }
 
 html {
@@ -95,8 +139,43 @@ html {
 
 body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #F8FAFC;
-  color: #081438;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+::selection {
+  background-color: var(--color-brand-gold);
+  color: var(--color-brand-midnight);
+}
+
+/* ─── Night-mode glow helpers ─────────────────────────────────────
+   Use on cards / accents in dark mode for the "vibrant nightly
+   look". Two layers: a soft outer halo (the warm brand glow) and
+   an inner crimson flicker on focus/hover. Both scale with the
+   .ring-glow-* tokens so they auto-disable in light mode. */
+.card-night {
+  box-shadow:
+    0 1px 0 0 var(--color-border-subtle) inset,
+    0 18px 48px -28px var(--color-ring-glow-gold),
+    0 8px 24px -16px var(--color-ring-glow-crimson);
+}
+
+.card-night:hover {
+  box-shadow:
+    0 1px 0 0 var(--color-border-subtle) inset,
+    0 26px 64px -28px var(--color-ring-glow-gold),
+    0 12px 32px -14px var(--color-ring-glow-crimson);
+  border-color: rgba(255, 210, 0, 0.45) !important;
+}
+
+.divider-glow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-ring-glow-gold) 50%,
+    transparent 100%
+  );
 }
 
 h1, h2, h3, .font-heading {

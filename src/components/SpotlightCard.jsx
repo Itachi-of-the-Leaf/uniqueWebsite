@@ -41,8 +41,12 @@ export default function SpotlightCard({
 
   const hasBg = /\bbg-/.test(className)
   const hasBorder = /\bborder-/.test(className)
-  const defaultBg = hasBg ? '' : 'bg-white'
-  const defaultBorder = hasBorder ? '' : 'border border-slate-200'
+  // Theme-aware defaults: in dark mode we want a translucent dark
+  // surface (matches the rest of the page) rather than pure white.
+  // Caller-provided bg-/border- utilities take precedence — these
+  // fallbacks only kick in when the consumer didn't set one.
+  const defaultBg = hasBg ? '' : 'bg-white dark:bg-white/[0.06]'
+  const defaultBorder = hasBorder ? '' : 'border border-slate-200 dark:border-white/10'
 
   return (
     <div

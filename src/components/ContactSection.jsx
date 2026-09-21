@@ -210,21 +210,21 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative w-full bg-gradient-to-b from-white to-[#F4F6FC] py-20 sm:py-24 lg:py-28 px-5 sm:px-8"
+      className="relative w-full bg-gradient-to-b from-canvas to-canvas-deep py-20 sm:py-24 lg:py-28 px-5 sm:px-8 transition-colors duration-300"
     >
       <div className="mx-auto max-w-5xl">
         {/* HEADER */}
         <div className="mb-12 lg:mb-14 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFD200]/15 border border-[#FFD200]/40 mb-5">
-            <MessageCircle className="w-3.5 h-3.5 text-[#0A1E5C]" />
-            <span className="text-[0.7rem] sm:text-xs font-bold tracking-[0.18em] uppercase text-[#0A1E5C]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase border border-amber-400/30 bg-amber-400/10 text-amber-300 mb-3">
+            <MessageCircle className="w-3.5 h-3.5 text-amber-300" />
+            <span className="text-[0.7rem] sm:text-xs font-bold tracking-[0.18em] uppercase text-amber-300">
               {badge}
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A1E5C] leading-[1.1] tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-navy dark:text-white tracking-tight leading-[1.1] mb-4">
             {heading}
           </h2>
-          <p className="text-base sm:text-lg text-[#3A4565] leading-relaxed">
+          <p className="text-base sm:text-lg text-brand-navy/75 dark:text-slate-300 leading-relaxed max-w-xl">
             {subheading}
           </p>
         </div>
@@ -235,7 +235,7 @@ export default function ContactSection() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="lg:col-span-7 rounded-2xl border border-[#E3E7F0] bg-white p-6 sm:p-8 shadow-sm"
+            className="card-night lg:col-span-7 rounded-2xl border border-[#E3E7F0] dark:border-white/10 bg-white dark:bg-white/[0.06] p-6 sm:p-8"
           >
             {/* First + Last Name row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -245,7 +245,7 @@ export default function ContactSection() {
                 error={errors.firstName}
               >
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] pointer-events-none" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -264,7 +264,7 @@ export default function ContactSection() {
                 error={errors.lastName}
               >
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] pointer-events-none" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -287,7 +287,7 @@ export default function ContactSection() {
                 error={errors.subject}
               >
                 <div className="relative">
-                  <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] pointer-events-none" />
+                  <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
                   <select
                     id="subject"
                     name="subject"
@@ -308,7 +308,7 @@ export default function ContactSection() {
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 20 20"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -327,7 +327,7 @@ export default function ContactSection() {
                 error={errors.message}
               >
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 w-4 h-4 text-[#5A6781] pointer-events-none" />
+                  <Mail className="absolute left-3 top-3.5 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
                   <textarea
                     id="message"
                     name="message"
@@ -351,11 +351,11 @@ export default function ContactSection() {
             </button>
 
             {/* Helper / success copy */}
-            <p className="mt-4 text-xs sm:text-sm text-[#5A6781] leading-relaxed">
+            <p className="mt-4 text-xs sm:text-sm text-[#5A6781] dark:text-ink-muted leading-relaxed">
               {helperText}
             </p>
             {submitted && (
-              <div className="mt-4 inline-flex items-start gap-2 px-3 py-2.5 rounded-lg bg-[#25D366]/10 border border-[#25D366]/30 text-xs sm:text-sm text-[#0A1E5C]">
+              <div className="mt-4 inline-flex items-start gap-2 px-3 py-2.5 rounded-lg bg-[#25D366]/10 dark:bg-[#25D366]/15 border border-[#25D366]/30 dark:border-[#25D366]/40 text-xs sm:text-sm text-[#0A1E5C] dark:text-ink">
                 <CheckCircle2 className="w-4 h-4 text-[#25D366] shrink-0 mt-0.5" />
                 <span>{successHint}</span>
               </div>
@@ -481,10 +481,10 @@ function inputClass(hasError) {
     // any input whose computed font-size is below 16px on focus,
     // which is jarring on mobile. `sm:text-base` would drop to
     // text-sm (14px) below the sm breakpoint.
-    'w-full rounded-lg border bg-white text-base text-[#0A1E5C] placeholder:text-[#8A95AD] pl-10 pr-3 py-3 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[48px]'
+    'w-full rounded-lg border bg-white dark:bg-[#0F1635] text-base text-[#0A1E5C] dark:text-ink placeholder:text-[#8A95AD] dark:placeholder:text-ink-muted pl-10 pr-3 py-3 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[48px]'
   const ring = hasError
     ? 'border-[#C41230] focus:border-[#C41230] focus:ring-[#C41230]/30'
-    : 'border-[#E3E7F0] focus:border-[#0A1E5C]/40 focus:ring-[#0A1E5C]/20'
+    : 'border-[#E3E7F0] dark:border-white/25 focus:border-[#0A1E5C]/40 dark:focus:border-[#FFD200]/50 focus:ring-[#0A1E5C]/20 dark:focus:ring-[#FFD200]/20'
   return `${base} ${ring}`
 }
 
@@ -493,7 +493,7 @@ function inputClass(hasError) {
 function Field({ id, label, error, children }) {
   return (
     <label htmlFor={id} className="block">
-      <span className="block text-[0.7rem] sm:text-xs font-bold tracking-[0.12em] uppercase text-[#0A1E5C] mb-1.5">
+      <span className="block text-[0.7rem] sm:text-xs font-bold tracking-[0.12em] uppercase text-[#0A1E5C] dark:text-ink mb-1.5">
         {label}
       </span>
       {children}

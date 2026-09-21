@@ -144,28 +144,28 @@ export default function MobileLeadSheet() {
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-black/55 z-50" />
           <Drawer.Content
-            className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white shadow-2xl outline-none flex flex-col max-h-[88vh] pb-[env(safe-area-inset-bottom)]"
+            className="md:hidden fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl bg-white dark:bg-[#0B1336] shadow-2xl outline-none flex flex-col max-h-[88vh] pb-[env(safe-area-inset-bottom)]"
             aria-describedby="mobile-sheet-desc"
           >
-            <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-[#E3E7F0]" />
+            <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-[#E3E7F0] dark:bg-white/20" />
             <div className="px-6 pt-5 pb-2 flex items-start justify-between gap-3">
               <div>
-                <p className="text-[0.65rem] font-bold tracking-[0.22em] uppercase text-[#0A1E5C]/70">
+                <p className="text-[0.65rem] font-bold tracking-[0.22em] uppercase text-[#0A1E5C]/70 dark:text-ink-muted">
                   {badge}
                 </p>
-                <Drawer.Title className="mt-1 text-xl font-extrabold text-[#0A1E5C] leading-tight">
+                <Drawer.Title className="mt-1 text-xl font-extrabold text-[#0A1E5C] dark:text-ink leading-tight">
                   {quickHeading}
                 </Drawer.Title>
                 <Drawer.Description
                   id="mobile-sheet-desc"
-                  className="mt-1.5 text-sm text-[#3A4565] leading-relaxed"
+                  className="mt-1.5 text-sm text-[#3A4565] dark:text-ink-muted leading-relaxed"
                 >
                   {quickSubheading}
                 </Drawer.Description>
               </div>
               <Drawer.Close
                 aria-label="Close"
-                className="min-h-[44px] min-w-[44px] -mr-2 -mt-1 p-2 rounded-full text-[#5A6781] hover:bg-[#F4F6FC] active:bg-[#E3E7F0] flex items-center justify-center"
+                className="min-h-[44px] min-w-[44px] -mr-2 -mt-1 p-2 rounded-full text-[#5A6781] dark:text-ink-muted hover:bg-[#F4F6FC] dark:hover:bg-white/10 active:bg-[#E3E7F0] dark:active:bg-white/20 dark:bg-white/20 flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </Drawer.Close>
@@ -181,12 +181,12 @@ export default function MobileLeadSheet() {
                       : `https://wa.me/${WHATSAPP_PHONE}`
                   }
                   onClick={handleQuick(topic.message)}
-                  className="group min-h-[56px] flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-[#E3E7F0] bg-gradient-to-br from-white to-[#F4F6FC] hover:border-[#25D366]/50 hover:shadow-md active:scale-[0.99] transition-all duration-150"
+                  className="group min-h-[56px] flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-[#E3E7F0] dark:border-white/15 bg-gradient-to-br from-white dark:from-white/[0.06] to-[#F4F6FC] dark:to-[#0B1336] hover:border-[#25D366]/50 hover:shadow-md active:scale-[0.99] transition-all duration-150"
                 >
                   <span className="w-10 h-10 shrink-0 rounded-xl bg-[#25D366]/12 flex items-center justify-center text-[#1DAE53]">
                     <Send className="w-4 h-4" />
                   </span>
-                  <span className="flex-1 text-base font-bold text-[#0A1E5C] leading-tight">
+                  <span className="flex-1 text-base font-bold text-[#0A1E5C] dark:text-ink leading-tight">
                     {topic.label}
                   </span>
                 </a>

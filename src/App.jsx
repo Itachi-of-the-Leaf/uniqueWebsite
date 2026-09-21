@@ -13,6 +13,7 @@ import BrandLogo from './components/BrandLogo'
 import CustomCursor from './components/CustomCursor'
 import { openWhatsappBlankChat, WHATSAPP_PHONE } from './utils/whatsapp'
 import { LanguageProvider, useLanguage } from './context/LanguageContext'
+import { ThemeProvider } from './context/ThemeContext'
 import {
   PhoneCall,
   MapPin,
@@ -37,7 +38,7 @@ function AppContent() {
       {/* Modern Lenis-style Interactive Smooth Trailing Cursor */}
       <CustomCursor />
 
-      <div className="min-h-screen bg-[#F8FAFC] text-[#081438] font-sans selection:bg-[#FFD200] selection:text-[#081438] flex flex-col justify-between">
+      <div className="min-h-screen bg-canvas text-ink font-sans selection:bg-[#FFD200] selection:text-[#081438] flex flex-col justify-between transition-colors duration-300">
         {/* Navigation with Upper Right Language Switcher */}
         <Navbar />
 
@@ -57,9 +58,9 @@ function AppContent() {
         <ContactSection />
 
         {/* Dynamic Curved Swoosh Divider into Footer */}
-        <div className="bg-[#FFFFFF]">
+        <div className="bg-canvas">
           <BrandSwoosh
-            topColor="#FFFFFF"
+            topColor="var(--color-canvas)"
             bottomColor="#0A1E5C"
             crimson="#C41230"
             gold="#FFD200"
@@ -192,9 +193,11 @@ function AppContent() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <AppContent />
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </ThemeProvider>
   )
 }
 

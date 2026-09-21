@@ -240,29 +240,29 @@ export default function ProductGallery() {
     <section
       ref={sectionRef}
       id="gallery"
-      className="relative w-full bg-[#FAFBFE] py-20 sm:py-24 lg:py-28 px-5 sm:px-8"
+      className="relative w-full bg-canvas-deep py-20 sm:py-24 lg:py-28 px-5 sm:px-8 transition-colors duration-300"
     >
       <div className="mx-auto max-w-7xl">
         {/* HEADER */}
         <div className="mb-12 lg:mb-16 max-w-3xl">
           <div
             data-reveal="header"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFD200]/15 border border-[#FFD200]/40 mb-5"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase border border-[#FFD200]/30 bg-[#FFD200]/10 text-[#FFD200] mb-4"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#0A1E5C]" />
-            <span className="text-[0.7rem] sm:text-xs font-bold tracking-[0.18em] uppercase text-[#0A1E5C]">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#FFD200]" />
+            <span className="text-[0.7rem] sm:text-xs font-bold tracking-[0.18em] uppercase text-[#FFD200]">
               {badge}
             </span>
           </div>
           <h2
             data-reveal="header"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0A1E5C] leading-[1.1] tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-navy dark:text-white leading-[1.1] tracking-tight mb-4"
           >
             {heading}
           </h2>
           <p
             data-reveal="header"
-            className="text-base sm:text-lg text-[#3A4565] leading-relaxed max-w-2xl"
+            className="text-base sm:text-lg text-brand-navy/75 dark:text-slate-300 leading-relaxed max-w-2xl"
           >
             {subheading}
           </p>
@@ -280,15 +280,15 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="group relative rounded-2xl bg-white p-6 sm:p-7 lg:p-8 border border-slate-200 hover:border-brand-navy/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col gap-5 cursor-pointer"
+                  className="card-night group relative rounded-2xl bg-white dark:bg-white/[0.06] p-6 sm:p-7 lg:p-8 border border-slate-200 dark:border-white/10 hover:border-brand-navy/40 dark:hover:border-[#FFD200]/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col gap-5 cursor-pointer"
                 >
                   {/* Top bar: icon on the left, ArrowUpRight on the right */}
                   <div className="flex items-start justify-between gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 text-brand-navy flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                       <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
                     </div>
                     <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      className="w-5 h-5 text-brand-navy/60 dark:text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
                       strokeWidth={2}
                       aria-hidden="true"
                     />
@@ -296,10 +296,10 @@ export default function ProductGallery() {
 
                   {/* Title + description */}
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-[#0A1E5C] leading-tight">
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy dark:text-white leading-tight">
                       {c.title}
                     </h3>
-                    <p className="text-sm sm:text-[0.95rem] text-[#3A4565] leading-relaxed">
+                    <p className="text-sm sm:text-[0.95rem] text-brand-navy/70 dark:text-slate-300 leading-relaxed">
                       {c.description}
                     </p>
                   </div>
@@ -309,7 +309,7 @@ export default function ProductGallery() {
                     {c.badges.map((b) => (
                       <span
                         key={b}
-                        className="text-xs font-semibold bg-brand-navy/5 text-[#0A1E5C] px-2.5 py-1 rounded-md"
+                        className="text-xs font-semibold bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-white px-2.5 py-1 rounded-md"
                       >
                         {b}
                       </span>
@@ -317,7 +317,7 @@ export default function ProductGallery() {
                   </div>
 
                   {/* CTA link */}
-                  <div className="mt-auto pt-2 text-sm font-bold text-brand-navy inline-flex items-center gap-1">
+                  <div className="mt-auto pt-2 text-sm font-bold text-brand-navy dark:text-[#FFD200] inline-flex items-center gap-1">
                     {c.cta}
                     <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
                   </div>
@@ -336,15 +336,15 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="group relative rounded-2xl bg-white p-6 border border-slate-200 hover:border-brand-navy/40 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
+                  className="card-night group relative rounded-2xl bg-white dark:bg-white/[0.06] p-6 border border-slate-200 dark:border-white/10 hover:border-brand-navy/40 dark:hover:border-[#FFD200]/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
                 >
                   {/* Top bar: icon + ArrowUpRight */}
                   <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 text-brand-navy flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                       <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
                     </div>
                     <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      className="w-5 h-5 text-brand-navy/60 dark:text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
                       strokeWidth={2}
                       aria-hidden="true"
                     />
@@ -352,10 +352,10 @@ export default function ProductGallery() {
 
                   {/* Body */}
                   <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-base sm:text-lg font-extrabold text-[#0A1E5C] leading-tight">
+                    <h3 className="text-base sm:text-lg font-extrabold text-brand-navy dark:text-white leading-tight">
                       {c.title}
                     </h3>
-                    <p className="text-sm text-[#3A4565] leading-snug">
+                    <p className="text-sm text-brand-navy/70 dark:text-slate-300 leading-snug">
                       {c.description}
                     </p>
                   </div>
@@ -365,7 +365,7 @@ export default function ProductGallery() {
                     {c.tags.map((t) => (
                       <span
                         key={t}
-                        className="text-xs bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md"
+                        className="text-xs bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white px-2.5 py-1 rounded-md"
                       >
                         {t}
                       </span>
@@ -380,14 +380,14 @@ export default function ProductGallery() {
         {/* FOOTNOTE BAND — single quiet callout about firmware */}
         <div
           ref={footnoteRef}
-          className="mt-14 lg:mt-16 mx-auto max-w-4xl rounded-2xl border border-[#0A1E5C]/15 bg-gradient-to-br from-white to-[#F4F6FC] px-6 py-7 sm:px-8 sm:py-8 shadow-sm"
+          className="card-night mt-14 lg:mt-16 mx-auto max-w-4xl rounded-2xl border border-[#0A1E5C]/15 dark:border-white/10 bg-gradient-to-br from-white to-[#F4F6FC] dark:from-white/[0.06] dark:to-[#0B1336] px-6 py-7 sm:px-8 sm:py-8"
         >
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#0A1E5C]/8 border border-[#0A1E5C]/20 mb-3">
-            <span className="text-[0.65rem] font-bold tracking-[0.2em] uppercase text-[#0A1E5C]">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#0A1E5C]/8 dark:bg-[#FFD200]/15 border border-[#0A1E5C]/20 dark:border-[#FFD200]/35 mb-3">
+            <span className="text-[0.65rem] font-bold tracking-[0.2em] uppercase text-[#0A1E5C] dark:text-[#FFD200]">
               {footnoteEyebrow}
             </span>
           </div>
-          <p className="text-sm sm:text-base text-[#3A4565] leading-relaxed">
+          <p className="text-sm sm:text-base text-brand-navy/70 dark:text-slate-300 leading-relaxed">
             {footnoteLine1}
           </p>
         </div>

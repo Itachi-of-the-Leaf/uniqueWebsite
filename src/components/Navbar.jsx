@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Menu, X, ChevronRight, PhoneCall, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -130,6 +131,11 @@ export default function Navbar() {
               </button>
             </div>
 
+            {/* Theme toggle — System / Light / Dark. Sits next to the
+                language pill so the right-side control cluster reads
+                as a single composed unit. */}
+            <ThemeToggle variant="navy" />
+
             {/* Quick Contact Link */}
             <a
               href="#contact"
@@ -151,8 +157,12 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* Mobile Right Controls: Language Switcher + Hamburger */}
+          {/* Mobile Right Controls: Theme + Language + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
+            {/* Mobile theme toggle — compact icon-only (no labels)
+                since horizontal space is tight. */}
+            <ThemeToggle variant="navy" />
+
             {/* Mobile Top-Right Language Switcher */}
             <div
               className="inline-flex items-center bg-[#07143D] border border-[#FFD200]/40 p-0.5 rounded-full shadow-inner"

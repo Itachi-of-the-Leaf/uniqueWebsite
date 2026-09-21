@@ -79,29 +79,29 @@ export default function HeroSection() {
   return (
     <section
       ref={rootRef}
-      className="relative isolate overflow-hidden bg-gradient-to-b from-brand-canvas via-white to-brand-canvas pt-24 pb-16 lg:pt-32 lg:pb-24"
+      className="relative isolate overflow-hidden bg-gradient-to-b from-canvas via-surface to-canvas pt-24 pb-16 lg:pt-32 lg:pb-24 transition-colors duration-300"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         {/* Headline + Subtitle */}
         <div className="lg:col-span-7">
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-navy/15 bg-white/70 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-brand-navy/70 backdrop-blur">
-            <span className="inline-block size-1.5 rounded-full bg-brand-crimson" />
+          <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase border border-sky-400/30 bg-sky-400/10 text-sky-300 mb-6">
+            <span className="inline-block size-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
             Established 1998 · Khed, Maharashtra
           </p>
 
           <h1
             ref={headlineRef}
-            className="font-heading text-4xl leading-[1.05] tracking-tight text-brand-navy sm:text-5xl lg:text-6xl xl:text-7xl"
+            className="text-white dark:text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]"
           >
             <span className="block">Empowering Rural Schools With</span>
-            <span className="block bg-gradient-to-r from-brand-cobalt to-brand-crimson bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-[#FFD200] via-amber-300 to-orange-400 dark:from-[#FFD200] dark:via-amber-300 dark:to-orange-400 bg-clip-text text-transparent">
               Affordable Digital Learning
             </span>
           </h1>
 
           <p
             ref={subtitleRef}
-            className="mt-6 max-w-2xl text-base leading-relaxed text-brand-navy/75 lg:text-lg"
+            className="mt-6 max-w-2xl text-base sm:text-lg text-slate-300 dark:text-slate-300 leading-relaxed lg:text-lg"
           >
             Pioneering rugged, offline eLearning setups across 150+ Zilla Parishad schools in
             Raigad &amp; Ratnagiri since 2014—engineered to operate within standard grant limits.
@@ -115,17 +115,17 @@ export default function HeroSection() {
             {HERO_METRICS.map((metric) => (
               <article
                 key={metric.label}
-                className="flex h-full flex-col justify-between rounded-2xl border border-brand-navy/10 bg-white/85 p-5 shadow-[0_8px_30px_-12px_rgba(10,30,92,0.18)] backdrop-blur"
+                className="card-night flex h-full flex-col justify-between rounded-2xl border border-brand-navy/10 dark:border-white/15 bg-white/85 dark:bg-white/[0.06] p-5 backdrop-blur"
               >
                 <div>
-                  <p className="font-heading text-2xl text-brand-navy lg:text-3xl">
+                  <p className="font-heading text-2xl text-brand-navy dark:text-white lg:text-3xl">
                     {metric.value}
                   </p>
                   <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-crimson">
                     {metric.label}
                   </p>
                 </div>
-                <p className="mt-4 border-t border-brand-navy/10 pt-3 text-xs leading-snug text-brand-navy/70">
+                <p className="mt-4 border-t border-brand-navy/10 dark:border-white/10 pt-3 text-xs leading-snug text-brand-navy/70 dark:text-slate-300">
                   {metric.detail}
                 </p>
               </article>
@@ -138,7 +138,7 @@ export default function HeroSection() {
           <div className="relative">
             {/* Glass frame */}
             <div className="absolute inset-0 -translate-x-2 translate-y-2 rounded-3xl bg-gradient-to-br from-brand-cobalt/15 to-brand-crimson/15 blur-xl" />
-            <div className="relative overflow-hidden rounded-3xl border border-white/40 bg-white/30 p-3 shadow-[0_30px_80px_-30px_rgba(8,20,56,0.45)] backdrop-blur-md">
+            <div className="card-night relative overflow-hidden rounded-3xl border border-white/40 dark:border-white/15 bg-white/30 dark:bg-white/[0.06] p-3 backdrop-blur-md">
               {/* Generous landscape frame so the projector ceiling mount, full chassis,
                   and the blackboard beneath it (Konkan taluka names) all stay visible. */}
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-brand-midnight">
@@ -164,7 +164,7 @@ export default function HeroSection() {
                   </p>
                 </div>
               </div>
-              <div className="mt-3 flex items-center justify-between px-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-navy/60">
+              <div className="mt-3 flex items-center justify-between px-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-navy/60 dark:text-slate-300">
                 <span>Est. 1998</span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
