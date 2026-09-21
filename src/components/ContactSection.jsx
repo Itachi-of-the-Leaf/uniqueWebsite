@@ -221,10 +221,10 @@ export default function ContactSection() {
               {badge}
             </span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-navy dark:text-white tracking-tight leading-[1.1] mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#0B1B4F] dark:text-white tracking-tight mb-3">
             {heading}
           </h2>
-          <p className="text-base sm:text-lg text-brand-navy/75 dark:text-slate-300 leading-relaxed max-w-xl">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed mb-8">
             {subheading}
           </p>
         </div>
@@ -235,7 +235,7 @@ export default function ContactSection() {
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="card-night lg:col-span-7 rounded-2xl border border-[#E3E7F0] dark:border-white/10 bg-white dark:bg-white/[0.06] p-6 sm:p-8"
+            className="w-full lg:w-[60%] bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-10"
           >
             {/* First + Last Name row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -481,10 +481,10 @@ function inputClass(hasError) {
     // any input whose computed font-size is below 16px on focus,
     // which is jarring on mobile. `sm:text-base` would drop to
     // text-sm (14px) below the sm breakpoint.
-    'w-full rounded-lg border bg-white dark:bg-[#0F1635] text-base text-[#0A1E5C] dark:text-ink placeholder:text-[#8A95AD] dark:placeholder:text-ink-muted pl-10 pr-3 py-3 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-0 min-h-[48px]'
+    'w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-gold pl-10 pr-3 min-h-[48px] transition-colors duration-150'
   const ring = hasError
     ? 'border-[#C41230] focus:border-[#C41230] focus:ring-[#C41230]/30'
-    : 'border-[#E3E7F0] dark:border-white/25 focus:border-[#0A1E5C]/40 dark:focus:border-[#FFD200]/50 focus:ring-[#0A1E5C]/20 dark:focus:ring-[#FFD200]/20'
+    : 'focus:border-[#0A1E5C]/40 dark:focus:border-[#FFD200]/50'
   return `${base} ${ring}`
 }
 
@@ -493,7 +493,7 @@ function inputClass(hasError) {
 function Field({ id, label, error, children }) {
   return (
     <label htmlFor={id} className="block">
-      <span className="block text-[0.7rem] sm:text-xs font-bold tracking-[0.12em] uppercase text-[#0A1E5C] dark:text-ink mb-1.5">
+      <span className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
         {label}
       </span>
       {children}

@@ -256,13 +256,13 @@ export default function ProductGallery() {
           </div>
           <h2
             data-reveal="header"
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-brand-navy dark:text-white leading-[1.1] tracking-tight mb-4"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0B1B4F] dark:text-white tracking-tight mb-4"
           >
             {heading}
           </h2>
           <p
             data-reveal="header"
-            className="text-base sm:text-lg text-brand-navy/75 dark:text-slate-300 leading-relaxed max-w-2xl"
+            className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mb-12"
           >
             {subheading}
           </p>
@@ -280,7 +280,7 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="card-night group relative rounded-2xl bg-white dark:bg-white/[0.06] p-6 sm:p-7 lg:p-8 border border-slate-200 dark:border-white/10 hover:border-brand-navy/40 dark:hover:border-[#FFD200]/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col gap-5 cursor-pointer"
+                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-7 lg:p-8 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 flex flex-col gap-5 cursor-pointer"
                 >
                   {/* Top bar: icon on the left, ArrowUpRight on the right */}
                   <div className="flex items-start justify-between gap-4">
@@ -296,10 +296,10 @@ export default function ProductGallery() {
 
                   {/* Title + description */}
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-brand-navy dark:text-white leading-tight">
+                    <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
                       {c.title}
                     </h3>
-                    <p className="text-sm sm:text-[0.95rem] text-brand-navy/70 dark:text-slate-300 leading-relaxed">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
                       {c.description}
                     </p>
                   </div>
@@ -336,7 +336,7 @@ export default function ProductGallery() {
                   href={c.href}
                   onClick={(e) => handleNav(e, c.href)}
                   data-card
-                  className="card-night group relative rounded-2xl bg-white dark:bg-white/[0.06] p-6 border border-slate-200 dark:border-white/10 hover:border-brand-navy/40 dark:hover:border-[#FFD200]/60 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
+                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem]"
                 >
                   {/* Top bar: icon + ArrowUpRight */}
                   <div className="flex items-start justify-between gap-4 mb-4">
@@ -352,10 +352,10 @@ export default function ProductGallery() {
 
                   {/* Body */}
                   <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-base sm:text-lg font-extrabold text-brand-navy dark:text-white leading-tight">
+                    <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
                       {c.title}
                     </h3>
-                    <p className="text-sm text-brand-navy/70 dark:text-slate-300 leading-snug">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
                       {c.description}
                     </p>
                   </div>

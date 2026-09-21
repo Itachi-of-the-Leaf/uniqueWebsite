@@ -84,14 +84,14 @@ export default function HeroSection() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         {/* Headline + Subtitle */}
         <div className="lg:col-span-7">
-          <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase border border-sky-400/30 bg-sky-400/10 text-sky-300 mb-6">
+          <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase border border-sky-200 bg-sky-50 text-sky-800 dark:border-[#FFD200]/30 dark:bg-[#FFD200]/10 dark:text-[#FFD200] mb-6">
             <span className="inline-block size-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
             Established 1998 · Khed, Maharashtra
           </p>
 
           <h1
             ref={headlineRef}
-            className="text-white dark:text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]"
+            className="text-[#0B1B4F] dark:text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]"
           >
             <span className="block">Empowering Rural Schools With</span>
             <span className="block bg-gradient-to-r from-[#FFD200] via-amber-300 to-orange-400 dark:from-[#FFD200] dark:via-amber-300 dark:to-orange-400 bg-clip-text text-transparent">
@@ -101,7 +101,7 @@ export default function HeroSection() {
 
           <p
             ref={subtitleRef}
-            className="mt-6 max-w-2xl text-base sm:text-lg text-slate-300 dark:text-slate-300 leading-relaxed lg:text-lg"
+            className="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed lg:text-lg"
           >
             Pioneering rugged, offline eLearning setups across 150+ Zilla Parishad schools in
             Raigad &amp; Ratnagiri since 2014—engineered to operate within standard grant limits.
