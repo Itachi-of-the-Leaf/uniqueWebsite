@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Menu, X, ChevronRight, PhoneCall, Globe } from 'lucide-react'
+import { Menu, X, ChevronRight, Phone, PhoneCall, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import ThemeToggle from './ThemeToggle'
 
@@ -136,29 +136,61 @@ export default function Navbar() {
                 as a single composed unit. */}
             <ThemeToggle variant="navy" />
 
-            {/* Quick Contact Link */}
+            {/* Direct-dial "Call Us" link — replaces the
+                previous "Khed Hub" affordance. On desktop
+                it sits between the theme toggle and the
+                primary Contact CTA so the eye reads the
+                right-side cluster as Language → Theme →
+                Phone → Contact. tapping a real phone on
+                desktop is uncommon but it stays useful
+                for VoIP / softphone clients (Skype,
+                FaceTime, Teams) that respect the tel:
+                scheme. The brighter red pill on mobile
+                is its primary surface, so the desktop
+                link is intentionally a hair quieter
+                (border + text-white, no red bg). */}
             <a
-              href="#contact"
-              onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FFD200] hover:text-white transition-colors px-2 py-1"
+              href="tel:+919422433394"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-white/90 hover:text-[#FFD200] transition-colors px-2 py-1"
+              aria-label="Call Unique Systems at +91 94224 33394"
             >
               <PhoneCall className="w-3.5 h-3.5" />
-              <span>{t('nav.khedHub')}</span>
+              <span>{t('nav.callUs')}</span>
             </a>
 
-            {/* Primary Action Button */}
+            {/* Primary desktop CTA — scrolls smoothly to the
+                #contact section. Kept the existing brand-red
+                palette (`bg-[#C41230]`) but stripped the
+                rounded-xl + heavy gold border + translateY
+                hover so it sits calmly in the right-side
+                cluster instead of shouting. Chevron icon
+                stays gold for accent. */}
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#C41230] hover:bg-[#A00E26] text-white text-xs sm:text-sm font-extrabold shadow-md shadow-[#C41230]/40 border border-[#FFD200]/70 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+              className="hidden md:flex items-center gap-1.5 px-5 py-2 rounded-full bg-[#C41230] hover:bg-[#a30f28] text-white font-bold text-sm shadow-md hover:shadow-red-900/30 transition-all"
             >
               <span>{t('nav.contactUs')}</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />
             </a>
           </div>
 
-          {/* Mobile Right Controls: Theme + Language + Hamburger */}
+          {/* Mobile Right Controls: Call Us + Theme + Language + Hamburger */}
           <div className="flex md:hidden items-center gap-2">
+            {/* Mobile "Call Us" pill — primary CTA on mobile,
+                hidden on desktop (where the Contact Us button
+                takes that role). Replaces the previous Khed
+                Hub affordance. Tapping opens the device's
+                native dialer with +919422433394 pre-filled. */}
+            <a
+              href="tel:+919422433394"
+              className="flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#C41230] hover:bg-[#a30f28] active:scale-95 text-white font-bold text-xs shadow-md transition-all"
+              aria-label="Call Unique Systems at +91 94224 33394"
+            >
+              <Phone className="w-3.5 h-3.5 shrink-0" />
+              <span>{t('nav.callUs')}</span>
+            </a>
+
             {/* Mobile theme toggle — compact icon-only (no labels)
                 since horizontal space is tight. */}
             <ThemeToggle variant="navy" />
@@ -231,18 +263,30 @@ export default function Navbar() {
             ))}
           </nav>
           <div className="pt-2 border-t border-white/10 flex flex-col gap-2.5">
+            {/* Mobile menu "Call Us" affordance — tel-link
+                so a tap inside the open menu also opens
+                the native dialer. Visually quieter than
+                the primary red Contact CTA so the eye
+                still lands on Contact first. */}
             <a
-              href="#contact"
-              onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="min-h-[48px] flex items-center gap-2 px-4 py-3 text-sm font-bold text-[#FFD200] rounded-lg hover:bg-white/5"
+              href="tel:+919422433394"
+              className="min-h-[48px] flex items-center gap-2 px-4 py-3 text-sm font-bold text-white/90 rounded-lg hover:bg-white/5 hover:text-[#FFD200] transition-colors"
+              aria-label="Call Unique Systems at +91 94224 33394"
             >
-              <PhoneCall className="w-4 h-4" />
-              <span>{t('nav.khedHub')} (+91 94224 33394)</span>
+              <Phone className="w-4 h-4 text-[#FFD200]" />
+              <span>{t('nav.callUs')} (+91 94224 33394)</span>
             </a>
+
+            {/* Mobile menu Contact CTA — restyled to match
+                the desktop pill (rounded-full instead of
+                rounded-xl, calmer shadow + hover, same
+                gold ChevronRight accent) so the two
+                surfaces read as the same affordance at
+                different sizes. */}
             <a
               href="#contact"
               onClick={(e) => handleSmoothScroll(e, '#contact')}
-              className="w-full min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#C41230] text-white font-extrabold shadow-md border border-[#FFD200]/80 text-sm"
+              className="w-full min-h-[48px] flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-[#C41230] hover:bg-[#a30f28] text-white font-extrabold shadow-md hover:shadow-red-900/30 text-sm transition-all"
             >
               <span>{t('nav.contactUs')}</span>
               <ChevronRight className="w-4 h-4 text-[#FFD200]" />
