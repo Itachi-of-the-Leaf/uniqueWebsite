@@ -46,7 +46,11 @@ export default function CatalogFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className="group relative w-full h-[460px] md:h-[420px] cursor-pointer [perspective:1400px] select-none"
+      className={`group relative w-full h-[460px] md:h-[420px] cursor-pointer [perspective:1400px] select-none ${
+        item.featured
+          ? 'ring-1 ring-[#FFD200]/30 shadow-[0_0_60px_-15px_rgba(255,210,0,0.35)] rounded-3xl'
+          : ''
+      }`}
     >
       <div
         className={`relative w-full h-full rounded-3xl transition-transform duration-700 [transform-style:preserve-3d] ${
@@ -59,9 +63,25 @@ export default function CatalogFlipCard({ item }) {
           {/* Left Column: Identity & Typography (~55% width) */}
           <div className="flex flex-col justify-between h-full w-full md:w-[55%] z-10">
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase bg-[#FFD200]/10 border border-[#FFD200]/30 text-[#FFD200]">
-                {item.front.tag}
-              </span>
+              {/* Featured-tier front tag (used when
+                  item.featured === true, i.e. the Interactive
+                  Panels + Projectors spotlight cards):
+                  brightest gold-tinted pill, leading sparkle
+                  icon, wide tracking, fully-rounded ends. */}
+              {item.featured ? (
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold tracking-[0.18em] uppercase bg-[#FFD200]/15 border border-[#FFD200]/40 text-[#FFD200] shadow-[0_0_18px_-2px_rgba(255,210,0,0.35)]">
+                  <Icons.Sparkles className="h-3 w-3" aria-hidden="true" />
+                  <span>{item.front.tag}</span>
+                </span>
+              ) : (
+                /* Standard-tier front tag: muted slate-blue
+                   tint, smaller, no glow. Reads as a category
+                   label rather than a spotlight callout. */
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-[0.16em] uppercase bg-white/[0.06] border border-white/15 text-slate-300">
+                  <Icons.Tag className="h-3 w-3" aria-hidden="true" />
+                  <span>{item.front.tag}</span>
+                </span>
+              )}
 
               <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-4 leading-tight">
                 {item.front.title}
@@ -108,10 +128,17 @@ export default function CatalogFlipCard({ item }) {
         {/* ================= BACK FACE ================= */}
         <div className="absolute inset-0 w-full h-full rounded-3xl bg-[#071233] border border-white/20 p-8 md:p-10 flex flex-col justify-between shadow-2xl overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased">
 
-          {/* Top Bar */}
+          {/* Top Bar — certification eyebrow + dismiss hint */}
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300">
-              {item.back.eyebrow}
+            {/* Translucent navy fill with sky-blue text —
+                reads as an "official certification stamp"
+                rather than a marketing tag. Per the reference
+                video, this is the most "trustworthy" element
+                on the card; it sits above the back-face title
+                without competing for visual weight. */}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-[0.14em] uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300">
+              <Icons.BadgeCheck className="h-3 w-3" aria-hidden="true" />
+              <span>{item.back.eyebrow}</span>
             </span>
             <span className="text-xs font-semibold text-slate-400 hover:text-white">
               ✕ Return
@@ -125,16 +152,33 @@ export default function CatalogFlipCard({ item }) {
             </h4>
           </div>
 
-          {/* Specification Grid: 4 columns on desktop */}
+          {/* Specification Grid: 4 columns on desktop. Per the
+              reference video, each spec chip uses a different
+              accent color on its icon (yellow / sky / emerald
+              / gold) to create a visually diverse but cohesive
+              matrix — mirrors the four-color pattern of the
+              reference product card. */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 my-auto">
             {item.back.specs.map((spec, idx) => {
               const IconComponent = Icons[spec.icon] || Icons.CheckCircle2
+              // Cyclic 4-color accent palette: gold, sky, emerald,
+              // amber. Each chip gets its own tint so the matrix
+              // reads as a categorized grid, not four identical
+              // pills. Mirrors the reference video's icon
+              // coloring exactly.
+              const accentByIndex = [
+                'text-[#FFD200]',   // 1st: brand gold
+                'text-sky-300',      // 2nd: sky blue
+                'text-emerald-300',  // 3rd: emerald green
+                'text-amber-300',    // 4th: amber
+              ]
+              const accent = accentByIndex[idx % accentByIndex.length]
               return (
                 <div
                   key={idx}
                   className="flex items-center gap-3 rounded-xl bg-white/[0.04] border border-white/10 p-4 text-sm text-slate-200"
                 >
-                  <IconComponent className="h-5 w-5 shrink-0 text-[#FFD200]" />
+                  <IconComponent className={`h-5 w-5 shrink-0 ${accent}`} />
                   <span className="font-medium leading-snug">{spec.label}</span>
                 </div>
               )
