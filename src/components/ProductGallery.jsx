@@ -288,7 +288,7 @@ export default function ProductGallery() {
                       <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
                     </div>
                     <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 dark:text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
                       strokeWidth={2}
                       aria-hidden="true"
                     />
@@ -344,7 +344,7 @@ export default function ProductGallery() {
                       <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
                     </div>
                     <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 dark:text-ink-muted transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                      className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
                       strokeWidth={2}
                       aria-hidden="true"
                     />

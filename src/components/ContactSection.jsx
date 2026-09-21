@@ -245,7 +245,7 @@ export default function ContactSection() {
                 error={errors.firstName}
               >
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                   <input
                     id="firstName"
                     name="firstName"
@@ -264,7 +264,7 @@ export default function ContactSection() {
                 error={errors.lastName}
               >
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                   <input
                     id="lastName"
                     name="lastName"
@@ -287,7 +287,7 @@ export default function ContactSection() {
                 error={errors.subject}
               >
                 <div className="relative">
-                  <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
+                  <ListChecks className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                   <select
                     id="subject"
                     name="subject"
@@ -308,7 +308,7 @@ export default function ContactSection() {
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 20 20"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -327,7 +327,7 @@ export default function ContactSection() {
                 error={errors.message}
               >
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3.5 w-4 h-4 text-[#5A6781] dark:text-ink-muted pointer-events-none" />
+                  <Mail className="absolute left-3 top-3.5 w-4 h-4 text-slate-500 dark:text-slate-400 pointer-events-none" />
                   <textarea
                     id="message"
                     name="message"
@@ -351,11 +351,11 @@ export default function ContactSection() {
             </button>
 
             {/* Helper / success copy */}
-            <p className="mt-4 text-xs sm:text-sm text-[#5A6781] dark:text-ink-muted leading-relaxed">
+            <p className="mt-4 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               {helperText}
             </p>
             {submitted && (
-              <div className="mt-4 inline-flex items-start gap-2 px-3 py-2.5 rounded-lg bg-[#25D366]/10 dark:bg-[#25D366]/15 border border-[#25D366]/30 dark:border-[#25D366]/40 text-xs sm:text-sm text-[#0A1E5C] dark:text-ink">
+              <div className="mt-4 inline-flex items-start gap-2 px-3 py-2.5 rounded-lg bg-[#25D366]/10 dark:bg-[#25D366]/15 border border-[#25D366]/30 dark:border-[#25D366]/40 text-xs sm:text-sm text-[#0A1E5C] dark:text-white">
                 <CheckCircle2 className="w-4 h-4 text-[#25D366] shrink-0 mt-0.5" />
                 <span>{successHint}</span>
               </div>
