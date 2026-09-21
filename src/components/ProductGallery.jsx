@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
+import FlipCard from './FlipCard'
 import {
   Monitor,
   Tv,
@@ -129,6 +130,88 @@ const FALLBACK = {
     line1:
       'Every device is pre-flashed with our tamper-proof firmware — boot screens display your institution\u2019s crest, statutory grant compliance is signed at the hardware level, and the asset survives any drive wipe or OS re-installation.',
   },
+}
+
+// ─── PlaceholderBack ────────────────────────────────────────
+// Local helper for the FlipCard back face. If a card has a real
+// image in `public/`, we render it as a rounded cover image.
+// Otherwise we render a soft brand-navy gradient with a small
+// "Image coming soon" label so the back of the card never reads
+// as a broken/blank state.
+//
+// The parent FlipCard already applies its own `borderRadius` via
+// the wrapper's `overflow-hidden` mask, so we just need to fill
+// the back-face box.
+function PlaceholderBack({ title, href, tier, image }) {
+  // Map known product categories to their real images. Once you
+  // upload the rest, extend this map and the lookup falls through
+  // automatically.
+  const imageMap = {
+    '/catalog/panels': '/SmartPanel1.jpeg',
+    '/catalog/projectors': '/SmartPanel2.jpeg',
+  }
+  const resolved = image || imageMap[href]
+
+  if (resolved) {
+    return (
+      <div className="relative h-full w-full">
+        <img
+          src={resolved}
+          alt={title}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
+        {/* Subtle dark vignette so any future overlaid text
+            stays legible over the photo. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A1E5C]/85 via-[#0A1E5C]/15 to-transparent"
+        />
+        {/* Caption at the bottom-left of the photo so the user
+            has context for what they're looking at on flip. */}
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-[#FFD200]">
+              {tier === 1 ? 'Featured' : 'Catalog'}
+            </span>
+            <span className="text-sm font-bold text-white drop-shadow-sm">
+              {title}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#0A1E5C] via-[#0B1B4F] to-[#070C24] p-6 text-center">
+      {/* Decorative frame — dashed inner border so the back
+          reads as a "placeholder slot" rather than empty
+          content. */}
+      <div className="pointer-events-none absolute inset-3 rounded-2xl border border-dashed border-white/15" />
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-8 w-8 text-[#FFD200]/80"
+      >
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="9" cy="10" r="1.5" />
+        <path d="M21 17l-5-5-7 7" />
+      </svg>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#FFD200]">
+        Image coming soon
+      </p>
+      <p className="text-sm font-medium text-white/85">{title}</p>
+      <p className="text-[0.7rem] text-white/55">
+        Catalog imagery placeholder
+      </p>
+    </div>
+  )
 }
 
 export default function ProductGallery() {
@@ -262,53 +345,83 @@ export default function ProductGallery() {
             {tier1.map((c) => {
               const Icon = c.Icon
               return (
-                <a
+                <FlipCard
                   key={c.href}
-                  href={c.href}
-                  onClick={(e) => handleNav(e, c.href)}
-                  data-card
-                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 sm:p-7 lg:p-8 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 flex flex-col gap-5 cursor-pointer opacity-100"
-                >
-                  {/* Top bar: icon on the left, ArrowUpRight on the right */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
-                      <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
-                    </div>
-                    <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
-                      strokeWidth={2}
-                      aria-hidden="true"
+                  axis="y"
+                  flipOnClick
+                  draggable
+                  dragDistance={120}
+                  tilt
+                  tiltMax={10}
+                  glare
+                  glareOpacity={0.18}
+                  hoverScale={1.02}
+                  radius={20}
+                  background="transparent"
+                  color="inherit"
+                  shadow={false}
+                  // Each card fills its grid cell. We give the
+                  // front face the existing card chrome (the
+                  // <a> classes), and the back a placeholder
+                  // image slot for now — you'll replace later
+                  // with the real catalog imagery.
+                  front={
+                    <a
+                      href={c.href}
+                      onClick={(e) => handleNav(e, c.href)}
+                      data-card
+                      className="group relative flex h-full w-full flex-col gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#0B1B4F]/40 dark:ring-white/10 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl cursor-pointer opacity-100 sm:p-7 lg:p-8"
+                      style={{ borderRadius: '20px' }}
+                    >
+                      {/* Top bar: icon on the left, ArrowUpRight on the right */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                          <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                        </div>
+                        <ArrowUpRight
+                          className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                          strokeWidth={2}
+                          aria-hidden="true"
+                        />
+                      </div>
+
+                      {/* Title + description */}
+                      <div className="flex flex-col gap-2">
+                        <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
+                          {c.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                          {c.description}
+                        </p>
+                      </div>
+
+                      {/* Pill badges highlighting bundled equipment */}
+                      <div className="flex flex-wrap gap-2">
+                        {c.badges.map((b) => (
+                          <span
+                            key={b}
+                            className="text-xs font-semibold bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-white px-2.5 py-1 rounded-md"
+                          >
+                            {b}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* CTA link */}
+                      <div className="mt-auto pt-2 text-sm font-bold text-brand-navy dark:text-[#FFD200] inline-flex items-center gap-1">
+                        {c.cta}
+                        <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
+                      </div>
+                    </a>
+                  }
+                  back={
+                    <PlaceholderBack
+                      title={c.title}
+                      href={c.href}
+                      tier={1}
                     />
-                  </div>
-
-                  {/* Title + description */}
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
-                      {c.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
-                      {c.description}
-                    </p>
-                  </div>
-
-                  {/* Pill badges highlighting bundled equipment */}
-                  <div className="flex flex-wrap gap-2">
-                    {c.badges.map((b) => (
-                      <span
-                        key={b}
-                        className="text-xs font-semibold bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-white px-2.5 py-1 rounded-md"
-                      >
-                        {b}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* CTA link */}
-                  <div className="mt-auto pt-2 text-sm font-bold text-brand-navy dark:text-[#FFD200] inline-flex items-center gap-1">
-                    {c.cta}
-                    <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
-                  </div>
-                </a>
+                  }
+                />
               )
             })}
           </div>
@@ -318,47 +431,72 @@ export default function ProductGallery() {
             {tier2.map((c) => {
               const Icon = c.Icon
               return (
-                <a
+                <FlipCard
                   key={c.href}
-                  href={c.href}
-                  onClick={(e) => handleNav(e, c.href)}
-                  data-card
-                  className="group relative rounded-2xl bg-white dark:bg-[#0B1B4F]/40 dark:backdrop-blur-xl border border-slate-200 dark:border-white/10 p-6 shadow-sm hover:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[14rem] opacity-100"
-                >
-                  {/* Top bar: icon + ArrowUpRight */}
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
-                      <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
-                    </div>
-                    <ArrowUpRight
-                      className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
-                      strokeWidth={2}
-                      aria-hidden="true"
+                  axis="y"
+                  flipOnClick
+                  draggable
+                  dragDistance={120}
+                  tilt
+                  tiltMax={10}
+                  glare
+                  glareOpacity={0.18}
+                  hoverScale={1.02}
+                  radius={16}
+                  background="transparent"
+                  color="inherit"
+                  shadow={false}
+                  front={
+                    <a
+                      href={c.href}
+                      onClick={(e) => handleNav(e, c.href)}
+                      data-card
+                      className="group relative flex h-full w-full min-h-[14rem] flex-col justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#0B1B4F]/40 dark:ring-white/10 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl cursor-pointer opacity-100"
+                      style={{ borderRadius: '16px' }}
+                    >
+                      {/* Top bar: icon + ArrowUpRight */}
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                          <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                        </div>
+                        <ArrowUpRight
+                          className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                          strokeWidth={2}
+                          aria-hidden="true"
+                        />
+                      </div>
+
+                      {/* Body */}
+                      <div className="flex flex-col gap-2 flex-1">
+                        <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
+                          {c.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                          {c.description}
+                        </p>
+                      </div>
+
+                      {/* Bottom-aligned spec chips */}
+                      <div className="mt-auto pt-3 flex flex-wrap gap-1.5">
+                        {c.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="text-xs bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white px-2.5 py-1 rounded-md"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </a>
+                  }
+                  back={
+                    <PlaceholderBack
+                      title={c.title}
+                      href={c.href}
+                      tier={2}
                     />
-                  </div>
-
-                  {/* Body */}
-                  <div className="flex flex-col gap-2 flex-1">
-                    <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
-                      {c.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
-                      {c.description}
-                    </p>
-                  </div>
-
-                  {/* Bottom-aligned spec chips */}
-                  <div className="mt-auto pt-3 flex flex-wrap gap-1.5">
-                    {c.tags.map((t) => (
-                      <span
-                        key={t}
-                        className="text-xs bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white px-2.5 py-1 rounded-md"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </a>
+                  }
+                />
               )
             })}
           </div>
