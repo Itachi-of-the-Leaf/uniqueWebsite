@@ -79,6 +79,7 @@ export default function HeroSection() {
   return (
     <section
       ref={rootRef}
+      id="hero"
       className="relative isolate overflow-hidden bg-gradient-to-b from-canvas via-surface to-canvas pt-24 pb-16 lg:pt-32 lg:pb-24 transition-colors duration-300"
     >
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">

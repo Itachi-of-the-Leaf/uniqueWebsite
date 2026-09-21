@@ -4,8 +4,14 @@ import gsap from 'gsap'
 /**
  * Context-Aware Custom Cursor:
  * - Default / Neutral Areas: Sleek 5px brand Navy/Gold dot with subtle trailing lag.
- * - Timeline Image Section (Era 01..05): Crisp white dot — reads cleanly against
- *   the dark classroom photographs without competing with the gold/cobalt palette.
+ * - Hero / Gallery / Contact sections (id="hero" | id="gallery" | id="contact"):
+ *   dot + ring follow the ACTIVE THEME — dark navy in light mode, Canary Gold
+ *   in dark mode. Read `document.documentElement.classList` on every mousemove
+ *   (no context subscription needed; the class IS the theme source of truth).
+ * - Story sections — Timeline (#journey, "Our Journey") and Testimonials
+ *   (#testimonials, "Teacher Voices"), both tagged `data-timeline-image`:
+ *   crisp white dot ALWAYS, regardless of theme. Reads cleanly against the
+ *   dark classroom photographs without competing with the gold/cobalt palette.
  * - Blackboard (Left Column): Soft chalk-tip dot (#FFFFFF with powdery yellow halo).
  * - Projector Screen (Right Column): Sharp classroom Red Laser Pointer dot (#EF4444 with optical bloom).
  * - Active scrolling: Two gold chevrons ("▲" above, "▼" below) appear flanking
@@ -26,7 +32,7 @@ export default function CustomCursor() {
   const chevronGroupRef = useRef(null)
   const chevronUpRef = useRef(null)
   const chevronDownRef = useRef(null)
-  const [cursorMode, setCursorMode] = useState('default') // 'default' | 'dark-bg' | 'timeline-image' | 'chalk' | 'laser'
+  const [cursorMode, setCursorMode] = useState('default') // 'default' | 'dark-bg' | 'themed-section' | 'themed-section-dark' | 'timeline-image' | 'chalk' | 'laser'
   const [isInteractive, setIsInteractive] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
@@ -77,14 +83,31 @@ export default function CustomCursor() {
       // Context detection via DOM hierarchy
       const target = e.target
       if (target) {
-        // Priority order: timeline-image > dark-bg > chalk > laser > default.
-        // `data-dark-bg` is opt-in markup on elements with a dark navy
-        // background — the cursor switches to white-on-dark for legibility
-        // without forcing every component to know about cursor styling.
+        // Priority order: timeline-image (story sections, ALWAYS white)
+        // > themed light/dark sections (hero/gallery/contact, theme-driven)
+        // > dark-bg > chalk > laser > default.
+        //
+        // Story sections (#journey, #testimonials) carry
+        // `data-timeline-image` and are checked FIRST so they stay
+        // white regardless of theme.
         if (target.closest('[data-timeline-image]')) {
-          // Timeline section (Era 01..05). White crosshair reads cleanly on
-          // the dark classroom photos without competing with the gold accents.
+          // Timeline ("Our Journey") + Testimonials ("Teacher Voices").
+          // Crisp white crosshair reads cleanly on the dark classroom
+          // photos without competing with the gold accents. Theme-blind.
           setCursorMode('timeline-image')
+        } else if (
+          target.closest('#hero') ||
+          target.closest('#gallery') ||
+          target.closest('#contact')
+        ) {
+          // Hero / Gallery / Contact: dot follows the ACTIVE theme.
+          // `.dark` on <html> is the single source of truth (set by the
+          // pre-paint bootstrap + ThemeContext), so read it directly —
+          // no React context subscription, no stale-closure risk.
+          const isDark =
+            typeof document !== 'undefined' &&
+            document.documentElement.classList.contains('dark')
+          setCursorMode(isDark ? 'themed-section-dark' : 'themed-section')
         } else if (target.closest('[data-dark-bg]')) {
           // Any element tagged as having a dark-blue background — typically
           // the footer, the ContactSection info card, or future navy
@@ -251,13 +274,34 @@ export default function CustomCursor() {
   let ringBoxShadow = 'none'
 
   if (cursorMode === 'timeline-image') {
-    // Pure white crosshair for the timeline section. Crisp on dark photos,
-    // neutral against gold accents. No halo so it doesn't fight the palette.
+    // Pure white crosshair for the story sections (Timeline "Our Journey"
+    // + Testimonials "Teacher Voices"). Crisp on dark photos, neutral
+    // against gold accents. No halo so it doesn't fight the palette.
+    // Theme-blind by design — checked before any theme logic.
     dotBg = '#FFFFFF'
     dotBoxShadow = '0 0 6px 1px rgba(255, 255, 255, 0.9)'
     ringBg = 'rgba(255, 255, 255, 0.08)'
     ringBorder = '1px solid rgba(255, 255, 255, 0.45)'
     ringBoxShadow = '0 0 6px rgba(255, 255, 255, 0.25)'
+  } else if (cursorMode === 'themed-section-dark') {
+    // Hero / Gallery / Contact while the site is in DARK mode.
+    // Canary Gold dot + halo — advances against the navy canvas via
+    // simultaneous contrast and echoes the brand accent, so the cursor
+    // feels native to the night theme instead of disappearing into it.
+    dotBg = '#FFD200'
+    dotBoxShadow = '0 0 6px 1px rgba(255, 210, 0, 0.9)'
+    ringBg = 'rgba(255, 210, 0, 0.10)'
+    ringBorder = '1px solid rgba(255, 210, 0, 0.55)'
+    ringBoxShadow = '0 0 8px rgba(255, 210, 0, 0.30)'
+  } else if (cursorMode === 'themed-section') {
+    // Hero / Gallery / Contact while the site is in LIGHT mode.
+    // Deep brand navy — maximum luminance gap against the light canvas
+    // (#F8FAFC), so the dot never washes out on white cards or glass.
+    dotBg = '#0B1B4F'
+    dotBoxShadow = '0 0 5px rgba(11, 27, 79, 0.55)'
+    ringBg = 'rgba(11, 27, 79, 0.08)'
+    ringBorder = '1px solid rgba(11, 27, 79, 0.30)'
+    ringBoxShadow = 'none'
   } else if (cursorMode === 'dark-bg') {
     // White dot for any element tagged `data-dark-bg` — typically the
     // footer and the ContactSection info card. Reads cleanly against
