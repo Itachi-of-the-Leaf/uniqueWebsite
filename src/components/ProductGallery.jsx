@@ -20,6 +20,9 @@ import {
   Usb,
   CheckCircle2,
   ArrowUpRight,
+  Cpu,
+  Touchpad,
+  ShieldCheck,
 } from 'lucide-react'
 
 // Icon registry — kept at module scope so React doesn't re-create
@@ -382,59 +385,123 @@ export default function ProductGallery() {
                   background="transparent"
                   color="inherit"
                   shadow={false}
-                  // Each card fills its grid cell. We give the
-                  // front face the existing card chrome (the
-                  // <a> classes), and the back a placeholder
-                  // image slot for now — you'll replace later
-                  // with the real catalog imagery.
+                  // Each card fills its grid cell. The front
+                  // face is branch-specialized per category:
+                  //   • /catalog/interactive-panels → hardware-
+                  //     anchor layout (EDLA badge + centered
+                  //     display visual + 4-icon spec grid).
+                  //     This rebuilds the front as native Tailwind
+                  //     UI primitives with vector-sharp Lucide
+                  //     icons — no baked-in text raster — so it
+                  //     stays sharp inside the rotating flip
+                  //     container.
+                  //   • /catalog/projectors (and any future
+                  //     tier-1 entries) → existing chrome.
                   front={
-                    <a
-                      href={c.href}
-                      onClick={(e) => handleNav(e, c.href)}
-                      data-card
-                      className="group relative flex h-full w-full flex-col gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#0B1B4F]/40 dark:ring-white/10 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl cursor-pointer opacity-100 sm:p-7 lg:p-8"
-                      style={{ borderRadius: '20px' }}
-                    >
-                      {/* Top bar: icon on the left, ArrowUpRight on the right */}
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
-                          <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                    c.href === '/catalog/interactive-panels' ? (
+                      <div
+                        data-card
+                        className="group relative w-full h-full min-h-[460px] rounded-3xl bg-[#0B1B4F] border border-white/15 p-6 flex flex-col justify-between overflow-hidden shadow-xl select-none [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased"
+                        style={{ borderRadius: '20px' }}
+                      >
+                        {/* Top header: EDLA badge */}
+                        <div className="flex flex-col">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase bg-sky-400/10 border border-sky-400/30 text-sky-300 w-fit">
+                            Google EDLA Certified
+                          </div>
+
+                          {/* Main card title */}
+                          <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-3">
+                            AI-Powered Interactive Flat Panel
+                          </h3>
                         </div>
-                        <ArrowUpRight
-                          className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
-                          strokeWidth={2}
-                          aria-hidden="true"
-                        />
-                      </div>
 
-                      {/* Title + description */}
-                      <div className="flex flex-col gap-2">
-                        <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
-                          {c.title}
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
-                          {c.description}
-                        </p>
-                      </div>
+                        {/* Center hardware visual anchor */}
+                        <div className="relative my-4 w-full flex items-center justify-center overflow-hidden rounded-xl bg-slate-950/40 border border-white/10 p-2">
+                          <img
+                            src="/assets/interactive-panel.webp"
+                            alt="Interactive Flat Panel"
+                            className="w-full max-h-[180px] object-contain drop-shadow-2xl [image-rendering:auto]"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </div>
 
-                      {/* Pill badges highlighting bundled equipment */}
-                      <div className="flex flex-wrap gap-2">
-                        {c.badges.map((b) => (
-                          <span
-                            key={b}
-                            className="text-xs font-semibold bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-white px-2.5 py-1 rounded-md"
-                          >
-                            {b}
-                          </span>
-                        ))}
-                      </div>
+                        {/* Bottom 4-icon spec grid */}
+                        <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-white/10">
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs text-slate-200">
+                            <Monitor className="w-4 h-4 text-brand-gold shrink-0" />
+                            <span>4K Ultra HD Display</span>
+                          </div>
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs text-slate-200">
+                            <Cpu className="w-4 h-4 text-sky-400 shrink-0" />
+                            <span>Android 14 OS</span>
+                          </div>
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs text-slate-200">
+                            <Touchpad className="w-4 h-4 text-emerald-400 shrink-0" />
+                            <span>40-Point Multi-Touch</span>
+                          </div>
+                          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/[0.04] border border-white/10 text-xs text-slate-200">
+                            <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0" />
+                            <span>3-Year Onsite SLA</span>
+                          </div>
+                        </div>
 
-                      {/* CTA link */}
-                      <div className="mt-auto pt-2 text-sm font-bold text-brand-navy dark:text-[#FFD200] inline-flex items-center gap-1">
-                        {c.cta}
-                        <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
+                        {/* Flip prompt footer */}
+                        <div className="mt-3 flex items-center justify-between text-[11px] font-medium text-slate-400">
+                          <span>Tap / Hover to explore specs</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-brand-gold" />
+                        </div>
                       </div>
-                    </a>
+                    ) : (
+                      <a
+                        href={c.href}
+                        onClick={(e) => handleNav(e, c.href)}
+                        data-card
+                        className="group relative flex h-full w-full flex-col gap-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#0B1B4F]/40 dark:ring-white/10 dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] dark:backdrop-blur-xl cursor-pointer opacity-100 sm:p-7 lg:p-8"
+                        style={{ borderRadius: '20px' }}
+                      >
+                        {/* Top bar: icon on the left, ArrowUpRight on the right */}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-[#FFD200] flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+                            <Icon className="w-6 h-6" strokeWidth={1.8} aria-hidden="true" />
+                          </div>
+                          <ArrowUpRight
+                            className="w-5 h-5 text-brand-navy/60 dark:text-slate-400 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1"
+                            strokeWidth={2}
+                            aria-hidden="true"
+                          />
+                        </div>
+
+                        {/* Title + description */}
+                        <div className="flex flex-col gap-2">
+                          <h3 className="text-lg font-bold text-[#0B1B4F] dark:text-white mb-2">
+                            {c.title}
+                          </h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+                            {c.description}
+                          </p>
+                        </div>
+
+                        {/* Pill badges highlighting bundled equipment */}
+                        <div className="flex flex-wrap gap-2">
+                          {c.badges.map((b) => (
+                            <span
+                              key={b}
+                              className="text-xs font-semibold bg-brand-navy/5 dark:bg-white/10 text-brand-navy dark:text-white px-2.5 py-1 rounded-md"
+                            >
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* CTA link */}
+                        <div className="mt-auto pt-2 text-sm font-bold text-brand-navy dark:text-[#FFD200] inline-flex items-center gap-1">
+                          {c.cta}
+                          <ArrowUpRight className="w-4 h-4" strokeWidth={2.4} />
+                        </div>
+                      </a>
+                    )
                   }
                   back={
                     <PlaceholderBack
