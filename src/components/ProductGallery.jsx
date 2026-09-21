@@ -147,7 +147,12 @@ function PlaceholderBack({ title, href, tier, image }) {
   // upload the rest, extend this map and the lookup falls through
   // automatically.
   const imageMap = {
-    '/catalog/interactive-panels': '/SharpenedSmartPanel3.png',
+    // 2x-density PNG downscale (1920 × 1168) of the original
+    // 6400 × 3892 asset — single-pass LANCZOS. The original
+    // PNG was 10× the rendered size, which made the browser's
+    // downsampler blur text edges on rotation. The 2x version
+    // downsamples cleanly and stays under 2 MB.
+    '/catalog/interactive-panels': '/SharpenedSmartPanel3_2x.png',
     '/catalog/projectors': '/SmartPanel2.jpeg',
   }
   const resolved = image || imageMap[href]
@@ -155,7 +160,7 @@ function PlaceholderBack({ title, href, tier, image }) {
   if (resolved) {
     return (
       // Center the image in the available cell so the natural
-      // aspect ratio (6400 × 3892 for SharpenedSmartPanel3)
+      // aspect ratio (1920 × 1168 for the 2x asset)
       // letterboxes cleanly into the card instead of pinning to
       // the top edge.
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
@@ -164,16 +169,16 @@ function PlaceholderBack({ title, href, tier, image }) {
           alt={title}
           loading="lazy"
           decoding="async"
-          // `object-contain` instead of `object-cover` so the
-          // photo isn't cropped — SharpenedSmartPanel3.png has
-          // whitespace framing baked into the asset that we want
-          // to preserve. `h-auto` keeps the natural aspect
-          // ratio without stretching. The
-          // -webkit-optimize-contrast hint tells Safari/Chrome
-          // to skip its default image-smoothing pass, which is
-          // what causes the visible blur when a card is rotated
-          // through a CSS 3D transform.
-          className="w-full h-auto object-contain [image-rendering:-webkit-optimize-contrast] select-none pointer-events-none"
+          // `object-contain` keeps the photo uncropped at its
+          // natural aspect ratio. `h-auto` preserves the
+          // 1920 × 1168 proportions so the card never stretches.
+          // Removed the previous `[image-rendering:-webkit-
+          // optimize-contrast]` — that hint disables smoothing
+          // on WebKit/Blink and made rotation blur WORSE for
+          // downscaled raster. The default `auto` mode uses
+          // bilinear/bicubic which is correct for our use case
+          // now that the asset is at proper 2x density.
+          className="w-full h-auto object-contain select-none pointer-events-none"
         />
         {/* Bottom-third vignette only — the photo's feature
             icons stay unobscured. Title sits in this band. */}
