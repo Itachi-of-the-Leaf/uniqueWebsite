@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../context/LanguageContext'
 import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const ERAS = [
+const FALLBACK_ERAS = [
   {
     id: 1,
     yearStart: 1998,
@@ -235,6 +236,7 @@ function renderEraCardBody(era, variant = 'desktop') {
 }
 
 export default function TimelineSection() {
+  const { t, language } = useLanguage()
   const sectionRef = useRef(null)
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
@@ -246,6 +248,18 @@ export default function TimelineSection() {
   const progressBarRef = useRef(null)
   const scrollHintRef = useRef(null)
   const progressRef = useRef(0)
+
+  // Resolve localized era data. The translations file owns the
+  // canonical 5-era story panels for both English and Marathi
+  // (`translations.<lang>.timelineEras`); we fall back to the
+  // local English FALLBACK_ERAS constant when the active
+  // language has no entry yet (e.g. mid-development) so the
+  // section never goes blank.
+  const eras = useMemo(
+    () => t('timelineEras') ?? FALLBACK_ERAS,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [language, t]
+  )
 
   // Mount the lazy-load observer for era backdrops 2-5. Era 01 is
   // already eager-loaded by the spread above. The deps list
@@ -337,14 +351,14 @@ export default function TimelineSection() {
                   trigger: sectionRef.current,
                   // Start when the section's top edge reaches the
                   // viewport top. End is decoupled from the section's
-                  // own height — it's a fixed `(ERAS.length + 0.8)`
+                  // own height — it's a fixed `(eras.length + 0.8)`
                   // viewport-height scroll distance, so the timeline
                   // has explicit "trailing buffer" room for the final
                   // era to dwell without starvation. The trailing
                   // 0.8vh beyond the 5-era scroll mirrors the
                   // `h-[600vh]` (5 eras + 1 buffer era) wrapper.
                   start: 'top top',
-                  end: () => '+=' + window.innerHeight * (ERAS.length + 0.8),
+                  end: () => '+=' + window.innerHeight * (eras.length + 0.8),
                   scrub: true,
                   pin: stageRef.current,
                   pinSpacing: true,
@@ -420,7 +434,7 @@ export default function TimelineSection() {
                 { fadeInStart: 0.72, fadeInEnd: 0.76, fadeOutStart: null, fadeOutEnd: null },
               ]
 
-              for (let i = 0; i < ERAS.length; i++) {
+              for (let i = 0; i < eras.length; i++) {
                 const phase = PHASES[i]
                 const backdrop = backdrops[i]
                 const card = cards[i]
@@ -521,7 +535,7 @@ export default function TimelineSection() {
             Hidden on mobile because the mobile narrative layer
             renders each era's backdrop inline above its own card. */}
         <div className="absolute inset-0 hidden md:block">
-          {ERAS.map((era, i) => (
+          {eras.map((era, i) => (
             <div
               key={`backdrop-${era.id}`}
               ref={(el) => setBackdropRef(el, i)}
@@ -570,7 +584,7 @@ export default function TimelineSection() {
             <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
             <div className="lg:col-span-5">
               <div className="relative h-auto min-h-[28rem] sm:min-h-[34rem]">
-                {ERAS.map((era, i) => (
+                {eras.map((era, i) => (
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
@@ -624,7 +638,7 @@ export default function TimelineSection() {
                  80-96px on sm) so each card reads as its own
                  self-contained "page" in the user's thumb scroll. */}
         <div className="md:hidden">
-          {ERAS.map((era, i) => (
+          {eras.map((era, i) => (
             <div
               key={`mobile-era-${era.id}`}
               className="relative w-full overflow-hidden"
@@ -658,7 +672,7 @@ export default function TimelineSection() {
                   they scroll. */}
               <div className="relative z-10 pt-10 pb-6 px-5 sm:px-7">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 mb-2">
-                  Era {era.id} of {ERAS.length}
+                  Era {era.id} of {eras.length}
                 </p>
                 <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/60">
                   Our Journey

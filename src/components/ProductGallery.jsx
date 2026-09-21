@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '../context/LanguageContext'
 import { CheckCircle2 } from 'lucide-react'
 import CatalogFlipCard from './CatalogFlipCard'
 import StandardFlipCard from './StandardFlipCard'
-import { HARDWARE_CATALOG } from '../data/hardwareCatalog'
+import { getLocalizedCatalog } from '../data/hardwareCatalog'
+import translations from '../data/translations'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -26,9 +27,17 @@ const FALLBACK = {
 }
 
 export default function ProductGallery() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const sectionRef = useRef(null)
   const footnoteRef = useRef(null)
+
+  // Memoize the localized catalog. Recomputes only when the
+  // active language flips. Each item is a fresh object so the
+  // catalog data file stays the single canonical (English) source.
+  const localizedCatalog = useMemo(
+    () => getLocalizedCatalog(language, translations),
+    [language]
+  )
 
   // Resolve localized strings — use the gallery.* block if present,
   // otherwise fall back to the English constants above.
@@ -131,7 +140,7 @@ export default function ProductGallery() {
         <div className="w-full max-w-6xl mx-auto flex flex-col gap-10 lg:gap-12 px-4 sm:px-6 lg:px-8">
           {/* Spotlight cards — full-width single-row showcase */}
           <div className="flex flex-col gap-10 lg:gap-12">
-            {HARDWARE_CATALOG.filter((item) => item.featured).map((item) => (
+            {localizedCatalog.filter((item) => item.featured).map((item) => (
               <CatalogFlipCard key={item.id} item={item} />
             ))}
           </div>
@@ -146,7 +155,7 @@ export default function ProductGallery() {
               of an aspect-square, so portrait screens don't
               get a thin tall sliver. */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 mt-10 max-w-6xl mx-auto w-full">
-            {HARDWARE_CATALOG.filter((item) => !item.featured).map((item) => (
+            {localizedCatalog.filter((item) => !item.featured).map((item) => (
               <StandardFlipCard key={item.id} item={item} />
             ))}
           </div>

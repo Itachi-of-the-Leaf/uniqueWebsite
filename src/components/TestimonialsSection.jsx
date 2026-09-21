@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../context/LanguageContext'
 import { Star, Quote, MapPin, PlayCircle, ChevronDown, Mouse } from 'lucide-react'
 import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
@@ -33,7 +34,7 @@ const SALVI_REVIEW_URL = 'https://maps.app.goo.gl/9pAsYP4XrssSQ9wA7'
 const SAGAR_REVIEW_URL = 'https://maps.app.goo.gl/68He2Wpwfxzc81p99'
 const HUB_REVIEW_URL = 'https://maps.app.goo.gl/wmjpm8W1p9Zxd1YR9'
 
-const STAGES = [
+const FALLBACK_STAGES = [
   {
     id: 'salvi',
     backdrop: '/Rating1.png',
@@ -344,6 +345,7 @@ function VideoCard({ stage }) {
    Main component
    ════════════════════════════════════════════════════════════════════════ */
 export default function TestimonialsSection() {
+  const { t, language } = useLanguage()
   const sectionRef = useRef(null)
   const stageRef = useRef(null)
   const backdropRefs = useRef([])
@@ -368,6 +370,47 @@ export default function TestimonialsSection() {
   backdropRefs.current = []
   cardRefs.current = []
 
+  // Resolve localized testimonial stages. The translations file
+  // owns the human-readable strings (eyebrow / quote / headline /
+  // description / attribution / ctaLabel) for both English and
+  // Marathi. The local FALLBACK_STAGES keeps the literal English
+  // copy as a safety net when a translation key is missing.
+  //
+  // The Google review URL, backdrop image path, and videoId stay
+  // outside the translations file — they're not user-facing copy
+  // and shouldn't change between locales. We re-attach them by
+  // id after resolving the localized copy.
+  const REVIEW_URLS = {
+    salvi: SALVI_REVIEW_URL,
+    sagar: SAGAR_REVIEW_URL,
+    'kids-celebrating': HUB_REVIEW_URL,
+    'happy-kids': HUB_REVIEW_URL,
+  }
+  const VIDEO_IDS = {
+    'kids-celebrating': 'J3EQ6acI7oU',
+    'happy-kids': '3xy5Ti_cFRU',
+  }
+  const stages = useMemo(() => {
+    const localized = t('testimonialStages')
+    const base = Array.isArray(localized) && localized.length > 0
+      ? localized
+      : FALLBACK_STAGES
+    return base.map((stage) => ({
+      ...stage,
+      ctaHref: REVIEW_URLS[stage.id] ?? '#',
+      videoId: VIDEO_IDS[stage.id],
+      // Keep the video title out of the translation file —
+      // it's metadata, not user-facing UI copy.
+      videoTitle:
+        stage.id === 'kids-celebrating'
+          ? 'Unique Systems — Kids Celebrating at a ZP School'
+          : stage.id === 'happy-kids'
+          ? 'Unique Systems — Lessons In Progress at a Rural School'
+          : '',
+    }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [language, t])
+
   useEffect(() => {
     if (!sectionRef.current || !stageRef.current) return
 
@@ -377,7 +420,7 @@ export default function TestimonialsSection() {
       const buildScene = () => {
         const backdrops = backdropRefs.current.filter(Boolean)
         const cards = cardRefs.current.filter(Boolean)
-        if (backdrops.length !== STAGES.length) return
+        if (backdrops.length !== stages.length) return
 
         // Initial state: stage 1 visible, stages 2-4 hidden.
         gsap.set(backdrops[0], { opacity: 1, scale: 1 })
@@ -398,14 +441,14 @@ export default function TestimonialsSection() {
             trigger: sectionRef.current,
             // Start when the section's top edge reaches the viewport
             // top. End is decoupled from the section's own height —
-            // it's a fixed `(STAGES.length + 0.8)` viewport-height
+            // it's a fixed `(stages.length + 0.8)` viewport-height
             // scroll distance, so the timeline has explicit "trailing
             // buffer" room for the final stage to dwell without
             // starvation. The trailing 0.8vh beyond the 4-stage scroll
             // mirrors the `h-[600vh]` (4 stages + 2 buffer eras)
             // wrapper.
             start: 'top top',
-            end: () => '+=' + window.innerHeight * (STAGES.length + 0.8),
+            end: () => '+=' + window.innerHeight * (stages.length + 0.8),
             scrub: true,
             pin: stageRef.current,
             pinSpacing: true,
@@ -481,7 +524,7 @@ export default function TestimonialsSection() {
           { fadeInStart: 0.60, fadeInEnd: 0.64, fadeOutStart: null,  fadeOutEnd: null  },
         ]
 
-        for (let i = 0; i < STAGES.length; i++) {
+        for (let i = 0; i < stages.length; i++) {
           const phase = PHASES[i]
           const backdrop = backdrops[i]
           const card = cards[i]
@@ -544,7 +587,7 @@ export default function TestimonialsSection() {
       id="testimonials"
       className="relative w-full h-[600vh] bg-brand-canvas dark:bg-[#070C24]"
       data-timeline-image
-      aria-label="Verified Google Reviews & Classroom Testimonials"
+      aria-label={t('testimonials.sectionAria') || 'Verified Google Reviews & Classroom Testimonials'}
     >
       <div
         ref={stageRef}
@@ -552,7 +595,7 @@ export default function TestimonialsSection() {
       >
         {/* ── Backdrop layers (stacked, crossfaded) ── */}
         <div className="absolute inset-0">
-          {STAGES.map((stage, i) => (
+          {stages.map((stage, i) => (
             <div
               key={`backdrop-${stage.id}`}
               ref={(el) => setBackdropRef(el, i)}
@@ -590,7 +633,7 @@ export default function TestimonialsSection() {
           <div className="flex items-center gap-2">
             <GoogleGIcon size={14} />
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/85">
-              Posted on Google · Teacher Voices
+              {t('testimonials.sectionEyebrow') || 'Posted on Google · Teacher Voices'}
             </p>
           </div>
         </div>
@@ -607,7 +650,7 @@ export default function TestimonialsSection() {
             />
             <div className="lg:col-span-5">
               <div className="relative h-auto min-h-[30rem] sm:min-h-[34rem]">
-                {STAGES.map((stage, i) => (
+                {stages.map((stage, i) => (
                   <article
                     key={`card-${stage.id}`}
                     ref={(el) => setCardRef(el, i)}
@@ -656,7 +699,7 @@ export default function TestimonialsSection() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/70 backdrop-blur-md border border-white/15 shadow-xl text-slate-200">
             <Mouse className="w-3.5 h-3.5 text-[#FFD200] shrink-0" />
             <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
-              Scroll to explore
+              {t('scrollCue') || 'Scroll to explore'}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-[#FFD200] animate-bounce shrink-0" />
           </div>

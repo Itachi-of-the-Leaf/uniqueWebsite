@@ -2,28 +2,46 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useLanguage } from '../context/LanguageContext'
 
-const HERO_METRICS = [
-  {
-    value: '150+',
-    label: 'Schools Digitized',
-    detail: 'Across Raigad & Ratnagiri districts',
-  },
-  {
-    value: '₹25,000',
-    label: 'Benchmark',
-    detail: 'Engineered for ZP grant limits',
-  },
-  {
-    value: '100%',
-    label: 'Offline Capable',
-    detail: 'Zero internet dependency',
-  },
-  {
-    value: '4K',
-    label: 'Next-Gen Ecosystems',
-    detail: 'Interactive anti-glare flat panels',
-  },
-]
+// Fallback English copy for the hero block. The translation file
+// overrides these at render time; values here exist so the section
+// degrades gracefully if a translation key is missing.
+const FALLBACK = {
+  establishedBadge: 'Established 1998 · Khed, Maharashtra',
+  titlePart1: 'Empowering Rural Schools With',
+  titlePart2: 'Affordable Digital Learning',
+  subtitle:
+    'Pioneering rugged, offline eLearning setups across 150+ Zilla Parishad schools in Raigad & Ratnagiri since 2014—engineered to operate within standard grant limits.',
+  overlayEyebrow: 'DEPLOYMENT IN ACTION',
+  overlayLocation: 'ZP School · Konkan Division · Raigad',
+  overlayVerified: 'VERIFIED DEPLOYMENT',
+  overlaySince: 'Since 2014',
+  overlayEst: 'Est. 1998',
+  // Alt text for the projector-in-action image.
+  overlayAlt:
+    'Rugged LED ceiling-mounted projector deployed in a Konkan Zilla Parishad classroom, with regional taluka names written on the blackboard beneath',
+  stats: [
+    {
+      value: '150+',
+      label: 'Schools Digitized',
+      detail: 'Across Raigad & Ratnagiri districts',
+    },
+    {
+      value: '₹25,000',
+      label: 'Benchmark',
+      detail: 'Engineered for ZP grant limits',
+    },
+    {
+      value: '100%',
+      label: 'Offline Capable',
+      detail: 'Zero internet dependency',
+    },
+    {
+      value: '4K',
+      label: 'Next-Gen Ecosystems',
+      detail: 'Interactive anti-glare flat panels',
+    },
+  ],
+}
 
 export default function HeroSection() {
   const { t } = useLanguage()
@@ -32,6 +50,36 @@ export default function HeroSection() {
   const subtitleRef = useRef(null)
   const metricsRef = useRef(null)
   const showcaseRef = useRef(null)
+
+  // Resolve localized strings — use the hero.* block if present,
+  // otherwise fall back to the English constants above.
+  const hero = t('hero') || {}
+  const establishedBadge =
+    hero.establishedBadge ?? FALLBACK.establishedBadge
+  const titlePart1 = hero.titlePart1 ?? FALLBACK.titlePart1
+  const titlePart2 = hero.titlePart2 ?? FALLBACK.titlePart2
+  // Build the subtitle from the hero block if `subtitlePrefix` etc.
+  // exist (legacy structure); otherwise fall back to the literal
+  // `subtitle` string set above. The hero block in translations.js
+  // now also exposes a single `subtitle` key for the simpler form.
+  const subtitle =
+    hero.subtitle ??
+    (hero.subtitlePrefix
+      ? `${hero.subtitlePrefix}${hero.schoolsHighlight ?? ''}${
+          hero.subtitleMiddle ?? ''
+        }${hero.priceHighlight ?? ''}${hero.subtitleSuffix ?? ''}`
+      : FALLBACK.subtitle)
+  const overlayEyebrow = hero.overlayEyebrow ?? FALLBACK.overlayEyebrow
+  const overlayLocation = hero.overlayLocation ?? FALLBACK.overlayLocation
+  const overlayVerified = hero.overlayVerified ?? FALLBACK.overlayVerified
+  const overlaySince = hero.overlaySince ?? FALLBACK.overlaySince
+  const overlayEst = hero.overlayEst ?? FALLBACK.overlayEst
+  const overlayAlt = hero.overlayAlt ?? FALLBACK.overlayAlt
+  // Prefer `hero.stats` (already localized in translations.js). Fall
+  // back to the local English constants.
+  const metrics = Array.isArray(hero.stats) && hero.stats.length > 0
+    ? hero.stats
+    : FALLBACK.stats
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -87,16 +135,16 @@ export default function HeroSection() {
         <div className="lg:col-span-7">
           <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase border border-sky-200 bg-sky-50 text-sky-800 dark:border-[#FFD200]/30 dark:bg-[#FFD200]/10 dark:text-[#FFD200] mb-6">
             <span className="inline-block size-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
-            Established 1998 · Khed, Maharashtra
+            {establishedBadge}
           </p>
 
           <h1
             ref={headlineRef}
             className="text-[#0B1B4F] dark:text-white text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.1]"
           >
-            <span className="block">Empowering Rural Schools With</span>
+            <span className="block">{titlePart1}</span>
             <span className="block bg-gradient-to-r from-[#FFD200] via-amber-300 to-orange-400 dark:from-[#FFD200] dark:via-amber-300 dark:to-orange-400 bg-clip-text text-transparent">
-              Affordable Digital Learning
+              {titlePart2}
             </span>
           </h1>
 
@@ -104,8 +152,7 @@ export default function HeroSection() {
             ref={subtitleRef}
             className="mt-6 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-xl leading-relaxed lg:text-lg"
           >
-            Pioneering rugged, offline eLearning setups across 150+ Zilla Parishad schools in
-            Raigad &amp; Ratnagiri since 2014—engineered to operate within standard grant limits.
+            {subtitle}
           </p>
 
           {/* Trust Metric Strip */}
@@ -113,7 +160,7 @@ export default function HeroSection() {
             ref={metricsRef}
             className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
           >
-            {HERO_METRICS.map((metric) => (
+            {metrics.map((metric) => (
               <article
                 key={metric.label}
                 className="card-night flex h-full flex-col justify-between rounded-2xl border border-brand-navy/10 dark:border-white/15 bg-white/85 dark:bg-white/[0.06] p-5 backdrop-blur"
@@ -145,7 +192,7 @@ export default function HeroSection() {
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-brand-midnight">
                 <img
                   src="/Projector_in_action.jpeg"
-                  alt="Rugged LED ceiling-mounted projector deployed in a Konkan Zilla Parishad classroom, with regional taluka names written on the blackboard beneath"
+                  alt={overlayAlt}
                   className="absolute inset-0 size-full object-cover object-top"
                   loading="eager"
                   decoding="async"
@@ -155,23 +202,23 @@ export default function HeroSection() {
                     className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-gold"
                     style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
                   >
-                    Deployment in Action
+                    {overlayEyebrow}
                   </p>
                   <p
                     className="mt-1 text-sm font-medium"
                     style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
                   >
-                    ZP School · Konkan Division · Raigad
+                    {overlayLocation}
                   </p>
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between px-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-navy/60 dark:text-slate-300">
-                <span>Est. 1998</span>
+                <span>{overlayEst}</span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
-                  Verified deployment
+                  {overlayVerified}
                 </span>
-                <span>Since 2014</span>
+                <span>{overlaySince}</span>
               </div>
             </div>
           </div>

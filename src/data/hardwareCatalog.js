@@ -338,3 +338,159 @@ export const CATALOG_ICONS = [
   'Laptop',
   'CheckCircle2',
 ]
+
+// ── Per-card badge keys ───────────────────────────────────────
+//
+// Each item in HARDWARE_CATALOG exposes a `badgeKeys` array (parallel
+// to its `front.badges` array). The renderer uses these keys to look
+// up the localized label in `translations.js` under
+// `catalogCards.<cardId>.badges.<key>`. The keys themselves stay
+// stable across languages so the catalog data file stays JSON-friendly.
+//
+// Why per-card keys instead of mutating the data file with `mr` mirrors?
+// The catalog is consumed in two ways:
+//   1) The FlipCard components — need localized labels per language.
+//   2) A future headless CMS / admin form — needs stable identifiers.
+// `badgeKeys` gives both: stable keys for tooling, with the human label
+// resolved through the i18n layer.
+const FEATURED_BADGE_KEYS = {
+  'interactive-panels': [
+    'aiEnhanced',
+    'googleEdla',
+    'donorName',
+    'sla3yr',
+    'antiGlare4k',
+  ],
+  projectors: ['turnkey', 'stateBoard', 'ceilingRig', 'acoustic', 'usbPlayback'],
+}
+
+// For the 4 standard cards, the badge labels share their semantics
+// across cards (a label key is unique within a card, not across
+// cards). So we namespace the keys by card id — same approach.
+const STANDARD_BADGE_KEYS = {
+  computing: ['compact', 'adminStaff', 'preconfigured', 'licensedWindows'],
+  printers: ['printScanCopy', 'wifiShare', 'ecoTank', 'autoDuplex'],
+  'ups-systems': ['surge', 'zeroSwitch', 'tubular', 'pureSine'],
+  peripherals: ['monitor', 'spillResistant', 'shieldedHdmi', 'plugPlay'],
+}
+
+const STANDARD_SPEC_KEYS = {
+  computing: ['cpu', 'ssd', 'laptops', 'service'],
+  printers: ['mfd', 'wifi', 'copy', 'service'],
+  'ups-systems': ['voltage', 'backup', 'battery', 'health'],
+  peripherals: ['monitor', 'keyboard', 'hdmi', 'storage'],
+}
+
+// Helper used by renderers to produce a localized copy of an item.
+// Returns a NEW object so the original `HARDWARE_CATALOG` stays the
+// canonical, language-agnostic source (icons, image paths, brand
+// lists, structural flags). Strings + spec/badge labels come from
+// `translations.js`; anything not present in the active language
+// falls back to the English source.
+//
+// `language` must be 'en' or 'mr' (matches `LanguageContext`).
+export function getLocalizedCatalog(language, translations) {
+  const locale = language === 'mr' ? 'mr' : 'en'
+  const t = translations?.[locale]
+  const cardTranslations = t?.catalogCards ?? {}
+  const fallback = translations?.en?.catalogCards ?? {}
+
+  return HARDWARE_CATALOG.map((item) => {
+    const card = cardTranslations[item.id] ?? fallback[item.id] ?? {}
+    const cardFallback = fallback[item.id] ?? {}
+
+    const localizedFront = {
+      ...item.front,
+      tag: card.frontTag ?? cardFallback.frontTag ?? item.front.tag,
+      title:
+        card.frontTitle ?? cardFallback.frontTitle ?? item.front.title,
+      hint: card.frontHint ?? cardFallback.frontHint ?? item.front.hint,
+    }
+    // Re-stamp the badges with localized labels when badge keys exist.
+    if (Array.isArray(item.front.badges)) {
+      const keys =
+        FEATURED_BADGE_KEYS[item.id] ?? STANDARD_BADGE_KEYS[item.id]
+      localizedFront.badges = item.front.badges.map((badge, idx) => {
+        const key = keys?.[idx]
+        const localizedLabel =
+          (key && card.badges?.[key]) ||
+          (key && cardFallback.badges?.[key]) ||
+          badge.label
+        return { ...badge, label: localizedLabel }
+      })
+    }
+
+    const localizedBack = { ...item.back }
+    if (card.backEyebrow ?? cardFallback.backEyebrow) {
+      localizedBack.eyebrow =
+        card.backEyebrow ?? cardFallback.backEyebrow ?? item.back.eyebrow
+    }
+    if (card.backTitle ?? cardFallback.backTitle) {
+      localizedBack.title =
+        card.backTitle ?? cardFallback.backTitle ?? item.back.title
+    }
+    if (card.backSubtitle ?? cardFallback.backSubtitle) {
+      localizedBack.subtitle =
+        card.backSubtitle ?? cardFallback.backSubtitle ?? item.back.subtitle
+    }
+    if (card.brandsTitle ?? cardFallback.brandsTitle) {
+      localizedBack.brandsTitle =
+        card.brandsTitle ?? cardFallback.brandsTitle ?? item.back.brandsTitle
+    }
+    if (card.cta ?? cardFallback.cta) {
+      localizedBack.cta = card.cta ?? cardFallback.cta ?? item.back.cta
+    }
+    // Localize video labels (e.g. "DEPLOYMENT" → "शालेय वापर").
+    if (Array.isArray(item.back.videos)) {
+      const deploymentLabel =
+        card.videoDeploymentLabel ?? cardFallback.videoDeploymentLabel
+      const classroomLabel =
+        card.videoClassroomLabel ?? cardFallback.videoClassroomLabel
+      localizedBack.videos = item.back.videos.map((video) => {
+        // Match by the original English label, fall back to the
+        // existing label if neither Marathi slot is defined.
+        if (video.label === 'Deployment' && deploymentLabel) {
+          return { ...video, label: deploymentLabel }
+        }
+        if (
+          (video.label === 'Classroom' ||
+            video.label === 'Deployment Action' ||
+            video.label === 'Classroom Footage') &&
+          (video.label === 'Deployment Action' || video.label === 'Classroom Footage') &&
+          (deploymentLabel || classroomLabel)
+        ) {
+          // Projectors use two distinct English labels; map them
+          // to the matching Marathi slot.
+          if (video.label === 'Deployment Action' && deploymentLabel) {
+            return { ...video, label: deploymentLabel }
+          }
+          if (video.label === 'Classroom Footage' && classroomLabel) {
+            return { ...video, label: classroomLabel }
+          }
+        }
+        if (video.label === 'Classroom' && classroomLabel) {
+          return { ...video, label: classroomLabel }
+        }
+        return video
+      })
+    }
+    // Localize spec labels for standard cards.
+    if (Array.isArray(item.back.specs)) {
+      const keys = STANDARD_SPEC_KEYS[item.id]
+      localizedBack.specs = item.back.specs.map((spec, idx) => {
+        const key = keys?.[idx]
+        const localizedLabel =
+          (key && card.specs?.[key]) ||
+          (key && cardFallback.specs?.[key]) ||
+          spec.label
+        return { ...spec, label: localizedLabel }
+      })
+    }
+
+    return {
+      ...item,
+      front: localizedFront,
+      back: localizedBack,
+    }
+  })
+}
