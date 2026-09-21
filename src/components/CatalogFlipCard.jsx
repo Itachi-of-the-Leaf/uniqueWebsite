@@ -33,62 +33,6 @@ import * as Icons from 'lucide-react'
 //   https://www.youtube.com/watch?v=wtBHIyOkSuQ
 //   https://www.youtube.com/watch?v=XzfDhwStWVU
 // The back face mounts ONE iframe at a time and swaps its src
-// on tab change, so only one player is in the DOM at once.
-const YOUTUBE_VIDEOS = [
-  { id: 'wtBHIyOkSuQ', title: 'Interactive Flat Panels — Deployment Showcase', tabLabel: 'Deployment' },
-  { id: 'XzfDhwStWVU', title: 'Interactive Flat Panels — Classroom Walkthrough', tabLabel: 'Classroom' },
-]
-
-// Feature badges rendered down the left-column branch on the
-// Interactive Panels front face. Each pill is rendered as a
-// substantial, gradient-tinted chip with its icon integrated
-// INSIDE the pill background (not a detached bubble). Order
-// is intentional — top → bottom mirrors the priority Gemini
-// quoted. The container border-l-2 (white/20) draws the
-// vertical trunk that visually links the pills as a tree.
-//
-// Palette (per the spec):
-//   1. AI - Enhanced                sky / blue gradient
-//   2. Google EDLA Certified        amber / gold accent + G
-//   3. Integrated Donor Name        emerald / teal gradient
-//   4. 3-Year Onsite SLA            gold / bronze gradient
-//   5. 4K Anti-Glare Multi-Touch    purple / indigo gradient
-//
-// `icon` is the Lucide component reference; `customIcon` lets
-// a pill render an inline SVG (the Google "G" mark) instead.
-const INTERACTIVE_PANELS_BADGES = [
-  {
-    label: 'AI - Enhanced',
-    icon: 'Sparkles',
-    container: 'bg-sky-950/70 border-sky-400/50 text-sky-200',
-    iconColor: 'text-sky-300',
-  },
-  {
-    label: 'Google EDLA Certified',
-    customIcon: 'google-g',
-    container: 'bg-slate-900/80 border-amber-400/50 text-amber-200',
-    iconColor: 'text-amber-300',
-  },
-  {
-    label: 'Integrated Donor Name',
-    icon: 'User',
-    container: 'bg-emerald-950/70 border-emerald-400/50 text-emerald-200',
-    iconColor: 'text-emerald-300',
-  },
-  {
-    label: '3-Year Onsite SLA',
-    icon: 'ShieldCheck',
-    container: 'bg-amber-950/60 border-[#FFD200]/50 text-[#FFD200]',
-    iconColor: 'text-[#FFD200]',
-  },
-  {
-    label: '4K Anti-Glare Multi-Touch',
-    icon: 'Monitor',
-    container: 'bg-purple-950/60 border-purple-400/50 text-purple-200',
-    iconColor: 'text-purple-300',
-  },
-]
-
 // Inline Google "G" mark — 14px square, four-color slices.
 // Kept inside the component module so each pill renders the
 // authentic G without re-importing it per row.
@@ -103,61 +47,52 @@ function GoogleGIcon({ className = '' }) {
   )
 }
 
-// InteractivePanelsVideoPanel — side-by-side YouTube grid for
-// the Interactive Panels back face.
+// BackFaceVideosPanel — generic side-by-side YouTube grid for
+// any catalog item whose `back.videos` is a non-empty array.
+// The data shape lives in `src/data/hardwareCatalog.js`:
 //
-// Two iframes render simultaneously inside a 1-col → 2-col
-// responsive grid (stacked on mobile, side-by-side on desktop).
-// Each cell is `aspect-video` so the iframes auto-size to
-// 16:9 inside their grid cell — they always fit the box
-// regardless of card width.
+//   videos: [{ label: 'Deployment', embedUrl: 'https://...'}, ...]
 //
-// Above the grid, a single eyebrow caption ("Check the screen
-// out in deployment") contextualises what the user is about to
-// watch and visually anchors the two players. Per-cell labels
-// ("Deployment" / "Classroom") sit above each iframe so each
-// player is identifiable at a glance.
+// The panel renders a 1-col → 2-col responsive grid (stacked on
+// mobile, side-by-side on desktop). Each cell uses h-full +
+// min-h-0 so the iframes fill their grid cell cleanly at 16:9
+// — they always fit the box regardless of card width.
 //
-// Why the pulse-loader: you cannot reliably detect a loaded
-// YouTube video from inside an iframe without enabling the
-// JS API + postMessage handshake. As a pragmatic heuristic we:
-//   1. Listen for the <iframe> `onLoad` (fires when the DOM
-//      iframe element mounts, not when the video is ready —
-//      this is the *earliest* reliable event).
-//   2. Pass `enablejsapi=1` so the iframe is JS-controllable
-//      in future refactors.
-//   3. Set a 150 ms fallback timeout — if `onLoad` is delayed
-//      by network or has already fired before the effect ran,
-//      the fallback still hides the loader after a fixed
-//      upper bound.
-// The pulse-ring itself reuses `.yt-facade-play` from
-// `src/index.css` (also used by the Testimonials section) so
-// no new CSS is required.
+// Above the grid, the catalog-supplied `subtitle` (e.g.
+// "Check the screen out in deployment" or "Check the
+// projection rig in active deployment") anchors the two videos
+// and explains what the user is about to watch. Per-cell
+// labels sit above each iframe so each player is identifiable
+// at a glance.
+//
+// Pulse-loader (`.yt-facade-play`) reuses the keyframe from
+// `src/index.css` (same one Testimonials uses) — no new CSS
+// required.
 function VideoCell({ video }) {
   const [isLoaded, setIsLoaded] = useState(false)
   const ref = useRef(null)
   // Reset loader visibility whenever the cell's video changes.
-  // We use a ref to track the previous id so the synchronous
+  // We use a ref to track the previous url so the synchronous
   // setState below doesn't fire on the initial mount (only on
   // real remounts). 150 ms upper-bound fallback — if onLoad is
   // delayed by network or already fired before this effect ran,
   // the fallback still hides the loader after a fixed upper
   // bound.
-  const prevIdRef = useRef(video.id)
+  const prevUrlRef = useRef(video.embedUrl)
   useEffect(() => {
-    if (prevIdRef.current === video.id) return
-    prevIdRef.current = video.id
+    if (prevUrlRef.current === video.embedUrl) return
+    prevUrlRef.current = video.embedUrl
     setIsLoaded(false)
     const fallback = setTimeout(() => setIsLoaded(true), 150)
     return () => clearTimeout(fallback)
-  }, [video.id])
+  }, [video.embedUrl])
 
   return (
     <div className="relative w-full h-full min-h-0 rounded-lg overflow-hidden bg-slate-950 ring-1 ring-white/10">
       <iframe
         ref={ref}
-        src={`https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0&enablejsapi=1`}
-        title={video.title}
+        src={video.embedUrl}
+        title={video.label || 'YouTube video player'}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
         referrerPolicy="strict-origin-when-cross-origin"
@@ -183,7 +118,7 @@ function VideoCell({ video }) {
   )
 }
 
-function InteractivePanelsVideoPanel() {
+function BackFaceVideosPanel({ videos, subtitle }) {
   return (
     <div
       className="flex flex-col gap-2 w-full h-full min-h-0"
@@ -191,28 +126,32 @@ function InteractivePanelsVideoPanel() {
       // (iframes, labels, etc.) must NOT toggle the card flip.
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Caption — anchors the two videos and explains what
-          the user is looking at. Keeps the muted slate tone
-          of the back face. shrink-0 so it never gets
-          squeezed. */}
-      <p className="text-[11px] sm:text-xs text-slate-400 leading-snug text-center shrink-0">
-        Check the screen out in deployment
-      </p>
+      {/* Caption — anchors the videos and explains what
+          the user is looking at. Catalog-supplied so each
+          card can have its own subtitle (e.g. "Check the
+          screen out in deployment" vs "Check the projection
+          rig in active deployment"). shrink-0 so it never
+          gets squeezed. */}
+      {subtitle && (
+        <p className="text-[11px] sm:text-xs text-slate-400 leading-snug text-center shrink-0">
+          {subtitle}
+        </p>
+      )}
 
       {/* Two-iframe grid — stacks on mobile, side-by-side on
           `sm:` and up. Each VideoCell manages its own
           pulse-loader state independently. flex-1 + min-h-0
           so the grid claims all remaining vertical space
-          and the 16:9 aspect-video iframes fit cleanly
-          without being cropped by the card edge. */}
+          and the iframes fit cleanly without being cropped
+          by the card edge. */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 min-h-0">
-        {YOUTUBE_VIDEOS.map((video) => (
-          <div key={video.id} className="flex flex-col gap-1.5 min-h-0">
+        {videos.map((video) => (
+          <div key={video.embedUrl} className="flex flex-col gap-1.5 min-h-0">
             {/* Per-cell label — small uppercase tag above
                 each player so they remain identifiable when
                 both are visible at once. */}
             <span className="text-[10px] font-semibold tracking-[0.16em] uppercase text-[#FFD200]/80 shrink-0">
-              {video.tabLabel}
+              {video.label}
             </span>
             <VideoCell video={video} />
           </div>
@@ -262,7 +201,7 @@ export default function CatalogFlipCard({ item }) {
               rendered with an image-dominant layout below. */}
           <div
             className={`flex flex-col justify-between h-full w-full z-10 ${
-              item.id === 'interactive-panels' ? 'md:w-[32%]' : 'md:w-[55%]'
+              item.front.badges ? 'md:w-[38%]' : 'md:w-[55%]'
             }`}
           >
             <div>
@@ -291,21 +230,20 @@ export default function CatalogFlipCard({ item }) {
               </h3>
 
               {/* Feature pill tree — substantial gradient-tinted
-                  badges arranged down a vertical trunk. Per the
-                  Gemini brief:
-                    • 5 rows (sky → amber → emerald → bronze → purple)
+                  badges arranged down a vertical trunk. Each
+                  card opts in via `front.badges` on its catalog
+                  entry. Per the brief:
                     • px-4 py-2 / text-sm font-semibold padding
                     • Icon integrated INTO the pill (not detached)
-                    • Trunk = border-l-2 on the container (white/20)
+                    • Trunk = border-l-2 on the container
                     • space-y-3 even vertical rhythm
                   The container also acts as the flex child that
                   fills the left column's middle band, so the
                   FEATURED tag + title sit at the top and the
-                  "Tap for info" divider sits at the bottom — no
-                  dead voids. Hidden on mobile because the slim
-                  rail is too narrow there. Only on the
-                  Interactive Panels card. */}
-              {item.id === 'interactive-panels' && (
+                  "Tap for info" divider sits at the bottom —
+                  no dead voids. Hidden on mobile because the
+                  slim rail is too narrow there. */}
+              {Array.isArray(item.front.badges) && item.front.badges.length > 0 && (
                 <ul
                   className="mt-4 hidden md:block relative pl-4 border-l-2 border-white/20 space-y-3"
                   role="list"
@@ -319,12 +257,12 @@ export default function CatalogFlipCard({ item }) {
                     className="absolute -left-[5px] top-0 -translate-y-1/2 w-2 h-2 rounded-full bg-[#FFD200] ring-2 ring-[#0B1B4F]"
                   />
 
-                  {INTERACTIVE_PANELS_BADGES.map((badge) => {
+                  {item.front.badges.map((badge) => {
                     const Icon = badge.icon ? Icons[badge.icon] : null
                     return (
                       <li
                         key={badge.label}
-                        className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-wide border ${badge.container} shadow-[0_0_18px_-8px_rgba(0,0,0,0.6)]`}
+                        className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-wide border bg-gradient-to-r ${badge.gradient} ${badge.borderColor} ${badge.textColor} shadow-[0_0_18px_-8px_rgba(0,0,0,0.6)]`}
                       >
                         {/* Small branch tick — sits on the
                             trunk's right edge, vertically
@@ -336,10 +274,10 @@ export default function CatalogFlipCard({ item }) {
                         />
                         {/* Icon — INTEGRATED inside the pill
                             (not a detached bubble). Lucide for
-                            the four standard rows; the
-                            Google G is the inline SVG. */}
+                            the standard rows; the Google G is
+                            the inline SVG. */}
                         {badge.customIcon === 'google-g' ? (
-                          <GoogleGIcon className={`w-4 h-4 shrink-0`} />
+                          <GoogleGIcon className="w-4 h-4 shrink-0" />
                         ) : Icon ? (
                           <Icon
                             className={`w-4 h-4 shrink-0 ${badge.iconColor}`}
@@ -381,35 +319,35 @@ export default function CatalogFlipCard({ item }) {
               artwork inside the bezel. For other featured
               cards the existing 300 px-tall image frame is
               preserved. */}
-          {item.id === 'interactive-panels' ? (
-            /* Constructed-DOM branch — Interactive Flat Panels.
+          {item.front.imageDominant ? (
+            /* Constructed-DOM branch — image-dominant layout.
                Mirrors Featured.png structurally without using
                the bitmap:
                  1. Full-height dark stage — a single rounded
                     container that fills the entire vertical
                     height of the card. Replaces the
                     squished flex-1 panel that previously
-                    cropped the dual-screen render.
-                 2. SmartPanel3.jpeg at object-contain so the
-                    full dual-screen render is visible without
-                    being cropped.
+                    cropped the image.
+                 2. item.front.image at object-contain so the
+                    full render is visible without being
+                    cropped (aspect ratio preserved).
                  3. Hairline ring + inner glare for the
-                    "glass-fronted panel" feel.
-               The "Tap for info" hint is intentionally NOT
-               here — it lives at the bottom of the left
-               column as a thin divider line + hand icon,
-               matching Featured.png's reference treatment. */
-            <div className="relative w-full md:w-[68%] md:h-full overflow-hidden">
+                    glass-fronted feel.
+               Used by every card whose catalog entry sets
+               `front.imageDominant: true`. The Tap for info
+               hint lives at the bottom of the left column as
+               a thin divider line + hand icon, matching the
+               reference treatment. */
+            <div className="relative w-full md:w-[62%] md:h-full overflow-hidden">
               {/* Full-height dark stage — single rounded
                   container, no nested flex-1 squishing. */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 shadow-[0_18px_44px_-12px_rgba(0,0,0,0.65)] overflow-hidden">
-                {/* SmartPanel3.jpeg centered with object-contain
-                    so the dual-screen render is fully visible.
-                    A thin inner ring frames the image as the
-                    "screen edge". */}
+                {/* The product image centered with object-contain
+                    so the full render is visible. A thin inner
+                    ring frames the image as the "screen edge". */}
                 <div className="absolute inset-3 sm:inset-4 rounded-xl bg-slate-950 ring-1 ring-white/10 overflow-hidden flex items-center justify-center">
                   <img
-                    src="/SmartPanel3.jpeg"
+                    src={item.front.image}
                     alt={item.front.title}
                     className="max-w-full max-h-full w-auto h-auto object-contain"
                     loading="lazy"
@@ -485,13 +423,16 @@ export default function CatalogFlipCard({ item }) {
           </h4>
 
           {/* Back-face content branches by card identity:
-              Interactive Panels shows two side-by-side YouTube
-              iframes with a caption above them, each with
-              its own pulse-loader; other featured cards keep
-              the 4-icon spec matrix. */}
-          {item.id === 'interactive-panels' ? (
-            <div id="interactive-panels-video-panel" className="flex-1 min-h-0">
-              <InteractivePanelsVideoPanel />
+              cards with a non-empty `back.videos` array render
+              a side-by-side YouTube grid (each cell has its own
+              pulse-loader + label); cards without it fall
+              through to the 4-icon spec matrix. */}
+          {Array.isArray(item.back.videos) && item.back.videos.length > 0 ? (
+            <div id={`${item.id}-videos-panel`} className="flex-1 min-h-0">
+              <BackFaceVideosPanel
+                videos={item.back.videos}
+                subtitle={item.back.subtitle}
+              />
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-auto">

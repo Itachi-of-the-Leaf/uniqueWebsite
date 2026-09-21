@@ -3,19 +3,45 @@
 //
 // Each entry has two faces:
 //   • `front` — visual-impact hero (gold tag, hero image, title,
-//     flip hint). Used as the default-facing side.
+//     flip hint, optional badge tree, optional imageDominant
+//     right-column stage). Used as the default-facing side.
 //   • `back`  — institutional authority (compliance eyebrow,
-//     engineering title, 4-icon spec grid, CTA to the catalog
-//     route). Revealed on flip.
+//     engineering title, optional subtitle, optional videos
+//     grid OR 4-icon spec grid, CTA to the catalog route).
+//     Revealed on flip.
 //
 // `featured: true` cards get a wider cell in the responsive grid
 // (md:col-span-2 / lg:col-span-1) so they read as the page's
 // primary recommendations. Set to false (or omit) for
 // secondary-tier cards.
 //
-// Image paths use the `/assets/...` convention so Vite's public
-// folder serves them at the URL root. Fallbacks in
-// `CatalogFlipCard.jsx` route missing assets to a neutral SVG.
+// OPT-IN FIELDS (both featured cards now exercise them):
+//   front.badges           Array<{label, icon, gradient, borderColor,
+//                              textColor, iconColor}> — renders a
+//                              substantial gradient pill tree on
+//                              the LEFT column with integrated
+//                              icons. Required to render the pill
+//                              tree on this card.
+//   front.imageDominant    Boolean — when true, the right column
+//                              becomes a full-height dark stage
+//                              with the panel image rendered at
+//                              object-contain. Used by the two
+//                              featured spotlight cards
+//                              (interactive-panels + projectors)
+//                              to mimic Featured.png's seamless
+//                              right half.
+//   back.subtitle          String — caption text rendered above
+//                              the back-face video grid (e.g.
+//                              "Check the screen out in
+//                              deployment").
+//   back.videos            Array<{label, embedUrl}> — when present
+//                              and non-empty, renders the side-
+//                              by-side YouTube grid in place of
+//                              the 4-icon spec matrix.
+//
+// Image paths use the public-folder convention so Vite serves
+// them at the URL root. Fallbacks in `CatalogFlipCard.jsx`
+// route missing assets to a neutral SVG.
 export const HARDWARE_CATALOG = [
   {
     id: 'interactive-panels',
@@ -23,17 +49,65 @@ export const HARDWARE_CATALOG = [
     front: {
       tag: 'FEATURED',
       title: 'Interactive Flat Panels',
-      image: '/assets/interactive-panel.webp',
+      image: '/SmartPanel3.jpeg',
       hint: 'Tap for specifications & compliance ↻',
+      imageDominant: true,
+      badges: [
+        {
+          label: 'AI - Enhanced',
+          icon: 'Sparkles',
+          gradient: 'from-sky-950/80 to-blue-900/60',
+          borderColor: 'border-sky-400/50',
+          textColor: 'text-sky-200',
+          iconColor: 'text-sky-300',
+        },
+        {
+          label: 'Google EDLA Certified',
+          customIcon: 'google-g',
+          gradient: 'from-slate-900/90 via-amber-950/40 to-slate-900/90',
+          borderColor: 'border-amber-400/60',
+          textColor: 'text-amber-200',
+          iconColor: 'text-amber-300',
+        },
+        {
+          label: 'Integrated Donor Name',
+          icon: 'User',
+          gradient: 'from-emerald-950/80 to-teal-900/60',
+          borderColor: 'border-emerald-400/50',
+          textColor: 'text-emerald-200',
+          iconColor: 'text-emerald-300',
+        },
+        {
+          label: '3-Year Onsite SLA',
+          icon: 'ShieldCheck',
+          gradient: 'from-amber-950/60 to-yellow-900/50',
+          borderColor: 'border-[#FFD200]/50',
+          textColor: 'text-[#FFD200]',
+          iconColor: 'text-[#FFD200]',
+        },
+        {
+          label: '4K Anti-Glare Multi-Touch',
+          icon: 'Monitor',
+          gradient: 'from-purple-950/70 to-indigo-900/60',
+          borderColor: 'border-purple-400/50',
+          textColor: 'text-purple-200',
+          iconColor: 'text-purple-300',
+        },
+      ],
     },
     back: {
       eyebrow: 'GOOGLE EDLA CERTIFIED',
       title: 'AI-Powered Interactive Flat Panel',
-      specs: [
-        { icon: 'Monitor', label: '4K Ultra HD Display' },
-        { icon: 'Cpu', label: 'Android 14 OS' },
-        { icon: 'Touchpad', label: '40-Point Multi-Touch' },
-        { icon: 'ShieldCheck', label: '3-Year Onsite SLA' },
+      subtitle: 'Check the screen out in deployment',
+      videos: [
+        {
+          label: 'Deployment',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/wtBHIyOkSuQ?rel=0',
+        },
+        {
+          label: 'Classroom',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/XzfDhwStWVU?rel=0',
+        },
       ],
       href: '/catalog/interactive-panels',
       cta: 'Explore Models & Accessories ↗',
@@ -45,17 +119,65 @@ export const HARDWARE_CATALOG = [
     front: {
       tag: 'FEATURED SOLUTION',
       title: 'Projector Systems & Rigging',
-      image: '/assets/projector-rig.webp',
+      image: '/ProjectorImage.jpeg',
       hint: 'Tap for kit & mounting details ↻',
+      imageDominant: true,
+      badges: [
+        {
+          label: 'Turnkey Classroom Bundle',
+          icon: 'Package',
+          gradient: 'from-sky-950/80 to-blue-900/60',
+          borderColor: 'border-sky-400/50',
+          textColor: 'text-sky-200',
+          iconColor: 'text-sky-400',
+        },
+        {
+          label: 'State Board Content (Std 1–10)',
+          icon: 'BookOpen',
+          gradient: 'from-slate-900/90 via-amber-950/40 to-slate-900/90',
+          borderColor: 'border-amber-400/60',
+          textColor: 'text-amber-200',
+          iconColor: 'text-amber-400',
+        },
+        {
+          label: 'Heavy-Duty Ceiling Rigging',
+          icon: 'Anchor',
+          gradient: 'from-emerald-950/80 to-teal-900/60',
+          borderColor: 'border-emerald-400/50',
+          textColor: 'text-emerald-200',
+          iconColor: 'text-emerald-400',
+        },
+        {
+          label: '2.1 Immersive Acoustic Sound',
+          icon: 'Volume2',
+          gradient: 'from-purple-950/70 to-indigo-900/60',
+          borderColor: 'border-purple-400/50',
+          textColor: 'text-purple-200',
+          iconColor: 'text-purple-400',
+        },
+        {
+          label: 'Zero-Internet USB Playback',
+          icon: 'Usb',
+          gradient: 'from-amber-950/60 to-yellow-900/50',
+          borderColor: 'border-[#FFD200]/50',
+          textColor: 'text-[#FFD200]',
+          iconColor: 'text-[#FFD200]',
+        },
+      ],
     },
     back: {
-      eyebrow: 'ZP GRANT CAP COMPLIANT',
+      eyebrow: 'ZP GRANT CAP OPTIMIZED (₹25,000)',
       title: 'High-Lumen Classroom Projection Rig',
-      specs: [
-        { icon: 'Projector', label: 'High-Lumen Long Throw' },
-        { icon: 'Anchor', label: 'Steel Ceiling Mount Included' },
-        { icon: 'Tv', label: 'Motorized / Pull-Down Screens' },
-        { icon: 'Volume2', label: '2.1 Tuned Audio Package' },
+      subtitle: 'Check the projection rig in active deployment',
+      videos: [
+        {
+          label: 'Deployment Action',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/0BzyQJsbUlw?rel=0',
+        },
+        {
+          label: 'Classroom Footage',
+          embedUrl: 'https://www.youtube-nocookie.com/embed/3xy5Ti_cFRU?start=47&rel=0',
+        },
       ],
       href: '/catalog/projectors',
       cta: 'Explore Rigging & Bundles ↗',
@@ -200,4 +322,6 @@ export const CATALOG_ICONS = [
   'Keyboard',
   'Cable',
   'Speaker',
+  'Package',
+  'BookOpen',
 ]
