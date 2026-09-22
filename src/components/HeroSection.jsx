@@ -89,11 +89,12 @@ export default function HeroSection() {
           },
           '-=0.5'
         )
-        .from(
+        .fromTo(
           metricsRef.current?.children ?? [],
+          { opacity: 0, y: 12 },
           {
-            opacity: 0,
-            y: 12,
+            opacity: 1,
+            y: 0,
             duration: 0.5,
             stagger: 0.08,
           },
@@ -153,7 +154,13 @@ export default function HeroSection() {
               territory. Glassmorphic surface (bg-white/[0.06]
               + backdrop-blur-md + white/15 border) keeps
               the cards in the same design family as the
-              scrollytelling timeline + testimonials glass. */}
+              scrollytelling timeline + testimonials glass.
+              opacity-100 visible on each card is the safety
+              net against the GSAP entrance timeline — if the
+              StrictMode dev double-invoke or a hot-reload
+              leaves a card at opacity:0, the explicit class
+              forces the rendered opacity to 1 so the user
+              always sees them. */}
           <div
             ref={metricsRef}
             className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 w-full"
@@ -161,7 +168,7 @@ export default function HeroSection() {
             {metrics.map((metric) => (
               <article
                 key={metric.label}
-                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-5 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/40 hover:-translate-y-1 hover:bg-white/[0.09]"
+                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-5 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/40 hover:-translate-y-1 hover:bg-white/[0.09] opacity-100 visible"
               >
                 {/* Tier 1 — Value / Anchor Stat (top).
                     Big white bold. break-words + leading-none
