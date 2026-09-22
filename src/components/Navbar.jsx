@@ -113,29 +113,31 @@ export default function Navbar() {
             className="group flex items-center focus:outline-none min-w-0"
             aria-label="Unique Systems Home"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3 select-none min-w-0">
+            <div className="flex items-center gap-2 sm:gap-2.5 select-none">
               <img
                 src="/logo.jpeg"
                 alt="Unique Systems"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg object-contain border border-white/20 shadow-md flex-shrink-0"
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain shrink-0 rounded-lg border border-white/20 shadow-md"
               />
-              <div className="leading-tight min-w-0">
-                {/* Brand name — truncate on mobile so it shrinks
-                    cleanly instead of forcing a horizontal collision
-                    with the right-side controls. font-extrabold +
-                    tracking-tight keeps "युनिक सिस्टीम्स" and
-                    "Unique Systems" reading at the same visual
-                    weight across the two languages. */}
-                <span className="font-heading font-extrabold text-base sm:text-xl tracking-tight text-[#FFFFFF] block truncate">
+              <div className="flex flex-col justify-center">
+                {/* Brand name — proportional sizing across
+                    breakpoints. font-black + tracking-tight +
+                    leading-none keeps both "Unique Systems" and
+                    the Marathi "युनिक सिस्टीम्स" at the same
+                    visual weight across the two languages. */}
+                <span className="text-sm sm:text-base font-black text-white tracking-tight leading-none">
                   {t('nav.brandName')}
                 </span>
-                {/* GST — leading-none + mt-0.5 keeps it tight
-                    under the brand name so the two lines never
-                    collide. truncate so a Marathi locale (where
-                    the prefix is wider) still fits cleanly. */}
-                <p className="text-[0.65rem] sm:text-xs font-bold tracking-wider text-[#FFD200] mt-0.5 leading-none truncate">
+                {/* GST — full 15-character ID must always
+                    render. whitespace-nowrap + tightened leading
+                    keep the full string on one line at the
+                    smallest mobile widths. The slightly smaller
+                    mobile font (8.5px vs 10px) gives the 15-char
+                    string enough room to fit without truncation
+                    or wrap. */}
+                <span className="text-[8.5px] sm:text-[10px] font-bold text-[#FFD200] tracking-tight sm:tracking-wider leading-tight mt-0.5 whitespace-nowrap">
                   {t('nav.gst')}
-                </p>
+                </span>
               </div>
             </div>
           </a>
@@ -244,14 +246,18 @@ export default function Navbar() {
                 the device's native dialer with
                 +91 94224 33394 pre-filled. Canary Gold
                 style so it matches the desktop Contact
-                CTA and the language-pill accent. */}
+                CTA and the language-pill accent.
+                Icon-only on the smallest mobile widths
+                so the GST number on the brand block
+                never has to truncate — the phone glyph
+                is universally readable, and the
+                accessible name lives in aria-label. */}
             <a
               href="tel:+919****3394"
-              className="flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] font-extrabold text-xs shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 transition-all"
+              className="flex md:hidden items-center justify-center min-w-[44px] h-10 px-3 sm:px-3.5 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 transition-all"
               aria-label="Call Unique Systems at +91 94224 33394"
             >
-              <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2.5]" />
-              <span>{t('nav.callUs')}</span>
+              <Phone className="w-4 h-4 shrink-0 stroke-[2.5]" />
             </a>
 
             {/* Mobile theme toggle — compact single-icon button

@@ -560,44 +560,53 @@ export default function TimelineSection() {
         {/* ─── Narrative layer ───
             Always rendered. On mobile, GSAP pins this stage and
             crossfades the cards inside it — same architecture as
-            Testimonials. */}
-        <div className="relative z-10 h-full flex items-center">
+            Testimonials. z-30 ensures the cards float cleanly
+            above the backdrop layer (no explicit z-index, so
+            default z=auto which loses to any explicit value). */}
+        <div className="relative z-30 h-full flex items-center">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
             {/* Desktop-only left spacer — keeps the narrative card on
                 the right half of the screen on lg+. Hidden on mobile
                 so the card fills the viewport. */}
             <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
             <div className="lg:col-span-5">
-              {/* Card container — flexible height with internal
-                  scroll defense so Marathi prose (which expands
-                  25–35% over English) never clips at the bottom
-                  edge of the glass card. The card's actual visible
-                  area follows the viewport's vertical size (≤82vh
-                  so the gold progress bar + scroll-hint remain
-                  visible below). pb-10 gives the last bullet
-                  breathing room above the rounded bottom edge. */}
-              <div className="relative h-auto max-h-[82vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]">
+              {/* Card container — gives the absolutely-
+                  positioned cards a real box to live in. On
+                  mobile the cards fill the visible stage
+                  (h-screen - top/bottom chrome), on desktop
+                  the spacer pushes the card to the right
+                  column. min-h on mobile ensures the card has
+                  a real height since absolute children don't
+                  contribute to parent sizing.
+                  pb-10 cushion + leading-[1.7] on the inner
+                  body keep Marathi prose from clipping at the
+                  bottom rounded edge. */}
+              <div className="relative h-full min-h-[78vh] md:min-h-[34rem]">
                 {eras.map((era, i) => (
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
                     // Glassmorphic surface — mirrors Testimonials
-                    // section (bg-white/10 backdrop-blur-md
-                    // border-white/15 + soft outer shadow +
-                    // rounded-2xl).
+                    // (bg-white/10 backdrop-blur-md border-white/15
+                    // + soft outer shadow + rounded-2xl).
                     //
-                    // Padding: p-6 sm:p-7 lg:p-8 matches Testimonials.
-                    // overflow-y-auto lets Marathi copy scroll inside
-                    // the card on phones instead of being clipped by
-                    // the parent's h-screen overflow-hidden. The
-                    // hide-scrollbar classes keep the visual edge clean.
+                    // Padding: p-6 sm:p-7 lg:p-8 with explicit
+                    // pb-10/12 so the final bullet never collides
+                    // with the card's rounded bottom edge —
+                    // critical for Marathi (which expands ~30%
+                    // over English due to Devanagari glyph
+                    // metrics). overflow-hidden is the GSAP
+                    // crossfade requirement (matches Testimonials
+                    // exactly); Marathi safety lives in the
+                    // line-height + padding inside, not in a
+                    // scrollable nested container.
                     //
                     // position: absolute + inset:0 + opacity:0 +
                     // y:24px initial state is what allows the GSAP
                     // crossfade to work: all 5 cards overlap at the
                     // same location and GSAP flips opacity/transform
                     // as scroll progresses.
-                    className="timeline-card absolute inset-0 will-change-transform overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] rounded-2xl border border-white/15 bg-white/10 p-6 pb-10 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 sm:pb-10 lg:p-8 lg:pb-12"
+                    className="timeline-card absolute inset-0 will-change-transform overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-6 pb-10 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 sm:pb-10 lg:p-8 lg:pb-12"
                     style={{
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',
