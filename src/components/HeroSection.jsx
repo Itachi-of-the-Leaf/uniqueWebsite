@@ -202,15 +202,17 @@ export default function HeroSection() {
             {metrics.map((metric) => (
               <article
                 key={metric.label}
-                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-6 sm:p-7 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/50 hover:-translate-y-1 hover:bg-white/[0.09] opacity-100 visible"
+                className="card-night group relative flex h-full min-w-[220px] flex-col gap-3 rounded-2xl border border-white/15 bg-white/[0.06] p-6 sm:p-7 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/50 hover:-translate-y-1 hover:bg-white/[0.09] opacity-100 visible"
               >
                 {/* Tier 1 — Value / Anchor Stat (top).
-                    Big white bold. break-words + leading-none
+                    Big white bold. break-words + leading-tight
                     + whitespace-normal (no break-all) keeps
                     Devanagari words like "ऑनलाइन" or "लोकसहभाग"
                     intact across lines — never bisected
-                    mid-syllable. */}
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-none mb-2 break-words whitespace-normal">
+                    mid-syllable — and gives मात्रे / वेलांटी
+                    vertical room to render without matra
+                    collision if the stat ever wraps. */}
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight break-words whitespace-normal">
                   {metric.value}
                 </div>
 
@@ -220,14 +222,9 @@ export default function HeroSection() {
                     ~2.5:1 contrast. text-sm sm:text-base with
                     leading-snug gives Marathi मात्रे / वेलांटी
                     room to render without clipping. */}
-                <h4 className="mt-2.5 mb-0 text-sm sm:text-base font-bold text-[#FFD200] tracking-wide leading-snug break-words whitespace-normal">
+                <h4 className="text-sm sm:text-base font-bold text-[#FFD200] tracking-wide leading-snug break-words whitespace-normal">
                   {metric.label}
                 </h4>
-
-                {/* Thin glass accent rule — subtle visual anchor
-                    that ties the card back to the brand palette
-                    without adding new content. */}
-                <div className="mt-auto pt-3 border-t border-white/10" />
               </article>
             ))}
           </div>
