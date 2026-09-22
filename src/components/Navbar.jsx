@@ -1,7 +1,41 @@
 import { useEffect, useState } from 'react'
-import { Menu, X, ChevronRight, Phone, Globe } from 'lucide-react'
+import { Menu, X, ChevronRight, Phone, Globe, Sun, Moon, Monitor } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from './ThemeToggle'
+
+/**
+ * ThemeToggleMobile
+ * ─────────────────
+ * Compact single-icon button for the mobile navbar that cycles
+ * through `system → light → dark` on each tap. Replaces the full
+ * 3-segment ThemeToggle on phones because the segmented control
+ * consumed ~100px of header width and forced the brand + GST
+ * typography into a vertical collision. Mobile users who want the
+ * full segmented control can reach it inside the hamburger drawer.
+ */
+function ThemeToggleMobile() {
+  const { theme, setTheme } = useTheme()
+  const next = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system'
+  const Icon = theme === 'system' ? Monitor : theme === 'light' ? Sun : Moon
+  const title =
+    theme === 'system'
+      ? 'Theme: System — tap for Light'
+      : theme === 'light'
+      ? 'Theme: Light — tap for Dark'
+      : 'Theme: Dark — tap for System'
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(next)}
+      aria-label="Cycle theme mode"
+      title={title}
+      className="md:hidden min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full bg-[#07143D] border border-[#FFD200]/45 text-[#FFD200] hover:bg-[#0A1E5C] active:scale-95 transition-all shadow-inner"
+    >
+      <Icon className="w-4 h-4" />
+    </button>
+  )
+}
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -76,20 +110,30 @@ export default function Navbar() {
               e.preventDefault()
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
-            className="group flex items-center focus:outline-none"
+            className="group flex items-center focus:outline-none min-w-0"
             aria-label="Unique Systems Home"
           >
-            <div className="flex items-center gap-3 select-none">
+            <div className="flex items-center gap-2.5 sm:gap-3 select-none min-w-0">
               <img
                 src="/logo.jpeg"
                 alt="Unique Systems"
-                className="h-10 w-10 rounded-lg object-contain border border-white/20 shadow-md flex-shrink-0"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg object-contain border border-white/20 shadow-md flex-shrink-0"
               />
-              <div className="leading-tight">
-                <span className="font-heading font-extrabold text-xl tracking-tight text-[#FFFFFF] block">
+              <div className="leading-tight min-w-0">
+                {/* Brand name — truncate on mobile so it shrinks
+                    cleanly instead of forcing a horizontal collision
+                    with the right-side controls. font-extrabold +
+                    tracking-tight keeps "युनिक सिस्टीम्स" and
+                    "Unique Systems" reading at the same visual
+                    weight across the two languages. */}
+                <span className="font-heading font-extrabold text-base sm:text-xl tracking-tight text-[#FFFFFF] block truncate">
                   {t('nav.brandName')}
                 </span>
-                <p className="text-[0.7rem] sm:text-xs font-semibold tracking-wide text-[#FFD200] mt-0.5">
+                {/* GST — leading-none + mt-0.5 keeps it tight
+                    under the brand name so the two lines never
+                    collide. truncate so a Marathi locale (where
+                    the prefix is wider) still fits cleanly. */}
+                <p className="text-[0.65rem] sm:text-xs font-bold tracking-wider text-[#FFD200] mt-0.5 leading-none truncate">
                   {t('nav.gst')}
                 </p>
               </div>
@@ -192,8 +236,8 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* Mobile Right Controls: Call Us + Theme + Language + Hamburger */}
-          <div className="flex md:hidden items-center gap-2">
+          {/* Mobile Right Controls: Call Us + Theme (compact icon) + Language + Hamburger */}
+          <div className="flex md:hidden items-center gap-2 min-w-0">
             {/* Mobile "Call Us" pill — primary mobile CTA,
                 hidden on desktop (where the gold Contact
                 Us pill takes that role). Tapping opens
@@ -202,7 +246,7 @@ export default function Navbar() {
                 style so it matches the desktop Contact
                 CTA and the language-pill accent. */}
             <a
-              href="tel:+919422433394"
+              href="tel:+919****3394"
               className="flex md:hidden items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFD200] hover:bg-[#ffe033] active:scale-95 text-[#071330] font-extrabold text-xs shadow-md shadow-[#FFD200]/20 hover:shadow-[#FFD200]/35 transition-all"
               aria-label="Call Unique Systems at +91 94224 33394"
             >
@@ -210,9 +254,14 @@ export default function Navbar() {
               <span>{t('nav.callUs')}</span>
             </a>
 
-            {/* Mobile theme toggle — compact icon-only (no labels)
-                since horizontal space is tight. */}
-            <ThemeToggle variant="navy" />
+            {/* Mobile theme toggle — compact single-icon button
+                cycling light → dark → system. The full 3-segment
+                toggle is hidden on mobile (it consumed ~100px of
+                header space and crushed the brand + GST typography
+                into a vertical collision). Mobile users can still
+                reach the full segmented control inside the
+                hamburger drawer below. */}
+            <ThemeToggleMobile />
 
             {/* Mobile Top-Right Language Switcher */}
             <div
@@ -305,13 +354,27 @@ export default function Navbar() {
                 the primary red Contact CTA so the eye
                 still lands on Contact first. */}
             <a
-              href="tel:+919422433394"
+              href="tel:+919****3394"
               className="min-h-[48px] flex items-center gap-2 px-4 py-3 text-sm font-bold text-white/90 rounded-lg hover:bg-white/5 hover:text-[#FFD200] transition-colors"
               aria-label="Call Unique Systems at +91 94224 33394"
             >
               <Phone className="w-4 h-4 text-[#FFD200]" />
               <span>{t('nav.callUs')} (+91 94224 33394)</span>
             </a>
+
+            {/* Mobile menu Theme controls — the full 3-segment
+                ThemeToggle that was previously pinned to the
+                navbar. Lives here in the drawer now so the
+                mobile header has room for the brand + GST
+                typography. Mirrors the desktop right-cluster
+                so the two surfaces read as the same control
+                system at different breakpoints. */}
+            <div className="min-h-[48px] flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-[#07143D]/40 border border-white/10">
+              <span className="text-xs font-bold text-white/85 uppercase tracking-wider">
+                {t('nav.theme') || 'Theme'}
+              </span>
+              <ThemeToggle variant="navy" />
+            </div>
 
             {/* Mobile menu Contact CTA — Canary Gold pill
                 to match the desktop CTA exactly so the

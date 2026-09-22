@@ -217,12 +217,16 @@ function renderEraCardBody(era, variant = 'desktop') {
           mobile uses era.mobileBody (2 condensed entries) so the
           entire card fits inside a phone viewport without
           overflow. Both lists use the same inline-paragraph
-          markup so visual hierarchy stays consistent. */}
-      <div className="pt-5 border-t border-white/15 flex flex-col gap-4">
+          markup so visual hierarchy stays consistent.
+          Leading 1.7 + reduced gap-2.5 spacing gives Marathi
+          prose (which has taller ascenders/descenders than
+          Latin) enough vertical room that no glyph clips
+          against the next line. */}
+      <div className="pt-5 border-t border-white/15 flex flex-col gap-2.5 sm:gap-3">
         {bodyList.map((spec, j) => (
           <p
             key={j}
-            className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.65] m-0"
+            className="text-[15px] lg:text-[16px] text-slate-200 leading-[1.7] m-0"
           >
             <strong className="text-brand-gold font-semibold mr-2">
               {spec.label}:
@@ -564,32 +568,36 @@ export default function TimelineSection() {
                 so the card fills the viewport. */}
             <div className="hidden lg:block lg:col-span-7" aria-hidden="true" />
             <div className="lg:col-span-5">
-              <div className="relative h-auto min-h-[28rem] sm:min-h-[34rem]">
+              {/* Card container — flexible height with internal
+                  scroll defense so Marathi prose (which expands
+                  25–35% over English) never clips at the bottom
+                  edge of the glass card. The card's actual visible
+                  area follows the viewport's vertical size (≤82vh
+                  so the gold progress bar + scroll-hint remain
+                  visible below). pb-10 gives the last bullet
+                  breathing room above the rounded bottom edge. */}
+              <div className="relative h-auto max-h-[82vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]">
                 {eras.map((era, i) => (
                   <article
                     key={`card-${era.id}`}
                     ref={(el) => setCardRef(el, i)}
                     // Glassmorphic surface — mirrors Testimonials
-                    // section exactly (bg-white/10 backdrop-blur-md
+                    // section (bg-white/10 backdrop-blur-md
                     // border-white/15 + soft outer shadow +
-                    // rounded-2xl). The white-tint translucent
-                    // glass refracts the era's dark backdrop image
-                    // through the card and the user reads the
-                    // gold-on-white text labels as crisp layered
-                    // hierarchy rather than dark navy fill.
+                    // rounded-2xl).
                     //
-                    // Padding: p-6 sm:p-7 lg:p-8 matches Testimonials
-                    // exactly — same rhythm, same line-height
-                    // baselines across the two scrollytelling
-                    // sections so the user's eye reads them as one
-                    // visual system.
+                    // Padding: p-6 sm:p-7 lg:p-8 matches Testimonials.
+                    // overflow-y-auto lets Marathi copy scroll inside
+                    // the card on phones instead of being clipped by
+                    // the parent's h-screen overflow-hidden. The
+                    // hide-scrollbar classes keep the visual edge clean.
                     //
                     // position: absolute + inset:0 + opacity:0 +
                     // y:24px initial state is what allows the GSAP
                     // crossfade to work: all 5 cards overlap at the
                     // same location and GSAP flips opacity/transform
                     // as scroll progresses.
-                    className="timeline-card absolute inset-0 will-change-transform overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-6 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 lg:p-8"
+                    className="timeline-card absolute inset-0 will-change-transform overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] rounded-2xl border border-white/15 bg-white/10 p-6 pb-10 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 sm:pb-10 lg:p-8 lg:pb-12"
                     style={{
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',

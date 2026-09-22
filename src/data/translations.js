@@ -16,6 +16,7 @@ const translations = {
       langMarathi: 'मराठी',
       langEnglish: 'EN',
       switchAria: 'Switch to Marathi or English',
+      theme: 'Theme',
     },
     hero: {
       beltLabel: 'Konkan Operational Belt:',
@@ -877,6 +878,7 @@ const translations = {
       langMarathi: 'मराठी',
       langEnglish: 'EN',
       switchAria: 'मराठी किंवा इंग्रजी भाषा निवडा',
+      theme: 'थीम',
     },
     hero: {
       beltLabel: 'कोकण कार्यक्षेत्र:',
