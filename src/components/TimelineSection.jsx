@@ -207,20 +207,34 @@ function renderFormattedText(text) {
 // `era` carries the canonical era data; `isFlipped` and
 // `setFlipped` are the controlled flip pair.
 //
-// Front face: same eyebrow / title / lead / specs markup
-// as the standard card body (via renderEraCardBody), plus
-// a branded flip-cue strip at the bottom.
+// ARCHITECTURE (per css-3d-flip-card skill rule #1):
+//   Outer 3D wrapper has explicit height (h-[600px] sm:h-[560px]
+//   max-h-[85vh]). Both faces use `absolute inset-0` to fill
+//   that real box. Inside each face, the scrollable content
+//   area has its own `overflow-y-auto` track so long Marathi
+//   prose scrolls inside the card instead of being clipped by
+//   `overflow: hidden`. The flip indicator at the front face
+//   bottom (and the return cue at the back face top + bottom)
+//   is pinned via `shrink-0` so it's always visible.
 //
-// Back face: dedicated rich-narrative content for Era 2
-// only — Marathi copy that gives the user the
-// "behind-the-scenes" view of why Unique Systems was
-// founded. Uses [transform:rotateY(180deg)] +
-// [backface-visibility:hidden] on both faces so only one
-// is visible at a time during the 700ms transition.
+// Front face: header (year eyebrow + title), lead paragraph,
+// 3 highlight blocks, then pinned flip-cue strip.
+//
+// Back face: top bar (eyebrow + return cue), scrollable
+// narrative with 2 highlight callouts, then pinned bottom
+// return trigger.
 function renderFlipCardContent(era, isFlipped, setFlipped) {
   return (
     <div
-      className="relative h-full w-full [perspective:1400px] cursor-pointer"
+      // Explicit height gives the absolute-positioned faces a
+      // real box to fill. Without an explicit height here, the
+      // faces collapse to 0px (css-3d-flip-card skill rule #1).
+      // sm:h-[560px] calibrates for tablet+ where the desktop
+      // spacer pushes the card to the right column; max-h-[85vh]
+      // caps the card so it never exceeds the viewport on
+      // shorter phones, which would otherwise clip content at
+      // the top/bottom of the visible area.
+      className="relative h-[600px] sm:h-[560px] max-h-[85vh] w-full [perspective:1400px] cursor-pointer"
       onClick={() => setFlipped((prev) => !prev)}
       role="button"
       tabIndex={0}
@@ -239,69 +253,131 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         }`}
       >
-        {/* ─── FRONT FACE ─── */}
-        <div className="absolute inset-0 flex flex-col justify-between text-left [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]">
-          {renderEraCardBody(era)}
+        {/* ─── FRONT FACE ───
+            Self-contained scrollable surface. Outer parent
+            provides explicit height (h-[600px] sm:h-[560px]
+            max-h-[85vh]) so the absolute face has a real
+            box. Inner overflow-y-auto lets the content
+            scroll inside the card if the Marathi text ever
+            exceeds the available height. The flip indicator
+            at the bottom is pinned via shrink-0 so it stays
+            visible regardless of scroll position. */}
+        <div className="absolute inset-0 rounded-2xl bg-slate-900/85 backdrop-blur-xl border border-white/20 p-5 sm:p-7 flex flex-col justify-between text-left shadow-2xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)]">
+          {/* Scrollable content body — header + lead + 3 highlight
+              blocks. pr-1 keeps text from kissing the scrollbar
+              gutter. */}
+          <div className="overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3.5 [-webkit-overflow-scrolling:touch]">
+            {/* Milestone header — year eyebrow + Marathi title.
+                Year eyebrow uses brand gold; title uses white
+                with tight tracking so it stays visually weighted
+                against the lead paragraph below. */}
+            <div>
+              <span className="text-xs font-bold text-[#FFD200] tracking-wider uppercase">
+                २०१४ – २०१६
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug mt-1">
+                गरजेतून जन्मलेली डिजिटल क्रांति
+              </h3>
+            </div>
 
-          {/* Bottom flip indicator — gold pill + hint label that
-              invites the user to tap. The pill pulses (animate-pulse
-              on the Sparkles icon) so it's discoverable without
-              being noisy. The "टॅप करा व उलटा" hint sits on the
-              right and lights up white on card hover. */}
-          <div className="border-t border-white/15 pt-3.5 mt-5 flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFD200]/10 border border-[#FFD200]/40 text-[#FFD200] text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5 animate-pulse" aria-hidden="true" />
+            {/* Lead paragraph — Marathi, gentle relaxed leading.
+                font-normal so the body doesn't shout against the
+                highlight blocks below. */}
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+              तत्कालिन महागड्या डिजिटल तंत्रज्ञानाला पर्याय देत ग्रामीण भागातील लोकवर्गणीची मर्यादा सांभाळून, तेवढ्याच बजेटमध्ये स्वतः असेंबल केलेल्या एल.ई.डी. प्रोजेक्टरच्या माध्यमातून स्वस्त पण दर्जेदार डिजिटल क्लासरूम ची निर्मिती.
+            </p>
+
+            {/* 3 highlight blocks — the structured story. Each
+                block uses a translucent white panel with a
+                gold-bold label and slate-300 body text. The
+                spacing is tightened (space-y-2.5) so all three
+                fit comfortably inside the available height on
+                mobile. */}
+            <div className="space-y-2.5 pt-1 text-xs sm:text-[13px] leading-relaxed">
+              <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10">
+                <span className="font-bold text-[#FFD200]">ग्रामीण विभागांतील प्रमुख अडचण: </span>
+                <span className="text-slate-300">
+                  जि. प. शाळांसाठी पारंपरिक डिजिटल क्लासरूमची किंमत सुमारे ₹१,३५,०००/- होती. कमी पटसंख्या व मर्यादित लोकवर्गणीमुळे एवढी मोठी रक्कम उभी करणे ग्रामीण शाळांना शक्य नव्हते.
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10">
+                <span className="font-bold text-[#FFD200]">तांत्रिक संशोधन: </span>
+                <span className="text-slate-300">
+                  ₹३५,००० च्या मर्यादित बजेटमध्ये पर्याय शोधताना संगणकाची गरज वगळून स्वतः असेंबल केलेला स्मार्ट LED प्रोजेक्टर आणि शिक्षकांच्या मदतीने संकलित शैक्षणिक व्हिडिओ पेनड्राइव्हद्वारे उपलब्ध केले.
+                </span>
+              </div>
+
+              <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10">
+                <span className="font-bold text-[#FFD200]">परिणाम: </span>
+                <span className="text-slate-300">
+                  महागड्या डिजिटल अभ्यासक्रमाला पर्याय देत अत्यल्प खर्चात दर्जेदार डिजिटल क्लासरूम साकारली. लोकवर्गणीच्या मर्यादित बजेटमध्येही ग्रामीण विद्यार्थ्यांना आधुनिक डिजिटल शिक्षण उपलब्ध करून देण्याचा नवा मार्ग निर्माण झाला.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Pinned bottom flip indicator — always visible at the
+              bottom of the front face. The gold pulse pill on
+              the left + "टॅप करा व उलटा" hint on the right
+              invite the user to tap. shrink-0 prevents the
+              indicator from being squashed by flex layout. */}
+          <div className="border-t border-white/15 pt-3 mt-3 flex items-center justify-between shrink-0">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFD200]/15 border border-[#FFD200]/50 text-[#FFD200] text-xs font-bold shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" aria-hidden="true" />
               <span>सविस्तर भूमिका वाचा</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-white transition-colors">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setFlipped(true)
+              }}
+              className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
+              aria-label="टॅप करा व उलटा"
+            >
               <span>टॅप करा व उलटा ↻</span>
-            </div>
+            </button>
           </div>
         </div>
 
         {/* ─── BACK FACE ───
-            Rich narrative copy. The gradient + 2px gold border +
-            fade-in Aurora background differentiates it from the
-            front face so users know they're on the "expanded"
-            side of the card. overflow-y-auto + hidden scrollbar
-            means tall Marathi paragraphs scroll inside the card
-            on mobile without ever escaping the rounded boundary. */}
-        <div
-          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#071330]/95 via-[#0a1b47]/95 to-slate-950/95 backdrop-blur-2xl border-2 border-[#FFD200]/40 p-6 sm:p-8 flex flex-col text-left shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]"
-        >
-          {/* Top bar — eyebrow + return cue. The return cue is a
-              clickable label that flips the card back; placement
-              here makes "return to story" the most discoverable
-              affordance on the back. */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4 shrink-0">
-            <span className="text-xs font-extrabold tracking-widest uppercase text-[#FFD200]">
+            Rich narrative copy. The gradient + 2px gold border
+            differentiates it from the front face. overflow-y-auto
+            on the inner content area means tall Marathi
+            paragraphs scroll inside the card on mobile without
+            ever escaping the rounded boundary. Two return cues
+            (top bar + bottom pinned trigger) make it impossible
+            for the user to get stuck on the back. */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#071330] via-[#091b45] to-[#040b1f] border-2 border-[#FFD200]/40 p-5 sm:p-7 flex flex-col text-left shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
+          {/* Pinned top bar — eyebrow + return cue. shrink-0 so
+              it stays at the top regardless of scroll position
+              in the content area below. */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3 shrink-0">
+            <span className="text-[11px] sm:text-xs font-black tracking-widest uppercase text-[#FFD200]">
               UNIQUE SYSTEMS · आमचा दृष्टीकोन
             </span>
-            <span
-              className="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1"
-              role="button"
-              tabIndex={0}
-              aria-label="मूळ पानावर जा"
+            <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation()
                 setFlipped(false)
               }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setFlipped(false)
-                }
-              }}
+              className="text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 cursor-pointer"
+              aria-label="मूळ पानावर जा"
             >
-              मूळ पानावर जा ↺
-            </span>
+              <span>मूळ पानावर जा ↺</span>
+            </button>
           </div>
 
-          {/* Back content — generous line-height (leading-relaxed),
-              clean spacing (space-y-4), and two highlight blocks
-              for the most quotable lines. */}
-          <div className="space-y-4 text-xs sm:text-sm text-slate-200 leading-relaxed">
+          {/* Scrollable narrative body — the rich story. The
+              inner overflow-y-auto + hidden scrollbar means
+              tall Marathi paragraphs scroll inside the card on
+              mobile without ever escaping the rounded boundary.
+              pr-1 keeps text from kissing the scrollbar
+              gutter. [-webkit-overflow-scrolling:touch] gives
+              iOS momentum scrolling. */}
+          <div className="overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3 text-xs sm:text-[13px] text-slate-200 leading-relaxed [-webkit-overflow-scrolling:touch]">
             <p>
               ग्रामीण भागातील विद्यार्थ्यांना आधुनिक डिजिटल शिक्षणाची संधी मिळावी, या उद्देशाने सुरू झालेल्या एका महत्त्वपूर्ण उपक्रमात{' '}
               <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> ला सहभागी होण्याची संधी मिळाली.
@@ -312,43 +388,62 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
               <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> ने आपली भूमिका यशस्वीपणे पार पाडली.
             </p>
 
-            <p>
+            <p className="text-slate-300">
               या प्रवासात गुणवत्ता, तांत्रिक कौशल्य, वेळेचे नियोजन आणि विश्वासार्ह सेवा या चार गोष्टी आमच्या सोबत राहिल्या.
             </p>
 
             <p className="text-slate-300">आज मागे वळून पाहताना अभिमान वाटतो की—</p>
 
-            {/* Double Asterisk Highlight Block — the most quotable
-                line. Pulled out into a callout box with the brand
-                gold accent so it lands with weight. */}
-            <div className="p-4 rounded-xl bg-[#FFD200]/10 border-l-4 border-[#FFD200] my-3">
-              <p className="text-base sm:text-lg font-black text-white leading-snug tracking-tight">
+            {/* Double Asterisk Highlight Callout — the most
+                quotable line. Pulled out into a gold-bordered
+                callout so it lands with weight. */}
+            <div className="p-3.5 rounded-xl bg-[#FFD200]/10 border-l-4 border-[#FFD200] my-2">
+              <p className="text-sm sm:text-base font-black text-white leading-snug">
                 ही फक्त एक ऑर्डर नव्हती…
                 <br />
                 <span className="text-[#FFD200]">ही आमच्या प्रवासातील एक महत्त्वाची पायरी होती.</span>
               </p>
             </div>
 
-            <div className="pt-2 text-center">
-              <span className="text-xs font-extrabold tracking-wider text-slate-400 block uppercase">
+            <div className="py-1 text-center">
+              <span className="text-[11px] font-extrabold tracking-wider text-slate-400 block uppercase">
                 UNIQUE SYSTEMS
               </span>
-              <p className="text-sm font-bold text-slate-100 italic mt-1">
+              <p className="text-xs sm:text-sm font-bold text-slate-100 italic mt-0.5">
                 “संधीचे रूपांतर विश्वासात… आणि विश्वासाचे रूपांतर यशात!”
               </p>
             </div>
 
-            <p className="text-xs sm:text-sm">
+            <p>
               ही संधी होती शिक्षणाला तंत्रज्ञानाची जोड देण्याची! आणि{' '}
               <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> या उपक्रमातून केवळ उपकरणे उपलब्ध करून देणे हा उद्देश न ठेवता शिक्षकांसाठी अध्यापन अधिक प्रभावी आणि विद्यार्थ्यांसाठी शिक्षण अधिक सोपे, आनंददायी व आकर्षक बनवणे हे ध्येय ठेवले.
             </p>
 
             {/* Single Asterisk Highlight — closing italic banner. */}
-            <div className="mt-4 p-3.5 rounded-xl bg-slate-800/80 border border-white/15 text-center">
-              <p className="text-sm sm:text-base font-bold text-[#FFD200] italic leading-snug">
+            <div className="mt-3 p-3 rounded-xl bg-slate-800/90 border border-white/15 text-center">
+              <p className="text-xs sm:text-sm font-bold text-[#FFD200] italic leading-snug">
                 “एका गरजेपासून सुरू झालेला प्रवास… डिजिटल शिक्षणाच्या नव्या पर्वाची सुरुवात ठरला!”
               </p>
             </div>
+          </div>
+
+          {/* Fixed bottom flip return trigger — second way out
+              for users who scrolled past the top bar. Same
+              action as the top-bar button, but visually lighter
+              (just text, no pill) so it doesn't compete with
+              the main narrative. */}
+          <div className="border-t border-white/10 pt-2.5 mt-2 flex justify-center shrink-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setFlipped(false)
+              }}
+              className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors py-1 cursor-pointer"
+              aria-label="टॅप करून परत जा"
+            >
+              <span>टॅप करून परत जा ↻</span>
+            </button>
           </div>
         </div>
       </div>
