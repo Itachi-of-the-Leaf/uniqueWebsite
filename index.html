@@ -1,37 +1,42 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Unique Systems - Rural eLearning Pioneers since 1998. Equipping 120+ Zilla Parishad schools across Konkan with affordable, rugged offline digital learning rigs starting at ₹25,000." />
-    <title>Unique Systems (युनिक सिस्टीम्स) | Rural eLearning Pioneers (Est. 1998)</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Kalam:wght@400;700&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
-  <body class="antialiased font-sans">
-    <!-- Theme bootstrap: runs before React mounts so the canvas
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/logo.jpeg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Unique Systems (युनिक सिस्टीम्स)" />
+  <title>Unique Systems (युनिक सिस्टीम्स)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Kalam:wght@400;700&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="antialiased font-sans">
+  <!-- Theme bootstrap: runs before React mounts so the canvas
          colour matches the resolved theme on first paint (no white
          flash when the user is in dark mode). Reads localStorage
          ("uniquewebsite:theme" ∈ {light,dark,system}); falls back
          to the OS preference via prefers-color-scheme. Setting
          class on <html> is what triggers the .dark CSS-variable
          overrides in src/index.css. -->
-    <script>
-      (function () {
-        try {
-          var stored = localStorage.getItem('uniquewebsite:theme');
-          var mode = (stored === 'light' || stored === 'dark' || stored === 'system') ? stored : 'system';
-          var resolved = mode;
-          if (mode === 'system') {
-            resolved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          }
-          if (resolved === 'dark') document.documentElement.classList.add('dark');
-        } catch (e) { /* localStorage blocked — fall through to default light */ }
-      })();
-    </script>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('uniquewebsite:theme');
+        var mode = (stored === 'light' || stored === 'dark' || stored === 'system') ? stored : 'system';
+        var resolved = mode;
+        if (mode === 'system') {
+          resolved = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        if (resolved === 'dark') document.documentElement.classList.add('dark');
+      } catch (e) { /* localStorage blocked — fall through to default light */ }
+    })();
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>
