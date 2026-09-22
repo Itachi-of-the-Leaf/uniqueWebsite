@@ -184,6 +184,21 @@ const FALLBACK_ERAS = [
   },
 ]
 
+function renderFormattedText(text) {
+  if (typeof text !== 'string' || !text.includes('**')) return text
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={index} className="font-bold text-white">
+          {part.slice(2, -2)}
+        </strong>
+      )
+    }
+    return part
+  })
+}
+
 // Era card content — extracted so the same eyebrow / title /
 // lead / specs markup can be rendered for both the desktop
 // (3-spec) and mobile (2-condensed-spec) variants without
@@ -231,7 +246,7 @@ function renderEraCardBody(era, variant = 'desktop') {
             <strong className="text-brand-gold font-semibold mr-2">
               {spec.label}:
             </strong>
-            {spec.text}
+            {renderFormattedText(spec.text)}
           </p>
         ))}
       </div>
