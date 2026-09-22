@@ -88,7 +88,7 @@ function VideoCell({ video }) {
   }, [video.embedUrl])
 
   return (
-    <div className="relative w-full h-full min-h-0 rounded-lg overflow-hidden bg-slate-950 ring-1 ring-white/10">
+    <div className="relative w-full aspect-video h-full min-h-0 rounded-xl overflow-hidden bg-slate-950 ring-1 ring-white/10">
       <iframe
         ref={ref}
         src={video.embedUrl}
@@ -144,7 +144,7 @@ function BackFaceVideosPanel({ videos, subtitle }) {
           so the grid claims all remaining vertical space
           and the iframes fit cleanly without being cropped
           by the card edge. */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 min-h-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 my-2 flex-1 min-h-0">
         {videos.map((video) => (
           <div key={video.embedUrl} className="flex flex-col gap-1.5 min-h-0">
             {/* Per-cell label — small uppercase tag above
@@ -276,7 +276,7 @@ export default function CatalogFlipCard({ item }) {
       }}
       className={`group relative w-full cursor-pointer [perspective:1400px] select-none rounded-3xl ${
         item.featured
-          ? 'h-[650px] sm:h-[620px] lg:h-[480px]'
+          ? 'h-[510px] sm:h-[530px] lg:h-[480px]'
           : 'h-auto min-h-[560px] md:min-h-0 md:aspect-square'
       }`}
     >
@@ -312,7 +312,7 @@ export default function CatalogFlipCard({ item }) {
 
           {/* ─── MOBILE (<lg): vertical card anatomy ─── */}
           {item.front.imageDominant && (
-            <div className="flex lg:hidden flex-col justify-between h-full p-5 sm:p-6 relative z-10 border border-white/15 rounded-3xl">
+            <div className="flex lg:hidden flex-col h-full p-5 sm:p-6 relative z-10">
               {/* 1. Top Image Stage with Floating Overlaid Badge.
                   16:10 dark stage with a frosted glass pill
                   pinned to top-left. image fills via
@@ -342,16 +342,17 @@ export default function CatalogFlipCard({ item }) {
                 />
               </div>
 
-              {/* 2. Bold Title */}
-              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug my-3 text-left shrink-0">
+              {/* 2. Bold Title — tightly coupled to image + grid.
+                  Tight rhythm (mt-3.5 mb-2.5) so image, title,
+                  and badges form a cohesive unit. */}
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug mt-3.5 mb-2.5 text-left">
                 {item.front.title}
               </h3>
 
               {/* 3. Symmetrical 2x2 Badge Grid (first 4 only).
-                  Capsule pills with white icon + bold truncated
-                  label. Matches StandardFlipCard badge anatomy
-                  for visual continuity across the gallery. */}
-              <div className="grid grid-cols-2 gap-2.5 my-auto shrink-0">
+                  No my-auto — sits snug beneath the title so
+                  the grid hugs the typography above. */}
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 {(item.front.badges || []).slice(0, 4).map((b, idx) => {
                   const IconComponent = b.customIcon === 'google-g'
                     ? GoogleGIcon
@@ -374,9 +375,10 @@ export default function CatalogFlipCard({ item }) {
                 })}
               </div>
 
-              {/* 4. Bottom Interaction Footer */}
-              <div className="border-t border-white/15 pt-3.5 mt-auto flex items-center gap-2 text-xs font-medium text-slate-300 shrink-0">
-                <Icons.Pointer className="w-4 h-4 text-slate-300 rotate-12 shrink-0" aria-hidden="true" />
+              {/* 4. Bottom Interaction Footer — mt-auto pushes
+                  this to the bottom of the card. */}
+              <div className="border-t border-white/15 pt-3 mt-auto flex items-center gap-2 text-xs font-medium text-slate-300">
+                <Icons.Pointer className="w-3.5 h-3.5 text-slate-300 rotate-12 shrink-0" aria-hidden="true" />
                 <span>{item.front.hint || 'Tap for specifications & compliance ↻'}</span>
               </div>
             </div>
@@ -459,7 +461,7 @@ export default function CatalogFlipCard({ item }) {
         </div>
 
         {/* ================= BACK FACE ================= */}
-        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#071233] ${item.featured ? 'border-transparent' : 'border border-white/20'} p-6 md:p-7 flex flex-col justify-between gap-3 md:gap-4 shadow-2xl overflow-y-auto lg:overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased`}>
+        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#071233] ${item.featured ? 'border-transparent' : 'border border-white/20'} p-5 sm:p-6 lg:p-8 flex flex-col justify-between gap-3 md:gap-4 shadow-2xl overflow-y-auto lg:overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] subpixel-antialiased`}>
 
           {/* Featured-only: same rotating gold rim on the
               back face so the card's institutional gold trim
