@@ -162,12 +162,11 @@ function BackFaceVideosPanel({ videos, subtitle }) {
 }
 
 // ─── FeaturedGoldStarBorder ────────────────────────────────────
-// Razor-thin gold perimeter beam that travels around the
-// border of a featured card. Uses an SVG <rect> with a 1.5px
-// dashed stroke + CSS stroke-dashoffset animation, so the
-// visible glow is strictly confined to the stroke width — no
-// oversized conic gradients, no leaked halos, no blur
-// filters.
+// Razor-thin gold perimeter beam + outer gold-glowy rim that
+// travels around the border of a featured card. The 1.5px SVG
+// <rect> stroke gives a clean continuous beam (no leaked halos);
+// the outer glow shadow gives the card a soft golden aura so
+// the two featured spotlight cards visibly pop off the page.
 //
 // Why SVG and not a rotating conic-gradient?
 //   The previous conic implementation bled outside the card
@@ -189,10 +188,27 @@ function FeaturedGoldStarBorder() {
       aria-hidden="true"
       className="absolute inset-0 rounded-3xl pointer-events-none z-20 overflow-hidden"
     >
-      {/* Static soft-gold base border — always visible,
-          sits behind the traveling beam. Provides the
-          "institutional gold trim" base layer. */}
-      <div className="absolute inset-0 rounded-3xl border border-[#FFD200]/25" />
+      {/* Outer gold glow halo — a soft drop-shadow ring
+          visible just outside the card edge so the spotlight
+          pair feels "lit up" against the dark gallery
+          background. drop-shadow is opacity-driven (no
+          blur), so it never violates the compositor-only
+          animation rule. */}
+      <div
+        aria-hidden="true"
+        className="absolute -inset-[2px] rounded-3xl"
+        style={{
+          boxShadow:
+            '0 0 28px -2px rgba(255,210,0,0.55), 0 0 56px -6px rgba(255,210,0,0.35)',
+        }}
+      />
+
+      {/* Static soft-gold base border — thicker than before
+          (2px instead of 1px) so the spotlight cards read
+          as "framed in gold" at a glance. Sits behind the
+          traveling beam. Provides the "institutional gold
+          trim" base layer. */}
+      <div className="absolute inset-0 rounded-3xl border-2 border-[#FFD200]/45" />
 
       {/* Traveling gold perimeter beam — a stroked SVG
           rect with a short (140-unit) gold dash and a long
@@ -258,7 +274,7 @@ export default function CatalogFlipCard({ item }) {
           setIsFlipped((prev) => !prev)
         }
       }}
-      className={`group relative w-full h-[520px] md:h-[560px] cursor-pointer [perspective:1400px] select-none rounded-3xl`}
+      className={`group relative w-full h-auto min-h-[560px] md:h-[560px] cursor-pointer [perspective:1400px] select-none rounded-3xl`}
     >
       <div
         className={`relative w-full h-full rounded-3xl transition-transform duration-700 [transform-style:preserve-3d] ${
@@ -266,7 +282,17 @@ export default function CatalogFlipCard({ item }) {
         }`}
       >
         {/* ================= FRONT FACE ================= */}
-        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#0B1B4F] ${item.featured ? 'border-transparent' : 'border border-white/15'} p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased`}>
+        {/* Layout choice:
+            - imageDominant cards (Interactive Panels +
+              Projectors, both featured): vertical stack —
+              16:10 image stage on top, title + 2x2 badge
+              grid + footer hint below. Mirrors the
+              StandardFlipCard reference format.
+            - Other cards: keep the legacy horizontal split
+              (left text column, right image frame) since
+              they already work and the badges aren't
+              hidden. */}
+        <div className={`absolute inset-0 w-full h-full rounded-3xl bg-[#0B1B4F] ${item.featured ? 'border-transparent' : 'border border-white/15'} p-5 sm:p-6 md:p-8 ${item.front.imageDominant ? 'flex flex-col' : 'flex flex-col md:flex-row items-center'} justify-between gap-5 md:gap-8 shadow-2xl overflow-hidden [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] subpixel-antialiased`}>
 
           {/* Featured-only: rotating gold rim glow. Mounted
               as the first child so the face's own bg paints
@@ -277,68 +303,171 @@ export default function CatalogFlipCard({ item }) {
           {item.featured && <FeaturedGoldStarBorder />}
 
 
-          {/* Left Column: Identity & Typography (~32% width on
-              Interactive Panels; ~55% on the rest of the
-              featured cards). The Interactive Panels card is
-              rendered with an image-dominant layout below. */}
+          {item.front.imageDominant ? (
+            /* imageDominant branch (featured spotlight cards):
+               vertical stack — 16:10 product render on top,
+               text column below. Mirrors the StandardFlipCard
+               reference format. The image stage fills the full
+               card width with a 16:10 aspect, category pill
+               overlaid in the top-left, and the product image
+               centered with object-contain so the full render
+               is visible. */
+            <div className="relative w-full aspect-[16/10] shrink-0 overflow-hidden">
+              {/* Full-width dark stage — single rounded
+                  container. The category pill sits in the
+                  top-left corner with backdrop-blur so it
+                  reads cleanly against any product photo. */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 shadow-[0_18px_44px_-12px_rgba(0,0,0,0.65)] overflow-hidden">
+                {/* Category pill — same gold treatment as the
+                    featured front tag, but pinned to the image
+                    stage's top-left corner with backdrop-blur
+                    so it overlays any product photo cleanly.
+                    Mirrors StandardFlipCard's pill treatment. */}
+                <div className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-950/70 backdrop-blur-md border border-[#FFD200]/45 text-[#FFD200] shadow-lg">
+                  <Icons.Sparkles className="w-3 h-3 shrink-0" aria-hidden="true" />
+                  <span className="text-[10px] font-semibold tracking-[0.14em] uppercase">
+                    {item.front.tag}
+                  </span>
+                </div>
+                {/* The product image centered with object-contain
+                    so the full render is visible. A thin inner
+                    ring frames the image as the "screen edge". */}
+                <div className="absolute inset-3 sm:inset-4 rounded-xl bg-slate-950 ring-1 ring-white/10 overflow-hidden flex items-center justify-center">
+                  <img
+                    src={item.front.image}
+                    alt={item.front.title}
+                    className="max-w-full max-h-full w-auto h-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      // Fallback to a neutral SVG when the
+                      // asset hasn't been uploaded yet.
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src =
+                        'data:image/svg+xml;utf8,' +
+                        encodeURIComponent(
+                          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" fill="#0A1E5C"/><text x="120" y="86" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
+                        )
+                    }}
+                  />
+                  {/* Subtle diagonal glare for the
+                      glass-fronted feel. */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+
+          {/* Text column — Identity & Typography. On
+              imageDominant cards this sits BELOW the image
+              stage and runs full width; on other cards it
+              sits in the left column of the horizontal split. */}
           <div
-            className={`flex flex-col justify-between h-full w-full z-10 ${
-              item.front.badges ? 'md:w-[38%]' : 'md:w-[55%]'
-            }`}
+            className={`flex flex-col w-full z-10 ${
+              item.front.imageDominant
+                ? 'flex-1 min-h-0'
+                : 'justify-between h-full md:w-[38%]'
+            } ${!item.front.imageDominant && !item.front.badges ? 'md:w-[55%]' : ''}`}
           >
             <div>
               {/* Featured-tier front tag (used when
                   item.featured === true, i.e. the Interactive
                   Panels + Projectors spotlight cards):
                   restrained gold pill, no glow shadow, tight
-                  tracking. Restrained = professional. */}
-              {item.featured ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-[#FFD200]/10 border border-[#FFD200]/25 text-[#FFD200]">
-                  <Icons.Sparkles className="h-3 w-3" aria-hidden="true" />
-                  <span>{item.front.tag}</span>
-                </span>
-              ) : (
-                /* Standard-tier front tag: muted slate-blue
-                   tint, smaller, no glow. Reads as a category
-                   label rather than a spotlight callout. */
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-[0.16em] uppercase bg-white/[0.06] border border-white/15 text-slate-300">
-                  <Icons.Tag className="h-3 w-3" aria-hidden="true" />
-                  <span>{item.front.tag}</span>
-                </span>
+                  tracking. Restrained = professional.
+                  Hidden on imageDominant cards because the
+                  category pill already sits on the image
+                  stage — showing both would duplicate the
+                  FEATURED label. */}
+              {!item.front.imageDominant && (
+                item.featured ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-[0.14em] uppercase bg-[#FFD200]/10 border border-[#FFD200]/25 text-[#FFD200]">
+                    <Icons.Sparkles className="h-3 w-3" aria-hidden="true" />
+                    <span>{item.front.tag}</span>
+                  </span>
+                ) : (
+                  /* Standard-tier front tag: muted slate-blue
+                     tint, smaller, no glow. Reads as a category
+                     label rather than a spotlight callout. */
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-[0.16em] uppercase bg-white/[0.06] border border-white/15 text-slate-300">
+                    <Icons.Tag className="h-3 w-3" aria-hidden="true" />
+                    <span>{item.front.tag}</span>
+                  </span>
+                )
               )}
 
               <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-3 leading-tight">
                 {item.front.title}
               </h3>
 
-              {/* Feature pill tree — substantial gradient-tinted
-                  badges arranged down a vertical trunk. Each
-                  card opts in via `front.badges` on its catalog
-                  entry. Per the brief:
-                    • px-4 py-2 / text-sm font-semibold padding
-                    • Icon integrated INTO the pill (not detached)
-                    • Trunk = border-l-2 on the container
-                    • space-y-3 even vertical rhythm
-                  The container also acts as the flex child that
-                  fills the left column's middle band, so the
-                  FEATURED tag + title sit at the top and the
-                  "Tap for info" divider sits at the bottom —
-                  no dead voids. Hidden on mobile because the
-                  slim rail is too narrow there. */}
-              {Array.isArray(item.front.badges) && item.front.badges.length > 0 && (
+              {/* Feature pill tree — gradient-tinted badges.
+                  imageDominant (featured spotlight) cards use a
+                  compact 2-col grid so 5 badges read as a tidy
+                  matrix rather than a tall single column.
+                  Non-imageDominant cards keep the vertical
+                  trunk-with-rail treatment for desktop. */}
+              {Array.isArray(item.front.badges) && item.front.badges.length > 0 && item.front.imageDominant && (
+                /* imageDominant — 2-col grid */
                 <ul
-                  className="mt-4 hidden md:block relative pl-4 border-l-2 border-white/20 space-y-3"
+                  className="mt-4 grid grid-cols-2 gap-2"
                   role="list"
                 >
-                  {/* Title-node — small gold dot at the trunk's
-                      origin where it meets the title, sitting
-                      on the left border so the trunk "starts"
-                      from the dot. */}
+                  {item.front.badges.slice(0, 4).map((badge) => {
+                    const Icon = badge.icon ? Icons[badge.icon] : null
+                    return (
+                      <li
+                        key={badge.label}
+                        className={`relative inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-tight border bg-gradient-to-r ${badge.gradient} ${badge.borderColor} ${badge.textColor} shadow-[0_0_18px_-8px_rgba(0,0,0,0.6)] truncate`}
+                      >
+                        {badge.customIcon === 'google-g' ? (
+                          <GoogleGIcon className="w-3 h-3 shrink-0" />
+                        ) : Icon ? (
+                          <Icon
+                            className={`w-3 h-3 shrink-0 ${badge.iconColor}`}
+                            aria-hidden="true"
+                          />
+                        ) : null}
+                        <span className="truncate">{badge.label}</span>
+                      </li>
+                    )
+                  })}
+                  {/* 5th badge (if any) — spans full width
+                      below the 2x2 grid so it doesn't crowd
+                      one of the cells. */}
+                  {item.front.badges.length > 4 && (
+                    <li
+                      className={`col-span-2 relative inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-tight border bg-gradient-to-r ${item.front.badges[4].gradient} ${item.front.badges[4].borderColor} ${item.front.badges[4].textColor} shadow-[0_0_18px_-8px_rgba(0,0,0,0.6)] truncate`}
+                    >
+                      {(() => {
+                        const Icon5 = item.front.badges[4].icon
+                          ? Icons[item.front.badges[4].icon]
+                          : null
+                        return Icon5 ? (
+                          <Icon5
+                            className={`w-3 h-3 shrink-0 ${item.front.badges[4].iconColor}`}
+                            aria-hidden="true"
+                          />
+                        ) : null
+                      })()}
+                      <span className="truncate">{item.front.badges[4].label}</span>
+                    </li>
+                  )}
+                </ul>
+              )}
+              {Array.isArray(item.front.badges) && item.front.badges.length > 0 && !item.front.imageDominant && (
+                /* Non-imageDominant — vertical trunk */
+                <ul
+                  className="mt-4 relative pl-4 border-l-2 border-white/20 space-y-3 hidden md:block"
+                  role="list"
+                >
                   <span
                     aria-hidden="true"
                     className="absolute -left-[5px] top-0 -translate-y-1/2 w-2 h-2 rounded-full bg-[#FFD200] ring-2 ring-[#0B1B4F]"
                   />
-
                   {item.front.badges.map((badge) => {
                     const Icon = badge.icon ? Icons[badge.icon] : null
                     return (
@@ -346,18 +475,10 @@ export default function CatalogFlipCard({ item }) {
                         key={badge.label}
                         className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-wide border bg-gradient-to-r ${badge.gradient} ${badge.borderColor} ${badge.textColor} shadow-[0_0_18px_-8px_rgba(0,0,0,0.6)]`}
                       >
-                        {/* Small branch tick — sits on the
-                            trunk's right edge, vertically
-                            centered against the pill, so each
-                            pill reads as a node on the tree. */}
                         <span
                           aria-hidden="true"
                           className="absolute -left-[18px] top-1/2 -translate-y-1/2 w-[14px] h-px bg-white/20"
                         />
-                        {/* Icon — INTEGRATED inside the pill
-                            (not a detached bubble). Lucide for
-                            the standard rows; the Google G is
-                            the inline SVG. */}
                         {badge.customIcon === 'google-g' ? (
                           <GoogleGIcon className="w-4 h-4 shrink-0" />
                         ) : Icon ? (
@@ -391,70 +512,11 @@ export default function CatalogFlipCard({ item }) {
             </div>
           </div>
 
-          {/* Right Column: Hardware Showcase. For the Interactive
-              Panels card, this is a fully-constructed DOM
-              replica of the Featured.png reference — built as
-              real HTML/Tailwind elements rather than a bitmap,
-              so the panel chrome, screen content, and bottom
-              info strip stay accessible, themable, and
-              localizable. SmartPanel3.jpeg is the on-screen
-              artwork inside the bezel. For other featured
-              cards the existing 300 px-tall image frame is
-              preserved. */}
-          {item.front.imageDominant ? (
-            /* Constructed-DOM branch — image-dominant layout.
-               Mirrors Featured.png structurally without using
-               the bitmap:
-                 1. Full-height dark stage — a single rounded
-                    container that fills the entire vertical
-                    height of the card. Replaces the
-                    squished flex-1 panel that previously
-                    cropped the image.
-                 2. item.front.image at object-contain so the
-                    full render is visible without being
-                    cropped (aspect ratio preserved).
-                 3. Hairline ring + inner glare for the
-                    glass-fronted feel.
-               Used by every card whose catalog entry sets
-               `front.imageDominant: true`. The Tap for info
-               hint lives at the bottom of the left column as
-               a thin divider line + hand icon, matching the
-               reference treatment. */
-            <div className="relative w-full h-[260px] sm:h-[320px] md:h-full md:w-[62%] overflow-hidden">
-              {/* Full-height dark stage — single rounded
-                  container, no nested flex-1 squishing. */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 shadow-[0_18px_44px_-12px_rgba(0,0,0,0.65)] overflow-hidden">
-                {/* The product image centered with object-contain
-                    so the full render is visible. A thin inner
-                    ring frames the image as the "screen edge". */}
-                <div className="absolute inset-3 sm:inset-4 rounded-xl bg-slate-950 ring-1 ring-white/10 overflow-hidden flex items-center justify-center">
-                  <img
-                    src={item.front.image}
-                    alt={item.front.title}
-                    className="max-w-full max-h-full w-auto h-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => {
-                      // Fallback to a neutral SVG when the
-                      // asset hasn't been uploaded yet.
-                      e.currentTarget.onerror = null
-                      e.currentTarget.src =
-                        'data:image/svg+xml;utf8,' +
-                        encodeURIComponent(
-                          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" fill="#0A1E5C"/><text x="120" y="86" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#FFD200" font-weight="bold">IMAGE PENDING</text></svg>'
-                        )
-                    }}
-                  />
-                  {/* Subtle diagonal glare for the
-                      glass-fronted feel. */}
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-transparent"
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
+          {/* Non-imageDominant branch: keep the legacy 300 px
+              image frame on the right side. Standard cards
+              only — featured spotlight cards use the
+              imageDominant branch above. */}
+          {!item.front.imageDominant && (
             <div className="relative w-full md:w-[45%] h-[200px] md:h-[300px] flex items-center justify-center rounded-2xl bg-slate-950/40 border border-white/10 p-4 shadow-inner overflow-hidden shrink-0">
               <img
                 src={item.front.image}
