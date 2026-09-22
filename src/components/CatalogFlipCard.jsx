@@ -420,7 +420,7 @@ export default function CatalogFlipCard({ item }) {
                hint lives at the bottom of the left column as
                a thin divider line + hand icon, matching the
                reference treatment. */
-            <div className="relative w-full md:w-[62%] md:h-full overflow-hidden">
+            <div className="relative w-full h-[260px] sm:h-[320px] md:h-full md:w-[62%] overflow-hidden">
               {/* Full-height dark stage — single rounded
                   container, no nested flex-1 squishing. */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#071033] via-[#0B1B4F] to-[#071033] ring-1 ring-white/15 shadow-[0_18px_44px_-12px_rgba(0,0,0,0.65)] overflow-hidden">
