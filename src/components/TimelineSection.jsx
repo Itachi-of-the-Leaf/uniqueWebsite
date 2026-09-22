@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Sparkles } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { useLazyBackdrop } from '../hooks/useLazyBackdrop'
 
@@ -199,6 +200,162 @@ function renderFormattedText(text) {
   })
 }
 
+// Flip-card content — extracted so the second milestone
+// (Era 2, index 1) can render as a 3D flip card while the
+// outer <article> still participates in the GSAP opacity
+// crossfade. The flip state lives in the parent component.
+// `era` carries the canonical era data; `isFlipped` and
+// `setFlipped` are the controlled flip pair.
+//
+// Front face: same eyebrow / title / lead / specs markup
+// as the standard card body (via renderEraCardBody), plus
+// a branded flip-cue strip at the bottom.
+//
+// Back face: dedicated rich-narrative content for Era 2
+// only — Marathi copy that gives the user the
+// "behind-the-scenes" view of why Unique Systems was
+// founded. Uses [transform:rotateY(180deg)] +
+// [backface-visibility:hidden] on both faces so only one
+// is visible at a time during the 700ms transition.
+function renderFlipCardContent(era, isFlipped, setFlipped) {
+  return (
+    <div
+      className="relative h-full w-full [perspective:1400px] cursor-pointer"
+      onClick={() => setFlipped((prev) => !prev)}
+      role="button"
+      tabIndex={0}
+      aria-label={isFlipped ? 'मूळ पानावर जा' : 'सविस्तर भूमिका वाचा'}
+      aria-pressed={isFlipped}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setFlipped((prev) => !prev)
+        }
+      }}
+    >
+      {/* Inner 3D motion shell — the actual flip surface. */}
+      <div
+        className={`relative h-full w-full rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
+          isFlipped ? '[transform:rotateY(180deg)]' : ''
+        }`}
+      >
+        {/* ─── FRONT FACE ─── */}
+        <div className="absolute inset-0 flex flex-col justify-between text-left [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]">
+          {renderEraCardBody(era)}
+
+          {/* Bottom flip indicator — gold pill + hint label that
+              invites the user to tap. The pill pulses (animate-pulse
+              on the Sparkles icon) so it's discoverable without
+              being noisy. The "टॅप करा व उलटा" hint sits on the
+              right and lights up white on card hover. */}
+          <div className="border-t border-white/15 pt-3.5 mt-5 flex items-center justify-between">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FFD200]/10 border border-[#FFD200]/40 text-[#FFD200] text-xs font-bold tracking-wide">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" aria-hidden="true" />
+              <span>सविस्तर भूमिका वाचा</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300 group-hover:text-white transition-colors">
+              <span>टॅप करा व उलटा ↻</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── BACK FACE ───
+            Rich narrative copy. The gradient + 2px gold border +
+            fade-in Aurora background differentiates it from the
+            front face so users know they're on the "expanded"
+            side of the card. overflow-y-auto + hidden scrollbar
+            means tall Marathi paragraphs scroll inside the card
+            on mobile without ever escaping the rounded boundary. */}
+        <div
+          className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#071330]/95 via-[#0a1b47]/95 to-slate-950/95 backdrop-blur-2xl border-2 border-[#FFD200]/40 p-6 sm:p-8 flex flex-col text-left shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none]"
+        >
+          {/* Top bar — eyebrow + return cue. The return cue is a
+              clickable label that flips the card back; placement
+              here makes "return to story" the most discoverable
+              affordance on the back. */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4 shrink-0">
+            <span className="text-xs font-extrabold tracking-widest uppercase text-[#FFD200]">
+              UNIQUE SYSTEMS · आमचा दृष्टीकोन
+            </span>
+            <span
+              className="text-xs font-medium text-slate-400 hover:text-white flex items-center gap-1"
+              role="button"
+              tabIndex={0}
+              aria-label="मूळ पानावर जा"
+              onClick={(e) => {
+                e.stopPropagation()
+                setFlipped(false)
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setFlipped(false)
+                }
+              }}
+            >
+              मूळ पानावर जा ↺
+            </span>
+          </div>
+
+          {/* Back content — generous line-height (leading-relaxed),
+              clean spacing (space-y-4), and two highlight blocks
+              for the most quotable lines. */}
+          <div className="space-y-4 text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p>
+              ग्रामीण भागातील विद्यार्थ्यांना आधुनिक डिजिटल शिक्षणाची संधी मिळावी, या उद्देशाने सुरू झालेल्या एका महत्त्वपूर्ण उपक्रमात{' '}
+              <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> ला सहभागी होण्याची संधी मिळाली.
+            </p>
+
+            <p>
+              या संधीचे रूपांतर केवळ व्यवसायात न करता, शिक्षणाच्या डिजिटल परिवर्तनात योगदान देण्याच्या जबाबदारीत आम्ही केले. Projector आणि आधुनिक डिजिटल साधनांच्या माध्यमातून शाळांमध्ये स्मार्ट शिक्षणाची नवी सुरुवात करण्यासाठी{' '}
+              <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> ने आपली भूमिका यशस्वीपणे पार पाडली.
+            </p>
+
+            <p>
+              या प्रवासात गुणवत्ता, तांत्रिक कौशल्य, वेळेचे नियोजन आणि विश्वासार्ह सेवा या चार गोष्टी आमच्या सोबत राहिल्या.
+            </p>
+
+            <p className="text-slate-300">आज मागे वळून पाहताना अभिमान वाटतो की—</p>
+
+            {/* Double Asterisk Highlight Block — the most quotable
+                line. Pulled out into a callout box with the brand
+                gold accent so it lands with weight. */}
+            <div className="p-4 rounded-xl bg-[#FFD200]/10 border-l-4 border-[#FFD200] my-3">
+              <p className="text-base sm:text-lg font-black text-white leading-snug tracking-tight">
+                ही फक्त एक ऑर्डर नव्हती…
+                <br />
+                <span className="text-[#FFD200]">ही आमच्या प्रवासातील एक महत्त्वाची पायरी होती.</span>
+              </p>
+            </div>
+
+            <div className="pt-2 text-center">
+              <span className="text-xs font-extrabold tracking-wider text-slate-400 block uppercase">
+                UNIQUE SYSTEMS
+              </span>
+              <p className="text-sm font-bold text-slate-100 italic mt-1">
+                “संधीचे रूपांतर विश्वासात… आणि विश्वासाचे रूपांतर यशात!”
+              </p>
+            </div>
+
+            <p className="text-xs sm:text-sm">
+              ही संधी होती शिक्षणाला तंत्रज्ञानाची जोड देण्याची! आणि{' '}
+              <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> या उपक्रमातून केवळ उपकरणे उपलब्ध करून देणे हा उद्देश न ठेवता शिक्षकांसाठी अध्यापन अधिक प्रभावी आणि विद्यार्थ्यांसाठी शिक्षण अधिक सोपे, आनंददायी व आकर्षक बनवणे हे ध्येय ठेवले.
+            </p>
+
+            {/* Single Asterisk Highlight — closing italic banner. */}
+            <div className="mt-4 p-3.5 rounded-xl bg-slate-800/80 border border-white/15 text-center">
+              <p className="text-sm sm:text-base font-bold text-[#FFD200] italic leading-snug">
+                “एका गरजेपासून सुरू झालेला प्रवास… डिजिटल शिक्षणाच्या नव्या पर्वाची सुरुवात ठरला!”
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Era card content — extracted so the same eyebrow / title /
 // lead / specs markup can be rendered for both the desktop
 // (3-spec) and mobile (2-condensed-spec) variants without
@@ -267,6 +424,14 @@ export default function TimelineSection() {
   const progressBarRef = useRef(null)
   const scrollHintRef = useRef(null)
   const progressRef = useRef(0)
+
+  // Flip state for the second milestone card (Era 2 — "The
+  // ₹25,000 Breakthrough", index 1). Toggling this reveals the
+  // rich narrative back face for that one card only — the other
+  // 4 eras continue to crossfade through their normal GSAP
+  // scroll choreography. Kept scoped to this single card so
+  // the rest of the timeline architecture stays untouched.
+  const [isSecondCardFlipped, setIsSecondCardFlipped] = useState(false)
 
   // Resolve localized era data. The translations file owns the
   // canonical 5-era story panels for both English and Marathi
@@ -621,13 +786,31 @@ export default function TimelineSection() {
                     // crossfade to work: all 5 cards overlap at the
                     // same location and GSAP flips opacity/transform
                     // as scroll progresses.
+                    //
+                    // SECOND CARD (i === 1) — gets a special flip
+                    // treatment. The outer <article> keeps doing the
+                    // GSAP opacity crossfade, but the inner content
+                    // is wrapped in a flip-card 3D shell so the user
+                    // can tap to reveal the rich narrative back
+                    // face. All other eras render the standard
+                    // renderEraCardBody().
                     className="timeline-card absolute inset-0 will-change-transform overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-6 pb-10 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-7 sm:pb-10 lg:p-8 lg:pb-12"
                     style={{
                       opacity: 0,
                       transform: 'translate3d(0,24px,0)',
                     }}
                     aria-hidden={i !== 0}
-                  >{renderEraCardBody(era)}</article>
+                  >
+                    {i === 1 ? (
+                      renderFlipCardContent(
+                        era,
+                        isSecondCardFlipped,
+                        setIsSecondCardFlipped,
+                      )
+                    ) : (
+                      renderEraCardBody(era)
+                    )}
+                  </article>
                 ))}
               </div>
             </div>
