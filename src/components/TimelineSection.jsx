@@ -257,16 +257,23 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
             Self-contained scrollable surface. Outer parent
             provides explicit height (h-[600px] sm:h-[560px]
             max-h-[85vh]) so the absolute face has a real
-            box. Inner overflow-y-auto lets the content
-            scroll inside the card if the Marathi text ever
-            exceeds the available height. The flip indicator
-            at the bottom is pinned via shrink-0 so it stays
-            visible regardless of scroll position. */}
-        <div className="absolute inset-0 rounded-2xl bg-slate-900/85 backdrop-blur-xl border border-white/20 p-5 sm:p-7 flex flex-col justify-between text-left shadow-2xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)]">
+            box. `flex flex-col h-full` + `flex-1 min-h-0` on
+            the scrollable content area is the critical fix:
+            without `min-h-0`, a flex child with `overflow-y-auto`
+            refuses to shrink below its content size and instead
+            overflows the parent (causing the "front face clips
+            the third bullet" symptom). With it, the scroll
+            area claims exactly the leftover vertical space and
+            scrolls inside the card. The flip indicator at the
+            bottom is pinned via shrink-0 so it stays visible. */}
+        <div className="absolute inset-0 rounded-2xl bg-slate-900/85 backdrop-blur-xl border border-white/20 p-5 sm:p-7 flex flex-col h-full text-left shadow-2xl [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:translateZ(0)]">
           {/* Scrollable content body — header + lead + 3 highlight
               blocks. pr-1 keeps text from kissing the scrollbar
-              gutter. */}
-          <div className="overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3.5 [-webkit-overflow-scrolling:touch]">
+              gutter. flex-1 min-h-0 is the magic combo that makes
+              the inner overflow-y-auto actually work inside a
+              flex parent — without min-h-0, the flex child's
+              intrinsic content height overrides its parent. */}
+          <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3 [-webkit-overflow-scrolling:touch]">
             {/* Milestone header — year eyebrow + Marathi title.
                 Year eyebrow uses brand gold; title uses white
                 with tight tracking so it stays visually weighted
@@ -280,20 +287,19 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
               </h3>
             </div>
 
-            {/* Lead paragraph — Marathi, gentle relaxed leading.
-                font-normal so the body doesn't shout against the
-                highlight blocks below. */}
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
+            {/* Lead paragraph — Marathi, relaxed leading so
+                मात्रे / वेलांटी don't collide across line breaks. */}
+            <p className="text-xs sm:text-sm text-slate-200 leading-[1.7] font-normal">
               तत्कालिन महागड्या डिजिटल तंत्रज्ञानाला पर्याय देत ग्रामीण भागातील लोकवर्गणीची मर्यादा सांभाळून, तेवढ्याच बजेटमध्ये स्वतः असेंबल केलेल्या एल.ई.डी. प्रोजेक्टरच्या माध्यमातून स्वस्त पण दर्जेदार डिजिटल क्लासरूम ची निर्मिती.
             </p>
 
-            {/* 3 highlight blocks — the structured story. Each
-                block uses a translucent white panel with a
-                gold-bold label and slate-300 body text. The
-                spacing is tightened (space-y-2.5) so all three
-                fit comfortably inside the available height on
-                mobile. */}
-            <div className="space-y-2.5 pt-1 text-xs sm:text-[13px] leading-relaxed">
+            {/* 3 highlight blocks — tightened vertical spacing
+                (space-y-2) so all three fit comfortably in the
+                visible scroll area without forcing the user to
+                scroll on a 600px-tall mobile viewport. Each block
+                is a translucent panel with a gold-bold label and
+                slate-300 body. */}
+            <div className="space-y-2 pt-1 text-xs sm:text-[13px] leading-[1.7]">
               <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10">
                 <span className="font-bold text-[#FFD200]">ग्रामीण विभागांतील प्रमुख अडचण: </span>
                 <span className="text-slate-300">
@@ -321,7 +327,8 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
               bottom of the front face. The gold pulse pill on
               the left + "टॅप करा व उलटा" hint on the right
               invite the user to tap. shrink-0 prevents the
-              indicator from being squashed by flex layout. */}
+              indicator from being squashed by flex layout, and
+              mt-3 keeps it clear of the scroll area above. */}
           <div className="border-t border-white/15 pt-3 mt-3 flex items-center justify-between shrink-0">
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FFD200]/15 border border-[#FFD200]/50 text-[#FFD200] text-xs font-bold shadow-sm">
               <Sparkles className="w-3.5 h-3.5 animate-pulse shrink-0" aria-hidden="true" />
@@ -343,17 +350,24 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
 
         {/* ─── BACK FACE ───
             Rich narrative copy. The gradient + 2px gold border
-            differentiates it from the front face. overflow-y-auto
-            on the inner content area means tall Marathi
-            paragraphs scroll inside the card on mobile without
-            ever escaping the rounded boundary. Two return cues
-            (top bar + bottom pinned trigger) make it impossible
-            for the user to get stuck on the back. */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#071330] via-[#091b45] to-[#040b1f] border-2 border-[#FFD200]/40 p-5 sm:p-7 flex flex-col text-left shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
+            differentiates it from the front face. flex flex-col
+            h-full + flex-1 min-h-0 on the narrative body is the
+            critical fix for the "60% of back face missing" symptom:
+            without min-h-0, a flex child with overflow-y-auto
+            refuses to shrink and pushes the pinned top + bottom
+            elements off the card boundary. With it, the scroll
+            area claims exactly the leftover vertical space and
+            the full story scrolls cleanly inside the card. Two
+            return cues (top bar + bottom pinned trigger) stay
+            visible at all scroll positions. */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#071330] via-[#091b45] to-[#040b1f] border-2 border-[#FFD200]/40 p-5 sm:p-7 flex flex-col h-full text-left shadow-2xl [transform:rotateY(180deg)] [backface-visibility:hidden] [-webkit-backface-visibility:hidden]">
           {/* Pinned top bar — eyebrow + return cue. shrink-0 so
               it stays at the top regardless of scroll position
-              in the content area below. */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3 shrink-0">
+              in the content area below. pt-1 prevents the eyebrow
+              text from kissing the rounded top edge of the card
+              (p-5 sm:p-7 is the outer padding; this pt-1 adds a
+              small inner cushion before the text starts). */}
+          <div className="flex items-center justify-between border-b border-white/10 pt-1 pb-3 mb-3 shrink-0">
             <span className="text-[11px] sm:text-xs font-black tracking-widest uppercase text-[#FFD200]">
               UNIQUE SYSTEMS · आमचा दृष्टीकोन
             </span>
@@ -370,14 +384,13 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
             </button>
           </div>
 
-          {/* Scrollable narrative body — the rich story. The
-              inner overflow-y-auto + hidden scrollbar means
+          {/* Scrollable narrative body — the rich story. flex-1
+              min-h-0 + overflow-y-auto + hidden scrollbar means
               tall Marathi paragraphs scroll inside the card on
               mobile without ever escaping the rounded boundary.
-              pr-1 keeps text from kissing the scrollbar
-              gutter. [-webkit-overflow-scrolling:touch] gives
-              iOS momentum scrolling. */}
-          <div className="overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3 text-xs sm:text-[13px] text-slate-200 leading-relaxed [-webkit-overflow-scrolling:touch]">
+              pr-1 keeps text from kissing the scrollbar gutter.
+              [-webkit-overflow-scrolling:touch] gives iOS momentum. */}
+          <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] pr-1 space-y-3 text-xs sm:text-[13px] text-slate-200 leading-[1.7] [-webkit-overflow-scrolling:touch]">
             <p>
               ग्रामीण भागातील विद्यार्थ्यांना आधुनिक डिजिटल शिक्षणाची संधी मिळावी, या उद्देशाने सुरू झालेल्या एका महत्त्वपूर्ण उपक्रमात{' '}
               <strong className="text-white font-semibold">UNIQUE SYSTEMS</strong> ला सहभागी होण्याची संधी मिळाली.
@@ -431,7 +444,8 @@ function renderFlipCardContent(era, isFlipped, setFlipped) {
               for users who scrolled past the top bar. Same
               action as the top-bar button, but visually lighter
               (just text, no pill) so it doesn't compete with
-              the main narrative. */}
+              the main narrative. shrink-0 keeps it pinned at the
+              bottom regardless of scroll position in the body. */}
           <div className="border-t border-white/10 pt-2.5 mt-2 flex justify-center shrink-0">
             <button
               type="button"
