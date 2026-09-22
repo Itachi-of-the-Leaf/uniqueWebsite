@@ -17,24 +17,20 @@ const FALLBACK = {
     'Rugged LED ceiling-mounted projector deployed in a Konkan Zilla Parishad classroom, with regional taluka names written on the blackboard beneath',
   stats: [
     {
-      value: '150+',
-      label: 'Schools Digitized',
-      detail: 'Across Raigad & Ratnagiri districts',
+      value: '120+',
+      label: 'Successfully Operational In Schools',
     },
     {
-      value: '₹25,000',
-      label: 'Benchmark',
-      detail: 'Engineered for ZP grant limits',
+      value: 'Community-Funded',
+      label: 'Impactful Digital Classrooms Realized...',
     },
     {
       value: '100%',
-      label: 'Offline Capable',
-      detail: 'Zero internet dependency',
+      label: 'Fully Offline — Zero Internet Required',
     },
     {
-      value: '4K',
-      label: 'Next-Gen Ecosystems',
-      detail: 'Interactive anti-glare flat panels',
+      value: 'Google EDLA',
+      label: 'Certified Interactive Smart Touch Panels',
     },
   ],
 }
@@ -148,27 +144,49 @@ export default function HeroSection() {
             {subtitle}
           </p>
 
-          {/* Trust Metric Strip */}
+          {/* Trust Metric Strip — balanced 4-column grid
+              (1-col mobile, 2-col sm, 4-col lg) so the four
+              cards span the full hero width on desktop instead
+              of bunching on the left half. min-w-[220px] on
+              each card guarantees the Marathi label/value
+              glyphs never get squished into word-bisection
+              territory. Glassmorphic surface (bg-white/[0.06]
+              + backdrop-blur-md + white/15 border) keeps
+              the cards in the same design family as the
+              scrollytelling timeline + testimonials glass. */}
           <div
             ref={metricsRef}
-            className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 w-full"
           >
             {metrics.map((metric) => (
               <article
                 key={metric.label}
-                className="card-night flex h-full flex-col justify-between rounded-2xl border border-brand-navy/10 dark:border-white/15 bg-white/85 dark:bg-white/[0.06] p-5 backdrop-blur"
+                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-5 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/40 hover:-translate-y-1 hover:bg-white/[0.09]"
               >
-                <div>
-                  <p className="font-heading text-2xl text-brand-navy dark:text-white lg:text-3xl">
-                    {metric.value}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-brand-crimson">
-                    {metric.label}
-                  </p>
+                {/* Tier 1 — Value / Anchor Stat (top).
+                    Big white bold. break-words + leading-none
+                    + whitespace-normal (no break-all) keeps
+                    Devanagari words like "ऑनलाइन" or "लोकसहभाग"
+                    intact across lines — never bisected
+                    mid-syllable. */}
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-none break-words whitespace-normal">
+                  {metric.value}
                 </div>
-                <p className="mt-4 border-t border-brand-navy/10 dark:border-white/10 pt-3 text-xs leading-snug text-brand-navy/70 dark:text-slate-300">
-                  {metric.detail}
-                </p>
+
+                {/* Tier 2 — Primary Label (middle).
+                    Canary Gold replaces the old dark crimson —
+                    crimson on midnight navy failed WCAG AA at
+                    ~2.5:1 contrast. text-sm sm:text-base with
+                    leading-snug gives Marathi मात्रे / वेलांटी
+                    room to render without clipping. */}
+                <h4 className="mt-2.5 mb-0 text-sm sm:text-base font-bold text-[#FFD200] tracking-wide leading-snug break-words whitespace-normal">
+                  {metric.label}
+                </h4>
+
+                {/* Thin gold accent rule — subtle visual anchor
+                    that ties the card back to the brand palette
+                    without adding new content. */}
+                <div className="mt-auto pt-3 border-t border-white/10" />
               </article>
             ))}
           </div>
