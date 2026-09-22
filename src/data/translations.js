@@ -34,16 +34,12 @@ const translations = {
       milestonePrefix: 'Milestone 0',
       scrollIndicator: 'Scroll To Experience The Grassroots Journey',
       // Image-overlay pill on the classroom proof card (right column).
-      overlayEyebrow: 'DEPLOYMENT IN ACTION',
       overlayLocation: 'ZP School · Konkan Division · Raigad',
-      overlayVerified: 'VERIFIED DEPLOYMENT',
-      overlaySince: 'Since 2014',
-      overlayEst: 'Est. 1998',
       // Alt text for the projector-in-action image.
       overlayAlt:
         'Rugged LED ceiling-mounted projector deployed in a Konkan Zilla Parishad classroom, with regional taluka names written on the blackboard beneath',
       // Trust strip caption.
-      establishedBadge: 'Established 1998 · Khed, Maharashtra',
+      establishedBadge: 'Since 1998...',
       stats: [
         {
           value: '120+',
@@ -66,7 +62,7 @@ const translations = {
         {
           value: 'Google EDLA',
           label: 'Certified Next-Gen',
-          detail: 'Interactive smart panels',
+          detail: 'Interactive Smart Panels',
           highlight: 'Zero monthly subscription traps',
         },
       ],
@@ -883,8 +879,8 @@ const translations = {
     hero: {
       beltLabel: 'कोकण कार्यक्षेत्र:',
       beltCities: 'खेड • चिपळूण • महाड • दापोली • गुहागर',
-      titlePart1: 'ग्रामीण शाळांचे सक्षमीकरण:',
-      titlePart2: 'परवडणारे डिजिटल शिक्षण',
+      titlePart1: 'नवीन तंत्रज्ञानाच्या माध्यमातून शिक्षण',
+      titlePart2: 'अधिक प्रभावी, सक्षम आणि आनंददायी...',
       subtitlePrefix: '२०१४ पासून रायगड व रत्नागिरीतील ',
       schoolsHighlight: '१२०+ जिल्हा परिषद शाळांमध्ये',
       subtitleMiddle: ' मजबूत, ऑफलाइन ई-लर्निंग प्रणालीचे प्रणेते — अवघ्या ',
@@ -924,16 +920,12 @@ const translations = {
         },
       ],
       // Image overlay copy on the classroom proof card.
-      overlayEyebrow: 'प्रत्यक्ष शालेय वापर',
       overlayLocation: 'जि. प. शाळा · कोकण विभाग · रायगड',
-      overlayVerified: 'प्रमाणित सेटअप',
-      overlaySince: '२०१४ पासून',
-      overlayEst: 'स्थापना १९९८',
       // Marathi alt text for the projector-in-action image.
       overlayAlt:
         'कोकण जिल्हा परिषद शाळेतील छतावर बसवलेले मजबूत LED प्रोजेक्टर, पाठीमागे फलकावर प्रादेशिक तालुक्यांची नावे',
       // Trust strip caption.
-      establishedBadge: 'स्थापना १९९८ · खेड, महाराष्ट्र',
+      establishedBadge: '१९९८ पासून...',
     },
     timeline: {
       badge: 'ऐतिहासिक प्रवास (१९९८ — आजपर्यंत)',

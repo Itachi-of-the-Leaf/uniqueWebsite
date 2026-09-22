@@ -6,16 +6,12 @@ import { useLanguage } from '../context/LanguageContext'
 // overrides these at render time; values here exist so the section
 // degrades gracefully if a translation key is missing.
 const FALLBACK = {
-  establishedBadge: 'Established 1998 · Khed, Maharashtra',
+  establishedBadge: 'Since 1998...',
   titlePart1: 'Empowering Rural Schools With',
   titlePart2: 'Affordable Digital Learning',
   subtitle:
     'Pioneering rugged, offline eLearning setups across 150+ Zilla Parishad schools in Raigad & Ratnagiri since 2014—engineered to operate within standard grant limits.',
-  overlayEyebrow: 'DEPLOYMENT IN ACTION',
   overlayLocation: 'ZP School · Konkan Division · Raigad',
-  overlayVerified: 'VERIFIED DEPLOYMENT',
-  overlaySince: 'Since 2014',
-  overlayEst: 'Est. 1998',
   // Alt text for the projector-in-action image.
   overlayAlt:
     'Rugged LED ceiling-mounted projector deployed in a Konkan Zilla Parishad classroom, with regional taluka names written on the blackboard beneath',
@@ -71,9 +67,6 @@ export default function HeroSection() {
       : FALLBACK.subtitle)
   const overlayEyebrow = hero.overlayEyebrow ?? FALLBACK.overlayEyebrow
   const overlayLocation = hero.overlayLocation ?? FALLBACK.overlayLocation
-  const overlayVerified = hero.overlayVerified ?? FALLBACK.overlayVerified
-  const overlaySince = hero.overlaySince ?? FALLBACK.overlaySince
-  const overlayEst = hero.overlayEst ?? FALLBACK.overlayEst
   const overlayAlt = hero.overlayAlt ?? FALLBACK.overlayAlt
   // Prefer `hero.stats` (already localized in translations.js). Fall
   // back to the local English constants.
@@ -133,8 +126,8 @@ export default function HeroSection() {
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         {/* Headline + Subtitle */}
         <div className="lg:col-span-7">
-          <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-widest uppercase border border-sky-200 bg-sky-50 text-sky-800 dark:border-[#FFD200]/30 dark:bg-[#FFD200]/10 dark:text-[#FFD200] mb-6">
-            <span className="inline-block size-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+          <p className="inline-flex items-center gap-2.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase border border-sky-200 bg-sky-50 text-sky-800 dark:border-[#FFD200]/30 dark:bg-[#FFD200]/10 dark:text-[#FFD200] mb-6">
+            <span className="inline-block size-2 sm:size-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.6)]" />
             {establishedBadge}
           </p>
 
@@ -198,27 +191,21 @@ export default function HeroSection() {
                   decoding="async"
                 />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-midnight via-brand-midnight/70 to-transparent p-5 text-white">
+                  {overlayEyebrow && (
+                    <p
+                      className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-gold"
+                      style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
+                    >
+                      {overlayEyebrow}
+                    </p>
+                  )}
                   <p
-                    className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-gold"
-                    style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
-                  >
-                    {overlayEyebrow}
-                  </p>
-                  <p
-                    className="mt-1 text-sm font-medium"
+                    className={`text-sm font-medium ${overlayEyebrow ? 'mt-1' : ''}`}
                     style={{ textShadow: '0 1px 3px rgba(0,0,0,0.7)' }}
                   >
                     {overlayLocation}
                   </p>
                 </div>
-              </div>
-              <div className="mt-3 flex items-center justify-between px-1 text-[0.65rem] uppercase tracking-[0.18em] text-brand-navy/60 dark:text-slate-300">
-                <span>{overlayEst}</span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
-                  {overlayVerified}
-                </span>
-                <span>{overlaySince}</span>
               </div>
             </div>
           </div>
