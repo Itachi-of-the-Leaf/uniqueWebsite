@@ -481,32 +481,13 @@ export default function TimelineSection() {
               tl.to({}, { duration: 0.24 }, 0.76)
             }
 
-            // Desktop-only gate: pin+scrub only runs at >= md.
-            // On mobile the JSX renders each era as a natural-flow
-            // block with a condensed body (mobileBody[], 2 specs vs
-            // desktop's 3) so the entire card fits a phone viewport.
-            // Without this gate, the desktop GSAP scene would try
-            // to pin mobile cards that aren't even visible — the
-            // cards are inside `hidden md:flex` and the backdrops
-            // are inside `hidden md:block`, so the desktop scene's
-            // refs are empty on mobile, but the timeline still
-            // tries to scroll-pin 600vh of empty space, leaving
-            // the section feeling "stuck" between scroll strokes.
-            //
-            // The mobile-fallback gsap.set below ensures the
-            // desktop card refs (which exist but are display:none
-            // on mobile) render at opacity:1 if the scene doesn't
-            // run — harmless on desktop because buildScene
-            // overrides it back to 0 in its own setup block.
-            const allCardsMobile = cardRefs.current.filter(Boolean)
-            gsap.set(allCardsMobile, {
-              opacity: 1,
-              y: 0,
-              pointerEvents: 'auto',
-            })
-
+            // Run on every viewport (mobile + desktop). Mobile uses
+            // the same pin+scrub scene as desktop now — same
+            // glassmorphic cards, same crossfade, same progress bar.
+            // The previous mobile-only natural-flow block was
+            // removed; mobile relies entirely on this scene.
             mm.add(
-              '(min-width: 768px) and (prefers-reduced-motion: no-preference)',
+              '(prefers-reduced-motion: no-preference)',
               buildScene,
             )
     }, sectionRef)
@@ -525,16 +506,17 @@ export default function TimelineSection() {
     <section
       ref={sectionRef}
       id="journey"
-      className="relative w-full h-auto md:h-[600vh] bg-brand-canvas"
+      className="relative w-full h-[600vh] bg-brand-canvas"
       data-timeline-image
       aria-label="Our Journey"
     >
-      <div ref={stageRef} className="relative w-full md:sticky md:top-0 md:h-screen md:overflow-hidden">
-        {/* ─── DESKTOP backdrop layer ───
+      <div ref={stageRef} className="relative w-full sticky top-0 h-screen overflow-hidden">
+        {/* ─── Backdrop layer ───
             Stacked absolute siblings for the GSAP crossfade.
-            Hidden on mobile because the mobile narrative layer
-            renders each era's backdrop inline above its own card. */}
-        <div className="absolute inset-0 hidden md:block">
+            Used on every viewport — mobile now runs the same
+            pin+scrub scene as desktop, so it needs the same
+            backdrop crossfade layer. */}
+        <div className="absolute inset-0">
           {eras.map((era, i) => (
             <div
               key={`backdrop-${era.id}`}
@@ -571,12 +553,11 @@ export default function TimelineSection() {
           ))}
         </div>
 
-        {/* ─── DESKTOP narrative layer ───
-            Hidden on mobile because the mobile narrative layer
-            (added below) renders each era in natural document
-            flow. On desktop this stays as the absolutely-
-            positioned GSAP crossfade stack. */}
-        <div className="relative z-10 hidden h-full md:flex md:items-center">
+        {/* ─── Narrative layer ───
+            Always rendered. On mobile, GSAP pins this stage and
+            crossfades the cards inside it — same architecture as
+            Testimonials. */}
+        <div className="relative z-10 h-full flex items-center">
           <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 px-5 sm:gap-8 sm:px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
             {/* Desktop-only left spacer — keeps the narrative card on
                 the right half of the screen on lg+. Hidden on mobile
@@ -619,85 +600,6 @@ export default function TimelineSection() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* ─── MOBILE narrative layer ───
-            On screens below md, the GSAP pin-and-scrub scene
-            doesn't run (see matchMedia gate above). Instead of
-            trying to force the desktop pin onto mobile, render
-            each era as its own natural-flow block:
-              1. A full-bleed backdrop image (refracts through the
-                 glassmorphic card below it for the frosted-glass
-                 effect).
-              2. A glassmorphic card with the CONDENSED
-                 mobileBody[] content (2 specs vs 3 on desktop) so
-                 the entire card fits inside a phone viewport
-                 without overflow. Each era's mobile content
-                 targets 53w / 361c total — measured and verified.
-              3. A comfortable gap between eras (64-72px on mobile,
-                 80-96px on sm) so each card reads as its own
-                 self-contained "page" in the user's thumb scroll. */}
-        <div className="md:hidden">
-          {eras.map((era, i) => (
-            <div
-              key={`mobile-era-${era.id}`}
-              className="relative w-full overflow-hidden"
-            >
-              {/* Full-bleed backdrop layer — covers the entire
-                  era block. Refracts through the card's backdrop-
-                  blur for the frosted-glass effect. */}
-              <div
-                className="absolute inset-0 pointer-events-none will-change-transform"
-                aria-hidden="true"
-              >
-                {era.backdrop ? (
-                  <img
-                    src={i === 0 ? era.backdrop : undefined}
-                    {...(i !== 0 ? { 'data-src': era.backdrop } : {})}
-                    alt=""
-                    className="absolute inset-0 size-full object-cover lazy-bg"
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-midnight to-brand-cobalt" />
-                )}
-                {/* Veil — symmetric dark for legibility behind
-                    both the label band and the card. */}
-                <div className="absolute inset-0 bg-gradient-to-b from-brand-midnight/85 via-brand-midnight/75 to-brand-midnight/85" />
-              </div>
-
-              {/* Top label band — sits over the backdrop above
-                  the card so the user has a positional cue as
-                  they scroll. */}
-              <div className="relative z-10 pt-10 pb-6 px-5 sm:px-7">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70 mb-2">
-                  Era {era.id} of {eras.length}
-                </p>
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-white/60">
-                  Our Journey
-                </p>
-              </div>
-
-              {/* Card — natural document flow, glassmorphic
-                  surface mirrors Testimonials pattern. Renders
-                  the MOBILE variant of the card body (2 condensed
-                  specs). Sized to fit within a phone viewport
-                  without overflow. */}
-              <div className="relative z-10 px-4 pb-14 sm:px-6 sm:pb-20">
-                <article
-                  className="timeline-card relative w-full max-w-xl mx-auto overflow-hidden rounded-2xl border border-white/15 bg-white/10 p-5 text-white shadow-[0_30px_80px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-6"
-                  style={{
-                    opacity: 1,
-                    transform: 'translate3d(0,0,0)',
-                  }}
-                  aria-hidden={false}
-                >
-                  {renderEraCardBody(era, 'mobile')}
-                </article>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* ─── Section Heading (always visible) ─── */}
