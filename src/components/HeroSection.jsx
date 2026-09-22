@@ -144,59 +144,6 @@ export default function HeroSection() {
           >
             {subtitle}
           </p>
-
-          {/* Trust Metric Strip — balanced 4-column grid
-              (1-col mobile, 2-col sm, 4-col lg) so the four
-              cards span the full hero width on desktop instead
-              of bunching on the left half. min-w-[220px] on
-              each card guarantees the Marathi label/value
-              glyphs never get squished into word-bisection
-              territory. Glassmorphic surface (bg-white/[0.06]
-              + backdrop-blur-md + white/15 border) keeps
-              the cards in the same design family as the
-              scrollytelling timeline + testimonials glass.
-              opacity-100 visible on each card is the safety
-              net against the GSAP entrance timeline — if the
-              StrictMode dev double-invoke or a hot-reload
-              leaves a card at opacity:0, the explicit class
-              forces the rendered opacity to 1 so the user
-              always sees them. */}
-          <div
-            ref={metricsRef}
-            className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5 w-full"
-          >
-            {metrics.map((metric) => (
-              <article
-                key={metric.label}
-                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-5 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/40 hover:-translate-y-1 hover:bg-white/[0.09] opacity-100 visible"
-              >
-                {/* Tier 1 — Value / Anchor Stat (top).
-                    Big white bold. break-words + leading-none
-                    + whitespace-normal (no break-all) keeps
-                    Devanagari words like "ऑनलाइन" or "लोकसहभाग"
-                    intact across lines — never bisected
-                    mid-syllable. */}
-                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-none break-words whitespace-normal">
-                  {metric.value}
-                </div>
-
-                {/* Tier 2 — Primary Label (middle).
-                    Canary Gold replaces the old dark crimson —
-                    crimson on midnight navy failed WCAG AA at
-                    ~2.5:1 contrast. text-sm sm:text-base with
-                    leading-snug gives Marathi मात्रे / वेलांटी
-                    room to render without clipping. */}
-                <h4 className="mt-2.5 mb-0 text-sm sm:text-base font-bold text-[#FFD200] tracking-wide leading-snug break-words whitespace-normal">
-                  {metric.label}
-                </h4>
-
-                {/* Thin gold accent rule — subtle visual anchor
-                    that ties the card back to the brand palette
-                    without adding new content. */}
-                <div className="mt-auto pt-3 border-t border-white/10" />
-              </article>
-            ))}
-          </div>
         </div>
 
         {/* Visual Showcase: Glass-framed classroom proof point */}
@@ -233,6 +180,56 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Trust Metric Strip — full-width 4-column row
+            beneath the headline + showcase. Spanning all 12
+            grid columns gives the four cards genuine desktop
+            breathing room (no more 7/12-column squeeze),
+            and the generous gap-6 lg:gap-8 gutters stop
+            the rounded borders from ever touching or
+            overlapping into a conjoined bar. The glassmorphic
+            surface + opacity-100 visible class is the same
+            family used on the timeline / testimonials
+            scrollytelling surfaces, plus the GSAP-fromTo
+            safety net from the prior fix. */}
+        <div
+          ref={metricsRef}
+          className="col-span-1 lg:col-span-12 mt-4 lg:mt-8"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 w-full">
+            {metrics.map((metric) => (
+              <article
+                key={metric.label}
+                className="card-night group relative flex h-full min-w-[220px] flex-col justify-between rounded-2xl border border-white/15 bg-white/[0.06] p-6 sm:p-7 shadow-xl backdrop-blur-md transition-all duration-300 hover:border-[#FFD200]/50 hover:-translate-y-1 hover:bg-white/[0.09] opacity-100 visible"
+              >
+                {/* Tier 1 — Value / Anchor Stat (top).
+                    Big white bold. break-words + leading-none
+                    + whitespace-normal (no break-all) keeps
+                    Devanagari words like "ऑनलाइन" or "लोकसहभाग"
+                    intact across lines — never bisected
+                    mid-syllable. */}
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-none mb-2 break-words whitespace-normal">
+                  {metric.value}
+                </div>
+
+                {/* Tier 2 — Primary Label (middle).
+                    Canary Gold replaces the old dark crimson —
+                    crimson on midnight navy failed WCAG AA at
+                    ~2.5:1 contrast. text-sm sm:text-base with
+                    leading-snug gives Marathi मात्रे / वेलांटी
+                    room to render without clipping. */}
+                <h4 className="mt-2.5 mb-0 text-sm sm:text-base font-bold text-[#FFD200] tracking-wide leading-snug break-words whitespace-normal">
+                  {metric.label}
+                </h4>
+
+                {/* Thin glass accent rule — subtle visual anchor
+                    that ties the card back to the brand palette
+                    without adding new content. */}
+                <div className="mt-auto pt-3 border-t border-white/10" />
+              </article>
+            ))}
           </div>
         </div>
       </div>
